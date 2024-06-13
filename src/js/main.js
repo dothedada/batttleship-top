@@ -1,3 +1,6 @@
-import '../css/styles.css'
+import '../css/styles.css';
 
-console.log('carajo')
+const testeoDeMinifyEInyeccion = () => {
+    console.log('carajo');
+};
+testeoDeMinifyEInyeccion();
