@@ -1,6 +1,5 @@
 {
   "name": "battleshiptdd",
-  "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
@@ -9,8 +8,6 @@
     "preview": "vite preview"
   },
   "devDependencies": {
-    "jest": "^29.7.0",
-    "prettier": "^3.3.2",
     "vite": "^5.2.0"
   }
 }
