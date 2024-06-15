@@ -8,6 +8,7 @@
         "preview": "vite preview"
     },
     "devDependencies": {
+        "@biomejs/biome": "1.8.1",
         "globals": "^15.4.0",
         "prettier": "^3.3.2",
         "vite": "^5.2.0",
