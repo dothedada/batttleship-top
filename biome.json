@@ -40,7 +40,16 @@
                 "useArrayLiterals": "error",
                 "useIsNan": "error"
             },
-            "security": { "noGlobalEval": "error" },
+            "nursery": {
+                "noConsole": "warn"
+            },
+            "performance": {
+                "noAccumulatingSpread": "warn",
+                "noDelete": "warn"
+            },
+            "security": {
+                "noGlobalEval": "error"
+            },
             "style": {
                 "noCommaOperator": "error",
                 "noVar": "warn",
