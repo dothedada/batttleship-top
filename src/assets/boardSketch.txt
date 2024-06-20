@@ -48,7 +48,7 @@
 10│   │   │   │   │   │   │   │   │   │   │    ║  10│   │   │   │   │   │   │   │   │   │   │
   └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘    ║    └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
                                                ║
-	My shoots                                  ║     My ships:
+    My shoots                                  ║     My ships:
     · = Blank                                  ║     AAAAA	Carrier
     X = Hit                                    ║     BBBB	Battleship
                                                ║     CCC	Cruiser 
