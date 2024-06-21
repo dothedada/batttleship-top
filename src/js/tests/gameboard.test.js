@@ -17,10 +17,6 @@ describe('Evaluación del tablero', () => {
 });
 
 describe('Administración y posicionamiento de barcos', () => {
-    test('Cada jugador dispone de 5 barcos al iniciar el tablero', () => {
-        //
-    });
-
     test('Ubica un barco verticalmente dentro del tablero', () => {
         //
     });
@@ -53,16 +49,30 @@ describe('Administración y posicionamiento de barcos', () => {
         // queda 1
     });
 
-    test('ubica aleatoriamente los barcos restantes', () => {
-        //
-    });
-
-    test('Queda un registro en el tablero de la ubicación de los barcos', () => {
+    test('ubica aleatoriamente un barco', () => {
         //
     });
 });
 
 describe('Elementos del juego', () => {
-    test('marca en el disparo en una celda desocupada');
+    test('Marca en el disparo en una celda desocupada', () => {
+        //
+    });
+
+    test('Marca el disparo en una celda ocupada', () => {
+        //
+    });
+
+    test('Cuando el disparo da en un bote, se actualiza el estado de este', () => {
+        //
+    });
+
+    test('Reporta el hundimiento de un bote', () => {
+        //
+    });
+
+    test('avisa cuando ya no le quedan barcos en este tablero', () => {
+        //
+    })
     //
 });

@@ -15,10 +15,10 @@ Usar nvim y pasar tanto tiempo en la terminal tienen consecuencias, aunque este 
     - [] Debe tener el método receiveAttack(col<number>, row<number>), que determina si algun barco fue impactado le envía la señal de hit() y/o marcar en el tablero el impacto
     - [] debe tener el método shipsLeft() que indica cuántos botes aún quedan flotando.
     - [] debe tener un método randomPlaceShips() que ubica en un lugar aleatorio los barcons que todavía no han sido ubicados
-    - [] debe tener los métodos getShipsBoard() y getAttacksBoard() que retorna los tableros para renderizar
 - [] Crear los test propios y el objeto Player
     - [] crea un jugador con un nombre, sus barcos disponibles y su tablero
     - [] cada jugador debe tener un contador de barcos disponibles para ubicar
+    - [] debe tener los métodos getShipsBoard() y getAttacksBoard() que retorna los tableros para renderizar
 - [] Crea el archivo que integra los tres objetos y determina el gameflow
     - [] el gameflow se determina solo por los métodos
     - [] Posibilidad de jugar contra el cpu
