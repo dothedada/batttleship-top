@@ -23,7 +23,6 @@ class Gameboard {
 
     placeShip(col, row, vertical, type) {
         const ship = new Ship(type);
-        this.#shipsInPlace.add(type);
 
         const cols =
             !vertical && col + ship.length >= 10 ? 10 - ship.length : col;
@@ -39,6 +38,7 @@ class Gameboard {
             }
         }
 
+        this.#shipsInPlace.add(type);
         for (let l = 0; l < ship.length; l++) {
             const i = vertical ? rows + l : rows;
             const j = !vertical ? cols + l : cols;

@@ -1,50 +1,61 @@
-import Player from "../players";
+import Player from '../players';
 
-const humanPlayer1 = new Player('Human')
-const humanPlayer2 = new Player('Human')
-const computerPlayer2 = new Player('Computer')
+const player1 = new Player('Human');
+const player2 = new Player('Computer');
 
 describe('Métodos para el Jugador humano', () => {
-    test('Cada jugador tiene su tablero', ()=> {
-        expect(Array.isArray(humanPlayer1.board.ships)).toBe(true)
-        expect(Array.isArray(humanPlayer1.board.attacks)).toBe(true)
-    })
+    test('Cada jugador tiene su tablero', () => {
+        expect(Array.isArray(player1.board.ships)).toBe(true);
+        expect(Array.isArray(player1.board.attacks)).toBe(true);
+    });
+
+    test('Asigna un adversario', () => {
+        expect(player1.setAdversary(player2)).toBe(true)
+        expect(player2.setAdversary(player1)).toBe(true)
+    });
 
     test('Cada jugador dispone de 5 barcos al iniciar el tablero', () => {
-        expect(humanPlayer1.board.remainingShips()).toBe(5)
+        expect(player1.board.remainingShips()).toBe(5);
     });
 
     test('El contador se actualiza cada que ubica un barco', () => {
-        expect(humanPlayer1.board.placeShipRandom('Carrier')).toBe(true)
-        expect(humanPlayer1.board.remainingShips()).toBe(4)
-        expect(humanPlayer1.board.placeShipRandom('Battleship')).toBe(true)
-        expect(humanPlayer1.board.remainingShips()).toBe(3)
-        expect(humanPlayer1.board.placeShipRandom('Cruiser')).toBe(true)
-        expect(humanPlayer1.board.remainingShips()).toBe(2)
-        expect(humanPlayer1.board.placeShipRandom('Submarine')).toBe(true)
-        expect(humanPlayer1.board.remainingShips()).toBe(1)
-        expect(humanPlayer1.board.placeShipRandom('Destroyer')).toBe(true)
-        expect(humanPlayer1.board.remainingShips()).toBe(0)
-        console.table(humanPlayer1.board.ships)
+        expect(player1.board.placeShip(0, 2, false, 'Carrier')).toBe(true);
+        expect(player1.board.remainingShips()).toBe(4);
+        expect(player1.board.placeShip(7, 0, true, 'Battleship')).toBe(true);
+        expect(player1.board.remainingShips()).toBe(3);
+        expect(player1.board.placeShip(7, 0, false, 'Cruiser')).toBe(false);
+        expect(player1.board.remainingShips()).toBe(3);
+        expect(player1.board.placeShip(7, 6, false, 'Cruiser')).toBe(true);
+        expect(player1.board.remainingShips()).toBe(2);
+        expect(player1.board.placeShip(4, 9, true, 'Submarine')).toBe(true);
+        expect(player1.board.remainingShips()).toBe(1);
+        expect(player1.board.placeShip(1, 5, false, 'Destroyer')).toBe(true);
+        expect(player1.board.remainingShips()).toBe(0);
     });
 
     test('No permite ningun disparo fuera del tablero', () => {
-        expect(humanPlayer1.attack(0,0)).toBe(true)
-        expect(humanPlayer1.attack(10,10)).toBe(false)
-        expect(humanPlayer1.board.attacks[0][0]).toBe('·')
+        expect(player1.attack(0, 0)).toBe(true);
+        expect(player1.attack(10, 10)).toBe(false);
+        expect(player1.board.attacks[0][0]).toBe('·');
     });
 
     test('No permite disparos en donde ya han disparado', () => {
-        expect(humanPlayer1.attack(0, 0)).toBe(false)
+        expect(player1.attack(0, 0)).toBe(false);
     });
 
-    // test('Muestra la ubicación de los barcos y disparos recibidos', () => {
-    //     // getShipsBoard()
-    // });
-    //
-    // test('Muestra la ubicación de los disparos realizados', () => {
-    //     // getAttacksBoard()
-    // });
+    test('Muestra la ubicación de los barcos y disparos recibidos', () => {
+        expect(Array.isArray(player1.shipsBoard)).toBe(true);
+    });
+
+    test('Muestra la ubicación de los disparos realizados', () => {
+        expect(Array.isArray(player1.attacksBoard)).toBe(true);
+    });
+
+    test('Marca los disparos que dieron en algun barco del enemigo', () => {
+        player2.board.placeShip(3, 2, true, 'Carrier');
+        expect(player1.attack(3, 2)).toBe(true);
+        expect(player1.board.attacks[2][3]).toBe('X');
+    });
 });
 
 // describe('Métodos para el Jugador automático', () => {
