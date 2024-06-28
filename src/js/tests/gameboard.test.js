@@ -98,24 +98,27 @@ describe('Administración y posicionamiento de barcos', () => {
 describe('Elementos del juego', () => {
     test('Marca en el disparo en una celda desocupada', () => {
         expect(board.receiveAttack(4, 0)).toBe(true);
-        console.table(board.ships);
         expect(board.ships[0][4]).toBe('·');
     });
-    //
-    // test('No permite repetir ubicación de disparo', () => {
-    //     expect(board.receiveAttack(0, 0)).toBe(false);
-    // });
-    //
-    // test('Marca el disparo en una celda ocupada', () => {
-    //     expect(board.receiveAttack(0, 0)).toBe(true);
-    //     expect(board.ships[0][0]).toBe('X');
-    //     //
-    // });
-    //
-    // test('Cuando el disparo da en un bote, se actualiza el estado de este', () => {
-    //     //
-    // });
-    //
+
+    test('No permite repetir ubicación de disparo', () => {
+        expect(board.receiveAttack(4, 0)).toBe(false);
+    });
+
+    test('Marca el disparo en una celda ocupada', () => {
+        expect(board.receiveAttack(1, 2)).toBe(true);
+        expect(board.ships[2][1]).toBe('X');
+    });
+
+    test('Cuando el disparo da en un bote, se actualiza el estado de este', () => {
+        expect(board.ships[2][0].hits).toBe(1)
+        expect(board.receiveAttack(2, 2)).toBe(true);
+        expect(board.receiveAttack(3, 2)).toBe(true);
+        expect(board.receiveAttack(4, 2)).toBe(true);
+        expect(board.ships[2][0].hits).toBe(4)
+        console.table(board.ships);
+    });
+
     // test('Reporta el hundimiento de un bote', () => {
     //     //
     // });

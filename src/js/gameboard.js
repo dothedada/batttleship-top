@@ -64,9 +64,17 @@ class Gameboard {
         return 5 - this.#shipsAvailable.size;
     }
 
-    receiveAttack(col,row) {
-        this.ships[row][col] = '·'
-        return true
+    receiveAttack(col, row) {
+        if (this.ships[row][col] && typeof this.ships[row][col] !== 'object') {
+            return false;
+        }
+        if (typeof this.ships[row][col] === 'object') {
+            this.ships[row][col].hit();
+            this.ships[row][col] = 'X'
+            return true
+        }
+        this.ships[row][col] = '·';
+        return true;
     }
 }
 
