@@ -19,11 +19,12 @@ class Gameboard {
         return board;
     }
 
-    #shipsAvailable = new Set();
+    #shipsInPlace = new Set();
 
     placeShip(col, row, vertical, type) {
         const ship = new Ship(type);
-        this.#shipsAvailable.add(type);
+        this.#shipsInPlace.add(type);
+
         const cols =
             !vertical && col + ship.length >= 10 ? 10 - ship.length : col;
         const rows =
@@ -60,23 +61,32 @@ class Gameboard {
         return true;
     }
 
+    remainingShips() {
+        return 5 - this.#shipsInPlace.size
+    }
+
     shipsLeft() {
-        return 5 - this.#shipsAvailable.size;
+        return this.#shipsInPlace.size;
     }
 
     receiveAttack(col, row) {
         if (this.ships[row][col] && typeof this.ships[row][col] !== 'object') {
             return null;
         }
+
         if (typeof this.ships[row][col] === 'object') {
             this.ships[row][col].hit();
             const isSunk = this.ships[row][col].sunk;
+            
             if (isSunk) {
-                this.#shipsAvailable.delete(this.ships[row][col].type);
+                this.#shipsInPlace.delete(this.ships[row][col].type);
             }
+
             this.ships[row][col] = 'X';
+
             return isSunk ? 'Sunk' : 'Hit';
         }
+
         this.ships[row][col] = '·';
         return 'Miss';
     }

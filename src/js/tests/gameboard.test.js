@@ -43,7 +43,7 @@ describe('Administración y posicionamiento de barcos', () => {
     });
 
     test('Mantiene el inventario de los barcos ubicados', () => {
-        expect(board.shipsLeft()).toBe(3);
+        expect(board.remainingShips()).toBe(3);
     });
 
     test('No permite la ubicación de un barco donde por donde ya pasa otro, mismo sentido', () => {
@@ -69,7 +69,7 @@ describe('Administración y posicionamiento de barcos', () => {
     });
 
     test('Mantiene el inventario de los barcos ubicados 2', () => {
-        expect(board.shipsLeft()).toBe(1);
+        expect(board.remainingShips()).toBe(1);
     });
 
     test('ubica aleatoriamente un barco', () => {
@@ -121,11 +121,16 @@ describe('Elementos del juego', () => {
     test('Reporta el hundimiento de un bote', () => {
         expect(board.receiveAttack(0, 2)).toBe('Sunk');
         expect(board.receiveAttack(0, 2)).toBe(null);
-        expect(board.shipsLeft()).toBe(1);
-        //
+        expect(board.shipsLeft()).toBe(4);
     });
 
     test('avisa cuando ya no le quedan barcos en este tablero', () => {
-        //
+        for (let i = 0; i < 12; i++) {
+            const nextHit = board.ships.flat().findIndex((e) => e.type);
+            const [row, col] = nextHit.toString().padStart(2, '0').split('');
+            board.receiveAttack(col, row);
+        }
+
+        expect(board.shipsLeft()).toBe(0)
     });
 });
