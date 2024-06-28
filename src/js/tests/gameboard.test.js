@@ -57,22 +57,22 @@ describe('Administración y posicionamiento de barcos', () => {
     test('La ubicación de un barco horizontal nunca excede el límite', () => {
         expect(board.placeShip(9, 6, false, 'Cruiser')).toBe(true);
         for (let i = 7; i < 10; i++) {
-            expect(board.ships[i][6].type).toBe('Cruiser');
+            expect(board.ships[6][i].type).toBe('Cruiser');
         }
     });
 
     test('La ubicación de un barco vertical nunca excede el límite', () => {
-        expect(board.placeShip(6, 6, true, 'Submarine')).toBe(true);
+        expect(board.placeShip(4, 9, true, 'Submarine')).toBe(true);
         console.table(board.ships);
         for (let i = 7; i < 10; i++) {
-            expect(board.ships[4][i].type).toBe('Submarine');
+            expect(board.ships[i][4].type).toBe('Submarine');
         }
     });
-    //
-    // test('Mantiene el inventario de los barcos ubicados 2', () => {
-    //     expect(board.shipsLeft()).toBe(1);
-    // });
-    //
+
+    test('Mantiene el inventario de los barcos ubicados 2', () => {
+        expect(board.shipsLeft()).toBe(1);
+    });
+
     // test('ubica aleatoriamente un barco', () => {
     //     expect(placeShipRandom('Destroyer')).toBe(true);
     //     expect(shipCells(board.ships, 'D')).toBe(2);

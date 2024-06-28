@@ -20,34 +20,36 @@ class Gameboard {
     }
 
     placeShip(col, row, vertical, type) {
-        
-        const ship = new Ship(type)
-        this.#shipsAvailable.add(type)
-        // const cols = vertical && col + ship.length >= 10 ? 10 - ship.length : col
-        // const rows = vertical && row + ship.length >= 10 ? 10 - ship.length : row
-        for (let l = 0; l < ship.length; l++) {
-            const i = vertical ? row + l : row
-            const j = !vertical ? col + l : col
+        const ship = new Ship(type);
+        this.#shipsAvailable.add(type);
+        const cols =
+            !vertical && col + ship.length >= 10 ? 10 - ship.length : col;
+        const rows = vertical && row + ship.length >= 10 ? 10 - ship.length : row
 
-            if (this.ships[i][j]) return false
+        for (let l = 0; l < ship.length; l++) {
+            const i = vertical ? rows + l : rows;
+            const j = !vertical ? cols + l : cols;
+
+            if (this.ships[i][j]) {
+                return false;
+            }
         }
 
         for (let l = 0; l < ship.length; l++) {
-            const i = vertical ? row + l : row
-            const j = !vertical ? col + l : col
+            const i = vertical ? rows + l : rows;
+            const j = !vertical ? cols + l : cols;
 
-            this.ships[i][j] = ship
+            this.ships[i][j] = ship;
         }
-        
-        return true
+
+        return true;
     }
 
-    #shipsAvailable = new Set()
+    #shipsAvailable = new Set();
 
     shipsLeft() {
-        return 5 - this.#shipsAvailable.size
+        return 5 - this.#shipsAvailable.size;
     }
-
 }
 
 export default Gameboard;
