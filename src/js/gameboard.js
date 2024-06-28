@@ -1,4 +1,4 @@
-import Ship, { typeOfShips } from './ships';
+import Ship from './ships';
 
 class Gameboard {
     constructor() {
@@ -18,6 +18,8 @@ class Gameboard {
 
         return board;
     }
+
+    #shipsAvailable = new Set();
 
     placeShip(col, row, vertical, type) {
         const ship = new Ship(type);
@@ -47,25 +49,24 @@ class Gameboard {
     }
 
     placeShipRandom(type) {
-        const col = Math.floor(Math.random()*10)
-        const row = Math.floor(Math.random()*10)
-        const dir = Math.floor(Math.random()*2) ? true : false
-
-        console.log(col,row,dir)
+        const col = Math.floor(Math.random() * 10);
+        const row = Math.floor(Math.random() * 10);
+        const dir = Math.floor(Math.random() * 2);
 
         if (!this.placeShip(col, row, dir, type)) {
-            this.placeShipRandom(type)
+            this.placeShipRandom(type);
         }
 
-        return true
-
-        //
+        return true;
     }
-
-    #shipsAvailable = new Set();
 
     shipsLeft() {
         return 5 - this.#shipsAvailable.size;
+    }
+
+    receiveAttack(col,row) {
+        this.ships[row][col] = '·'
+        return true
     }
 }
 

@@ -1,5 +1,4 @@
 import Gameboard from '../gameboard';
-import Ship from '../ships';
 const board = new Gameboard();
 
 const shipCells = (arr = [], ship = undefined) => {
@@ -75,8 +74,20 @@ describe('Administración y posicionamiento de barcos', () => {
 
     test('ubica aleatoriamente un barco', () => {
         expect(board.placeShipRandom('Destroyer')).toBe(true);
-        console.table(board.ships);
         expect(shipCells(board.ships, 'Destroyer')).toBe(2);
+    });
+
+    test('Las celdas del barco ubicado aleatoriamente son continuas', () => {
+        const flatBoard = board.ships.flat();
+        const differenceOfIndexes =
+            99 -
+            flatBoard
+                .slice()
+                .reverse()
+                .findIndex((e) => e.type === 'Destroyer') -
+            flatBoard.findIndex((e) => e.type === 'Destroyer');
+
+        expect([1, 10]).toContain(differenceOfIndexes);
     });
 
     test('Sólo son marcadas las celdas ocupadas por kos barcos 2', () => {
@@ -85,10 +96,11 @@ describe('Administración y posicionamiento de barcos', () => {
 });
 
 describe('Elementos del juego', () => {
-    // test('Marca en el disparo en una celda desocupada', () => {
-    //     expect(board.receiveAttack(0, 0)).toBe(true);
-    //     expect(board.ships[0][0]).toBe('');
-    // });
+    test('Marca en el disparo en una celda desocupada', () => {
+        expect(board.receiveAttack(4, 0)).toBe(true);
+        console.table(board.ships);
+        expect(board.ships[0][4]).toBe('·');
+    });
     //
     // test('No permite repetir ubicación de disparo', () => {
     //     expect(board.receiveAttack(0, 0)).toBe(false);
