@@ -1,4 +1,5 @@
 import Gameboard from '../gameboard';
+import Ship from '../ships';
 const board = new Gameboard();
 
 const shipCells = (arr = [], ship = undefined) => {
@@ -63,7 +64,6 @@ describe('Administración y posicionamiento de barcos', () => {
 
     test('La ubicación de un barco vertical nunca excede el límite', () => {
         expect(board.placeShip(4, 9, true, 'Submarine')).toBe(true);
-        console.table(board.ships);
         for (let i = 7; i < 10; i++) {
             expect(board.ships[i][4].type).toBe('Submarine');
         }
@@ -73,22 +73,15 @@ describe('Administración y posicionamiento de barcos', () => {
         expect(board.shipsLeft()).toBe(1);
     });
 
-    // test('ubica aleatoriamente un barco', () => {
-    //     expect(placeShipRandom('Destroyer')).toBe(true);
-    //     expect(shipCells(board.ships, 'D')).toBe(2);
-    // });
-    //
-    // test('Las celdas del barco ubicado aleatoriamente son continuas', () => {
-    //     const flatBoard = board.ships.flat();
-    //     const differenceOfIndexes =
-    //         flatBoard.lastIndexOf('D') - flatBoard.findIndex('D');
-    //
-    //     expect([1, 10]).toContain(differenceOfIndexes);
-    // });
-    //
-    // test('Sólo son marcadas las celdas ocupadas por kos barcos 2', () => {
-    //     expect(shipCells(board.ships)).toBe(17);
-    // });
+    test('ubica aleatoriamente un barco', () => {
+        expect(board.placeShipRandom('Destroyer')).toBe(true);
+        console.table(board.ships);
+        expect(shipCells(board.ships, 'Destroyer')).toBe(2);
+    });
+
+    test('Sólo son marcadas las celdas ocupadas por kos barcos 2', () => {
+        expect(shipCells(board.ships)).toBe(83);
+    });
 });
 
 describe('Elementos del juego', () => {

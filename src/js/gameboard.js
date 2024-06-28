@@ -24,7 +24,8 @@ class Gameboard {
         this.#shipsAvailable.add(type);
         const cols =
             !vertical && col + ship.length >= 10 ? 10 - ship.length : col;
-        const rows = vertical && row + ship.length >= 10 ? 10 - ship.length : row
+        const rows =
+            vertical && row + ship.length >= 10 ? 10 - ship.length : row;
 
         for (let l = 0; l < ship.length; l++) {
             const i = vertical ? rows + l : rows;
@@ -43,6 +44,22 @@ class Gameboard {
         }
 
         return true;
+    }
+
+    placeShipRandom(type) {
+        const col = Math.floor(Math.random()*10)
+        const row = Math.floor(Math.random()*10)
+        const dir = Math.floor(Math.random()*2) ? true : false
+
+        console.log(col,row,dir)
+
+        if (!this.placeShip(col, row, dir, type)) {
+            this.placeShipRandom(type)
+        }
+
+        return true
+
+        //
     }
 
     #shipsAvailable = new Set();
