@@ -66,15 +66,19 @@ class Gameboard {
 
     receiveAttack(col, row) {
         if (this.ships[row][col] && typeof this.ships[row][col] !== 'object') {
-            return false;
+            return null;
         }
         if (typeof this.ships[row][col] === 'object') {
             this.ships[row][col].hit();
-            this.ships[row][col] = 'X'
-            return true
+            const isSunk = this.ships[row][col].sunk;
+            if (isSunk) {
+                this.#shipsAvailable.delete(this.ships[row][col].type);
+            }
+            this.ships[row][col] = 'X';
+            return isSunk ? 'Sunk' : 'Hit';
         }
         this.ships[row][col] = '·';
-        return true;
+        return 'Miss';
     }
 }
 
