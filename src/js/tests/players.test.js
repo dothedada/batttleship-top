@@ -1,7 +1,8 @@
 import Player from '../players';
 
 const player1 = new Player('Human');
-const player2 = new Player('Computer');
+const player2 = new Player('Human');
+const playerC = new Player('Computer');
 
 describe('Métodos para el Jugador humano', () => {
     test('Cada jugador tiene su tablero', () => {
@@ -10,8 +11,8 @@ describe('Métodos para el Jugador humano', () => {
     });
 
     test('Asigna un adversario', () => {
-        expect(player1.setAdversary(player2)).toBe(true)
-        expect(player2.setAdversary(player1)).toBe(true)
+        expect(player1.setAdversary(player2)).toBe(true);
+        expect(player2.setAdversary(player1)).toBe(true);
     });
 
     test('Cada jugador dispone de 5 barcos al iniciar el tablero', () => {
@@ -55,38 +56,37 @@ describe('Métodos para el Jugador humano', () => {
         player2.board.placeShip(3, 2, true, 'Carrier');
         expect(player1.attack(3, 2)).toBe(true);
         expect(player1.board.attacks[2][3]).toBe('X');
+        expect(player2.board.ships[2][3]).toBe('X');
     });
 });
 
-// describe('Métodos para el Jugador automático', () => {
-//     test('Cada jugador dispone de 5 barcos al iniciar el tablero', () => {
-//         //
-//     });
-//
-//     test('ubica sus 5 barcos de forma aleatoria', () => {
-//         //
-//     });
-//
-//     test('hace un disparos aleatorios', () => {
-//         //
-//     });
-//
-//     test('No dispara fuera del tablero', () => {
-//         //
-//     });
-//
-//     test('No disparas donde ya han disparado', () => {
-//         //
-//     });
-//
-//     test('Luego de impactar un barco, los siguientes disparos son en las casillas contiguas hasta volver a impactar', () => {
-//         //
-//     });
-//
-//     test('una vez vuelve a impactar, dispara en las celdas contiguas a esa línea hasta hundir el barco', () => {
-//         //
-//     });
-// });
+describe('Métodos para el Jugador automático', () => {
+    test('ubica sus 5 barcos de forma aleatoria', () => {
+        playerC.placeAllShips()
+        expect(playerC.shipsBoard.flat().filter(e => e.type).length).toBe(17)
+        console.table(playerC.shipsBoard)
+    });
+
+    // test('hace un disparos aleatorios', () => {
+    //     //
+    // });
+    //
+    // test('No dispara fuera del tablero', () => {
+    //     //
+    // });
+    //
+    // test('No disparas donde ya han disparado', () => {
+    //     //
+    // });
+    //
+    // test('Luego de impactar un barco, los siguientes disparos son en las casillas contiguas hasta volver a impactar', () => {
+    //     //
+    // });
+    //
+    // test('una vez vuelve a impactar, dispara en las celdas contiguas a esa línea hasta hundir el barco', () => {
+    //     //
+    // });
+});
 //
 // test('Cuando un jugador queda sin barcos declara el ganador', () => {
 //     //

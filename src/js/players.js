@@ -1,4 +1,5 @@
 import Gameboard from './gameboard';
+import { typeOfShips } from './ships';
 
 class Player {
     #adversary = undefined;
@@ -39,6 +40,12 @@ class Player {
 
     get attacksBoard() {
         return this.board.attacks;
+    }
+
+    placeAllShips() {
+        for (const ship of Object.keys(typeOfShips)){
+            this.board.placeShipRandom(ship)
+        }
     }
 }
 
