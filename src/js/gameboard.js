@@ -22,6 +22,9 @@ class Gameboard {
     #shipsInPlace = new Set();
 
     placeShip(col, row, vertical, type) {
+        if (this.#shipsInPlace.has(type)) {
+            return false
+        }
         const ship = new Ship(type);
 
         const cols =
@@ -39,6 +42,7 @@ class Gameboard {
         }
 
         this.#shipsInPlace.add(type);
+
         for (let l = 0; l < ship.length; l++) {
             const i = vertical ? rows + l : rows;
             const j = !vertical ? cols + l : cols;
