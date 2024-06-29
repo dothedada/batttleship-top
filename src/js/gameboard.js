@@ -6,6 +6,10 @@ class Gameboard {
         this.attacks = this.#boardGenerator();
     }
 
+    resetAttacksBoard() {
+        this.attacks = this.#boardGenerator();
+    }
+
     #boardGenerator() {
         const board = [];
 
@@ -31,35 +35,33 @@ class Gameboard {
         return 5 - this.#sankShips.size;
     }
 
-    placeShip(col, row, vertical, type) {
+    placeShip(col, row, vert, type) {
         if (this.#placedShips.has(type)) {
             return false;
         }
-        const ship = new Ship(type);
 
-        const cols =
-            !vertical && col + ship.length >= 10 ? 10 - ship.length : col;
-        const rows =
-            vertical && row + ship.length >= 10 ? 10 - ship.length : row;
+        const ship = new Ship(type);
+        const maxShipIndex = 10 - ship.length
+        const cols = !vert && col > maxShipIndex ? maxShipIndex : col;
+        const rows = vert && row >maxShipIndex ? maxShipIndex : row;
 
         for (let l = 0; l < ship.length; l++) {
-            const i = vertical ? rows + l : rows;
-            const j = !vertical ? cols + l : cols;
+            const i = vert ? rows + l : rows;
+            const j = !vert ? cols + l : cols;
 
             if (this.ships[i][j]) {
                 return false;
             }
         }
 
-        this.#placedShips.add(type);
-
         for (let l = 0; l < ship.length; l++) {
-            const i = vertical ? rows + l : rows;
-            const j = !vertical ? cols + l : cols;
+            const i = vert ? rows + l : rows;
+            const j = !vert ? cols + l : cols;
 
             this.ships[i][j] = ship;
         }
 
+        this.#placedShips.add(type);
         return true;
     }
 
@@ -76,16 +78,17 @@ class Gameboard {
     }
 
     receiveAttack(col, row) {
-        if (this.ships[row][col] && typeof this.ships[row][col] !== 'object') {
+        const cell = this.ships[row][col]
+        if (cell && typeof cell !== 'object') {
             return null;
         }
 
-        if (typeof this.ships[row][col] === 'object') {
-            this.ships[row][col].hit();
-            const isSunk = this.ships[row][col].sunk;
+        if (typeof cell === 'object') {
+            cell.hit();
+            const isSunk = cell.sunk;
 
             if (isSunk) {
-                this.#sankShips.add(this.ships[row][col].type);
+                this.#sankShips.add(cell.type);
             }
 
             this.ships[row][col] = 'X';
