@@ -19,11 +19,21 @@ class Gameboard {
         return board;
     }
 
-    #shipsInPlace = new Set();
+    #placedShips = new Set();
+
+    shipsLeftToPlace() {
+        return 5 - this.#placedShips.size;
+    }
+
+    #sankShips = new Set();
+
+    shipsSunk() {
+        return 5 - this.#sankShips.size;
+    }
 
     placeShip(col, row, vertical, type) {
-        if (this.#shipsInPlace.has(type)) {
-            return false
+        if (this.#placedShips.has(type)) {
+            return false;
         }
         const ship = new Ship(type);
 
@@ -41,7 +51,7 @@ class Gameboard {
             }
         }
 
-        this.#shipsInPlace.add(type);
+        this.#placedShips.add(type);
 
         for (let l = 0; l < ship.length; l++) {
             const i = vertical ? rows + l : rows;
@@ -65,14 +75,6 @@ class Gameboard {
         return true;
     }
 
-    remainingShips() {
-        return 5 - this.#shipsInPlace.size
-    }
-
-    shipsLeft() {
-        return this.#shipsInPlace.size;
-    }
-
     receiveAttack(col, row) {
         if (this.ships[row][col] && typeof this.ships[row][col] !== 'object') {
             return null;
@@ -81,9 +83,9 @@ class Gameboard {
         if (typeof this.ships[row][col] === 'object') {
             this.ships[row][col].hit();
             const isSunk = this.ships[row][col].sunk;
-            
+
             if (isSunk) {
-                this.#shipsInPlace.delete(this.ships[row][col].type);
+                this.#sankShips.add(this.ships[row][col].type);
             }
 
             this.ships[row][col] = 'X';
