@@ -3,6 +3,7 @@ import Player from '../players';
 const player1 = new Player('Human');
 const player2 = new Player('Human');
 const playerC = new Player('Computer');
+const playerC2 = new Player('Computer');
 
 describe('Métodos para el Jugador humano', () => {
     test('Cada jugador tiene su tablero', () => {
@@ -13,6 +14,8 @@ describe('Métodos para el Jugador humano', () => {
     test('Asigna un adversario', () => {
         expect(player1.setAdversary(player2)).toBe(true);
         expect(player2.setAdversary(player1)).toBe(true);
+        expect(playerC.setAdversary(playerC2)).toBe(true);
+        expect(playerC2.setAdversary(playerC)).toBe(true);
     });
 
     test('Cada jugador dispone de 5 barcos al iniciar el tablero', () => {
@@ -62,22 +65,18 @@ describe('Métodos para el Jugador humano', () => {
 
 describe('Métodos para el Jugador automático', () => {
     test('ubica sus 5 barcos de forma aleatoria', () => {
-        playerC.placeAllShips()
-        expect(playerC.shipsBoard.flat().filter(e => e.type).length).toBe(17)
-        console.table(playerC.shipsBoard)
+        playerC.placeAllShips();
+        expect(playerC.shipsBoard.flat().filter((e) => e.type).length).toBe(17);
     });
 
-    // test('hace un disparos aleatorios', () => {
-    //     //
-    // });
-    //
-    // test('No dispara fuera del tablero', () => {
-    //     //
-    // });
-    //
-    // test('No disparas donde ya han disparado', () => {
-    //     //
-    // });
+    test('Luego de 100 disparos aleatorios ha cubierto todo el tablero', () => {
+        for (let i = 0; i < 100; i++) {
+            expect(playerC.randomAttack()).toBe(true);
+        }
+        expect(
+            playerC.attacksBoard.flat().filter((e) => e === false).length,
+        ).toBe(0);
+    });
     //
     // test('Luego de impactar un barco, los siguientes disparos son en las casillas contiguas hasta volver a impactar', () => {
     //     //

@@ -14,7 +14,7 @@ class Player {
             return false;
         }
         this.#adversary = player;
-        return true
+        return true;
     }
 
     #hitOrMiss(col, row) {
@@ -34,6 +34,26 @@ class Player {
         return true;
     }
 
+    randomAttack() {
+        const availableShoots = this.attacksBoard
+            .flat()
+            .reduce((sum, cell, index) => {
+                if (!cell) {
+                    sum.push(`${index}`.padStart(2, 0));
+                }
+                return sum;
+            }, []);
+
+        const [row, col] =
+            availableShoots[
+                Math.floor(Math.random() * (availableShoots.length - 1))
+            ];
+
+        this.attack(col, row);
+
+        return true;
+    }
+
     get shipsBoard() {
         return this.board.ships;
     }
@@ -43,8 +63,8 @@ class Player {
     }
 
     placeAllShips() {
-        for (const ship of Object.keys(typeOfShips)){
-            this.board.placeShipRandom(ship)
+        for (const ship of Object.keys(typeOfShips)) {
+            this.board.placeShipRandom(ship);
         }
     }
 }
