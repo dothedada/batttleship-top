@@ -18,32 +18,24 @@ class Gameboard {
         this.ships = Gameboard.boardGenerator() 
     }
 
-
-    #placedShips = new Set();
-
-    shipsLeftToPlace() {
-        return 5 - this.#placedShips.size;
+    shipsInventory = {
+        placed: new Set(),
+        sank: new Set() 
     }
 
-    #sankShips = new Set();
-
-    shipsSunk() {
-        return 5 - this.#sankShips.size;
-    }
-
-    placeShip(col, row, vert, type) {
-        if (this.#placedShips.has(type)) {
+    placeShip(col, row, hor, type) {
+        if (this.shipsInventory.placed.has(type)) {
             return false;
         }
 
         const ship = new Ship(type);
         const maxShipIndex = 10 - ship.length
-        const cols = !vert && col > maxShipIndex ? maxShipIndex : col;
-        const rows = vert && row >maxShipIndex ? maxShipIndex : row;
+        const cols = hor && col > maxShipIndex ? maxShipIndex : col;
+        const rows = !hor && row >maxShipIndex ? maxShipIndex : row;
 
         for (let l = 0; l < ship.length; l++) {
-            const i = vert ? rows + l : rows;
-            const j = !vert ? cols + l : cols;
+            const i = !hor ? rows + l : rows;
+            const j = hor ? cols + l : cols;
 
             if (this.ships[i][j]) {
                 return false;
@@ -51,13 +43,13 @@ class Gameboard {
         }
 
         for (let l = 0; l < ship.length; l++) {
-            const i = vert ? rows + l : rows;
-            const j = !vert ? cols + l : cols;
+            const i = !hor ? rows + l : rows;
+            const j = hor ? cols + l : cols;
 
             this.ships[i][j] = ship;
         }
 
-        this.#placedShips.add(type);
+        this.shipsInventory.placed.add(type);
         return true;
     }
 
@@ -84,7 +76,7 @@ class Gameboard {
             const isSunk = cell.sunk;
 
             if (isSunk) {
-                this.#sankShips.add(cell.type);
+                this.shipsInventory.sank.add(cell.type);
             }
 
             this.ships[row][col] = 'X';

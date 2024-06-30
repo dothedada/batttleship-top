@@ -1,4 +1,5 @@
 import Gameboard from '../gameboard';
+
 const board = new Gameboard();
 
 const shipCells = (arr = [], ship = undefined) => {
@@ -25,7 +26,7 @@ describe('Evaluación del tablero', () => {
 
 describe('Administración y posicionamiento de barcos', () => {
     test('Ubica un barco horizontalmente dentro del tablero', () => {
-        expect(board.placeShip(0, 2, false, 'Carrier')).toBe(true);
+        expect(board.placeShip(0, 2, true, 'Carrier')).toBe(true);
         for (let i = 0; i < 5; i++) {
             expect(board.ships[2][i].type).toBe('Carrier');
         }
@@ -36,40 +37,36 @@ describe('Administración y posicionamiento de barcos', () => {
     });
 
     test('Ubica un barco verticalmente dentro del tablero', () => {
-        expect(board.placeShip(7, 0, true, 'Battleship')).toBe(true);
+        expect(board.placeShip(7, 0, false, 'Battleship')).toBe(true);
         for (let i = 0; i < 4; i++) {
             expect(board.ships[i][7].type).toBe('Battleship');
         }
     });
 
-    test('Mantiene el inventario de los barcos ubicados', () => {
-        expect(board.shipsLeftToPlace()).toBe(3);
-    });
-
     test('No permite la ubicación de un barco donde por donde ya pasa otro, mismo sentido', () => {
-        expect(board.placeShip(4, 2, false, 'Cruiser')).toBe(false);
+        expect(board.placeShip(4, 2, true, 'Cruiser')).toBe(false);
     });
 
     test('No permite la ubicación de un barco donde por donde ya pasa otro, sentido contrario', () => {
-        expect(board.placeShip(2, 1, true, 'Cruiser')).toBe(false);
+        expect(board.placeShip(2, 1, false, 'Cruiser')).toBe(false);
     });
 
     test('La ubicación de un barco horizontal nunca excede el límite', () => {
-        expect(board.placeShip(9, 6, false, 'Cruiser')).toBe(true);
+        expect(board.placeShip(9, 6, true, 'Cruiser')).toBe(true);
         for (let i = 7; i < 10; i++) {
             expect(board.ships[6][i].type).toBe('Cruiser');
         }
     });
 
+    test('Mantiene el inventario de los barcos ubicados', () => {
+        expect(board.shipsInventory.placed.size).toBe(3);
+    });
+
     test('La ubicación de un barco vertical nunca excede el límite', () => {
-        expect(board.placeShip(4, 9, true, 'Submarine')).toBe(true);
+        expect(board.placeShip(4, 9, false, 'Submarine')).toBe(true);
         for (let i = 7; i < 10; i++) {
             expect(board.ships[i][4].type).toBe('Submarine');
         }
-    });
-
-    test('Mantiene el inventario de los barcos ubicados 2', () => {
-        expect(board.shipsLeftToPlace()).toBe(1);
     });
 
     test('ubica aleatoriamente un barco', () => {
@@ -131,6 +128,6 @@ describe('Elementos del juego', () => {
             board.receiveAttack(col, row);
         }
 
-        expect(board.shipsSunk()).toBe(0)
+        expect(board.shipsSunk()).toBe(0);
     });
 });
