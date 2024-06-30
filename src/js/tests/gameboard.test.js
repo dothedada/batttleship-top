@@ -94,7 +94,7 @@ describe('Administración y posicionamiento de barcos', () => {
 
 describe('Elementos del juego', () => {
     test('Marca en el disparo en una celda desocupada', () => {
-        expect(board.receiveAttack(4, 0)).toBe('Miss');
+        expect(board.receiveAttack(4, 0)).toBe('Water');
         expect(board.ships[0][4]).toBe('·');
     });
 
@@ -103,14 +103,14 @@ describe('Elementos del juego', () => {
     });
 
     test('Marca el disparo en una celda ocupada', () => {
-        expect(board.receiveAttack(1, 2)).toBe('Hit');
+        expect(board.receiveAttack(1, 2)).toBe('Ship');
         expect(board.ships[2][1]).toBe('X');
     });
 
     test('Cuando el disparo da en un bote, se actualiza el estado de este', () => {
         expect(board.ships[2][0].hits).toBe(1);
         for (let i = 2; i < 5; i++) {
-            expect(board.receiveAttack(i, 2)).toBe('Hit');
+            expect(board.receiveAttack(i, 2)).toBe('Ship');
         }
         expect(board.ships[2][0].hits).toBe(4);
     });
@@ -118,16 +118,20 @@ describe('Elementos del juego', () => {
     test('Reporta el hundimiento de un bote', () => {
         expect(board.receiveAttack(0, 2)).toBe('Sunk');
         expect(board.receiveAttack(0, 2)).toBe(null);
-        expect(board.shipsSunk()).toBe(4);
+        expect(board.shipsInventory.sank.size).toBe(1);
     });
 
     test('avisa cuando ya no le quedan barcos en este tablero', () => {
         for (let i = 0; i < 12; i++) {
             const nextHit = board.ships.flat().findIndex((e) => e.type);
-            const [row, col] = nextHit.toString().padStart(2, '0').split('');
-            board.receiveAttack(col, row);
+            const [row, col] = nextHit.toString().padStart(2, '0')
+            if (i !== 11) {
+                board.receiveAttack(col, row);
+            } else {
+                expect(board.receiveAttack(col, row)).toBe('No ships left')
+            }
         }
 
-        expect(board.shipsSunk()).toBe(0);
+        expect(board.shipsInventory.sank.size).toBe(5);
     });
 });

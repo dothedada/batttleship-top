@@ -15,27 +15,27 @@ class Gameboard {
     }
 
     constructor() {
-        this.ships = Gameboard.boardGenerator() 
+        this.ships = Gameboard.boardGenerator();
     }
 
     shipsInventory = {
         placed: new Set(),
-        sank: new Set() 
-    }
+        sank: new Set(),
+    };
 
-    placeShip(col, row, hor, type) {
+    placeShip(column, row, horizontal, type) {
         if (this.shipsInventory.placed.has(type)) {
             return false;
         }
 
         const ship = new Ship(type);
-        const maxShipIndex = 10 - ship.length
-        const cols = hor && col > maxShipIndex ? maxShipIndex : col;
-        const rows = !hor && row >maxShipIndex ? maxShipIndex : row;
+        const maxPosition = 10 - ship.length;
+        const cols = horizontal && column > maxPosition ? maxPosition : column;
+        const rows = !horizontal && row > maxPosition ? maxPosition : row;
 
         for (let l = 0; l < ship.length; l++) {
-            const i = !hor ? rows + l : rows;
-            const j = hor ? cols + l : cols;
+            const i = !horizontal ? rows + l : rows;
+            const j = horizontal ? cols + l : cols;
 
             if (this.ships[i][j]) {
                 return false;
@@ -43,8 +43,8 @@ class Gameboard {
         }
 
         for (let l = 0; l < ship.length; l++) {
-            const i = !hor ? rows + l : rows;
-            const j = hor ? cols + l : cols;
+            const i = !horizontal ? rows + l : rows;
+            const j = horizontal ? cols + l : cols;
 
             this.ships[i][j] = ship;
         }
@@ -56,36 +56,37 @@ class Gameboard {
     placeShipRandom(type) {
         const col = Math.floor(Math.random() * 10);
         const row = Math.floor(Math.random() * 10);
-        const dir = Math.floor(Math.random() * 2);
+        const horizontal = Boolean(Math.floor(Math.random() * 2));
 
-        if (!this.placeShip(col, row, dir, type)) {
+        if (!this.placeShip(col, row, horizontal, type)) {
             this.placeShipRandom(type);
         }
-
         return true;
     }
 
     receiveAttack(col, row) {
-        const cell = this.ships[row][col]
+        const cell = this.ships[row][col];
         if (cell && typeof cell !== 'object') {
             return null;
         }
 
         if (typeof cell === 'object') {
+            this.ships[row][col] = 'X';
             cell.hit();
-            const isSunk = cell.sunk;
 
-            if (isSunk) {
+            if (cell.sunk) {
                 this.shipsInventory.sank.add(cell.type);
+
+                return this.shipsInventory.sank.size === 5
+                    ? 'No ships left'
+                    : 'Sunk';
             }
 
-            this.ships[row][col] = 'X';
-
-            return isSunk ? 'Sunk' : 'Hit';
+            return 'Ship';
         }
 
         this.ships[row][col] = '·';
-        return 'Miss';
+        return 'Water';
     }
 }
 
