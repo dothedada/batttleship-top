@@ -1,16 +1,7 @@
 import Ship from './ships';
 
 class Gameboard {
-    constructor() {
-        this.ships = this.#boardGenerator();
-        this.attacks = this.#boardGenerator();
-    }
-
-    resetAttacksBoard() {
-        this.attacks = this.#boardGenerator();
-    }
-
-    #boardGenerator() {
+    static boardGenerator() {
         const board = [];
 
         for (let i = 0; i < 10; i++) {
@@ -22,6 +13,11 @@ class Gameboard {
 
         return board;
     }
+
+    constructor() {
+        this.ships = Gameboard.boardGenerator() 
+    }
+
 
     #placedShips = new Set();
 
