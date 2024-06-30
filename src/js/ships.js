@@ -1,15 +1,15 @@
-export const typeOfShips = {
-    Carrier: 5,
-    Battleship: 4,
-    Cruiser: 3,
-    Submarine: 3,
-    Destroyer: 2,
-};
-
 export default class Ship {
+    static sizeOfShip = {
+        Carrier: 5,
+        Battleship: 4,
+        Cruiser: 3,
+        Submarine: 3,
+        Destroyer: 2,
+    };
+
     constructor(type) {
-        this.type = type
-        this.length = typeOfShips[type];
+        this.type = type;
+        this.length = Ship.sizeOfShip[type];
         this.hits = 0;
         this.sunk = false;
     }
@@ -23,4 +23,3 @@ export default class Ship {
         this.sunk = this.length === this.hits;
     }
 }
-

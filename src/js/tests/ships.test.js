@@ -1,10 +1,11 @@
 import Ship from '../ships';
 
 describe('Test para ship', () => {
-    const carrier = new Ship(5);
-    const battleship = new Ship(4);
-    const cruiser = new Ship(3);
-    const destroyer = new Ship(2);
+    const carrier = new Ship('Carrier');
+    const battleship = new Ship('Battleship');
+    const cruiser = new Ship('Cruiser');
+    const submarine = new Ship('Submarine');
+    const destroyer = new Ship('Destroyer');
 
     test('Los barcos son objetos', () => {
         expect(typeof destroyer === 'object').toBe(true);
@@ -14,6 +15,7 @@ describe('Test para ship', () => {
         expect(carrier.length).toBe(5);
         expect(battleship.length).toBe(4);
         expect(cruiser.length).toBe(3);
+        expect(submarine.length).toBe(3);
         expect(destroyer.length).toBe(2);
     });
 
