@@ -36,6 +36,14 @@ describe('Tablero de juego para cada juugador', () => {
         expect(playerC.myShips.flat().filter((e) => e.type).length).toBe(17);
         expect(playerC.board.shipsInventory.placed.size).toBe(5);
     });
+
+    test('Permite ubicar los barcos restantes de forma aleatoria', () => {
+        player3.board.placeShip(0, 0, false, 'Carrier')
+        player3.board.placeShip(1, 0, false, 'Submarine')
+        player3.placeAllShips()
+        expect(playerC.myShips.flat().filter((e) => e.type).length).toBe(17);
+        expect(playerC.board.shipsInventory.placed.size).toBe(5);
+    })
 });
 // test('El tablero de ataques únicamente muestra disparos posibles, fallidos o acertados', () => {
 //     player1.board.placeShip(0, 2, false, 'Carrier')

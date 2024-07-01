@@ -1,4 +1,5 @@
 import Gameboard from './gameboard';
+import Ship from './ships';
 
 class Player {
     constructor(name = undefined) {
@@ -29,13 +30,13 @@ class Player {
         }
     }
 
-    // placeAllShips() {
-    //     for (const ship of Object.keys(typeOfShips)) {
-    //         this.board.placeShipRandom(ship);
-    //     }
-    // }
-    //
-    //
+    placeAllShips() {
+        for (const ship of Object.keys(Ship.shipsAndSize)) {
+            if (!this.board.shipsInventory.placed.has(ship)) {
+                this.board.placeShipRandom(ship);
+            }
+        }
+    }
     //
     // #hitOrMiss(col, row) {
     //     if (typeof this.#adversary.shipsBoard[row][col] === 'object') {
