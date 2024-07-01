@@ -47,10 +47,15 @@ class Player {
 
         this.myAttacks[row][col] = typeOfHit === 'Water' ? '·' : 'X';
 
+        if (!this.name && typeOfHit !== 'Water') {
+            this.#setNextAttack(col, row);
+        }
+
         if (typeOfHit === 'Sunk') {
             this.score = this.#adversary.board.shipsInventory.sank.size;
             return 'Sunk';
         }
+
 
         return true;
     }
@@ -59,7 +64,7 @@ class Player {
         if (this.name || !this.nextAttack.queue) {
             this.attackRandom();
         } else {
-            // this.queueAttack();
+            this.#attackQueued();
         }
     }
 
@@ -75,15 +80,28 @@ class Player {
         const [rRow, rCol] = target[Math.floor(Math.random() * target.length)];
 
         this.attack(rCol, rRow);
-        this.#setNextAttack(rCol, rRow);
     }
 
     #setNextAttack(fromCol, fromRow) {
-        if (this.name || this.myAttacks[fromRow][fromCol] !== 'X') {
-            return;
-        }
-
         this.nextAttack.hits.push([fromCol, fromRow]);
+
+        if (this.nextAttack.hits.length === 1) {
+            const attackSecuence = [
+                [-1, 0],
+                [0, 1],
+                [1, 0],
+                [0, -1],
+            ];
+
+            this.nextAttack.queue = attackSecuence.map((attack) => {
+                return [fromRow + attack[0], fromCol + attack[1]];
+            });
+        }
+    }
+
+    #attackQueued() {
+        const [row, col] = this.nextAttack.queue.shift()
+        this.attack(col, row)
     }
 
     // queueAttack() {

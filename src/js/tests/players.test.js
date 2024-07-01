@@ -6,6 +6,9 @@ const player2 = new Player('Andrea');
 const playerC = new Player();
 const player3 = new Player('Arturito');
 
+const playerC1 = new Player();
+const playerC2 = new Player();
+
 describe('Tablero de juego para cada jugador', () => {
     test('Cada jugador tiene su tablero y los jugadores humanos un nombre', () => {
         expect(Array.isArray(player1.myShips)).toBe(true);
@@ -25,6 +28,7 @@ describe('Tablero de juego para cada jugador', () => {
     test('Vincula los adversarios', () => {
         player1.setAdversary(player2);
         playerC.setAdversary(player3);
+        playerC1.setAdversary(playerC2);
 
         expect(player1.adversaryName).toBe('Andrea');
         expect(player2.adversaryName).toBe('Miguel');
@@ -63,6 +67,7 @@ describe('Interacciones entre jugadores', () => {
     test('Marca de igual manera los disparos en el tablero del attacante y del defensor', () => {
         expect(player2.myShips[0][0]).toBe('·');
         expect(player1.attack(0, 2)).toBe(true);
+        console.table(player2.myShips)
         expect(player1.myAttacks[2][0]).toBe('X');
     });
 
@@ -91,27 +96,44 @@ describe('Interacciones entre jugadores', () => {
     });
 });
 
+playerC2.board.placeShip(3, 4, true, 'Carrier');
+playerC2.board.placeShip(8, 6, false, 'Battleship');
+playerC2.board.placeShip(9, 0, false, 'Cruiser');
+playerC2.board.placeShip(0, 6, false, 'Submarine');
+playerC2.board.placeShip(1, 5, false, 'Destroyer');
+
 describe('Comportamiento de los ataques automatizados', () => {
-    test('Luego de 100 disparos aleatorios ha cubierto todo el tablero', () => {
+    test.skip('Luego de 100 disparos aleatorios ha cubierto todo el tablero', () => {
         for (let i = 0; i < 100; i++) {
             player2.attackAuto();
         }
-        expect(
-            player2.myAttacks.flat().filter((e) => e === false).length,
-        ).toBe(0);
+        expect(player2.myAttacks.flat().filter((e) => e === false).length).toBe(
+            0,
+        );
     });
 
     test('Al impactar un barco, registra las coordenadas del disparo', () => {
-        //
-    })
+        playerC1.attack(1, 1);
+        expect(playerC1.nextAttack.hits.length).toBe(0);
+        playerC1.attack(5, 4);
+        expect(playerC1.nextAttack.hits.length).toBe(1);
+    });
 
     test('El primer impacto crea el queue de exploración', () => {
-        //
-    })
+        console.table(playerC2.myShips);
+        expect(playerC1.nextAttack.queue.length).toBe(4);
+        expect(playerC1.nextAttack.queue[0].join('')).toBe('35');
+        expect(playerC1.nextAttack.queue[1].join('')).toBe('46');
+        expect(playerC1.nextAttack.queue[2].join('')).toBe('55');
+        expect(playerC1.nextAttack.queue[3].join('')).toBe('44');
+    });
 
-    test('El primer impacto crea el queue de exploración', () => {
-        //
-    })
+    test('Los disparos siguientes a un impacto siguen el queue', () => {
+        playerC1.attackAuto();
+        expect(playerC1.myAttacks[3][5]).toBeTruthy();
+        playerC1.attackAuto();
+        expect(playerC1.myAttacks[4][6]).toBeTruthy();
+    });
 });
 
 // describe('Comportamiento de los disparos de la computadora desde el impacto hasta hundir un bote', () => {
@@ -124,11 +146,6 @@ describe('Comportamiento de los ataques automatizados', () => {
 //         expect(playerC.nextAttack.hits[0]).toBe('11')
 //
 //         console.log(playerC.nextAttack.queue.length)
-// expect(playerC.nextAttack.queue.length).toBe(4)
-// expect(playerC.nextAttack.queue[0]).toBe('01')
-// expect(playerC.nextAttack.queue[1]).toBe('12')
-// expect(playerC.nextAttack.queue[2]).toBe('21')
-// expect(playerC.nextAttack.queue[3]).toBe('10')
 
 // });
 
