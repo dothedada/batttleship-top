@@ -1,5 +1,5 @@
 export default class Ship {
-    static sizeOfShip = {
+    static shipsAndSize = {
         Carrier: 5,
         Battleship: 4,
         Cruiser: 3,
@@ -9,7 +9,7 @@ export default class Ship {
 
     constructor(type) {
         this.type = type;
-        this.length = Ship.sizeOfShip[type];
+        this.length = Ship.shipsAndSize[type];
         this.hits = 0;
         this.sunk = false;
     }
