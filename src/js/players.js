@@ -64,28 +64,26 @@ class Player {
     }
 
     attackRandom() {
-        const target = [];
-
-        for (let i = 0; i < 100; i++) {
-            const row = Math.floor(i / 10);
-            const col = i % 10;
-
-            if (!this.myAttacks[row][col]) {
-                target.push([row, col]);
-            }
-        }
+        const target = this.myAttacks.flatMap((row, rowNumber) => {
+            return row
+                .map((cell, colNumber) =>
+                    !cell ? [rowNumber, colNumber] : null,
+                )
+                .filter((e) => e);
+        });
 
         const [rRow, rCol] = target[Math.floor(Math.random() * target.length)];
 
         this.attack(rCol, rRow);
-        this.#setNextAttack(rCol, rRow)
-
+        this.#setNextAttack(rCol, rRow);
     }
 
     #setNextAttack(fromCol, fromRow) {
         if (this.name || this.myAttacks[fromRow][fromCol] !== 'X') {
             return;
         }
+
+        this.nextAttack.hits.push([fromCol, fromRow]);
     }
 
     // queueAttack() {
