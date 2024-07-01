@@ -2,16 +2,7 @@ import Ship from './ships';
 
 class Gameboard {
     static boardGenerator() {
-        const board = [];
-
-        for (let i = 0; i < 10; i++) {
-            board.push([]);
-            for (let j = 0; j < 10; j++) {
-                board[i].push(false);
-            }
-        }
-
-        return board;
+        return Array.from({ length: 10 }, () => Array(10).fill(false));
     }
 
     constructor() {
@@ -23,19 +14,19 @@ class Gameboard {
         sank: new Set(),
     };
 
-    placeShip(column, row, horizontal, type) {
+    placeShip(col, row, horizontal, type) {
         if (this.shipsInventory.placed.has(type)) {
             return false;
         }
 
         const ship = new Ship(type);
         const maxPosition = 10 - ship.length;
-        const cols = horizontal && column > maxPosition ? maxPosition : column;
-        const rows = !horizontal && row > maxPosition ? maxPosition : row;
+        const startCol = horizontal && col > maxPosition ? maxPosition : col;
+        const startRow = !horizontal && row > maxPosition ? maxPosition : row;
 
         for (let l = 0; l < ship.length; l++) {
-            const i = !horizontal ? rows + l : rows;
-            const j = horizontal ? cols + l : cols;
+            const i = !horizontal ? startRow + l : startRow;
+            const j = horizontal ? startCol + l : startCol;
 
             if (this.ships[i][j]) {
                 return false;
@@ -43,13 +34,14 @@ class Gameboard {
         }
 
         for (let l = 0; l < ship.length; l++) {
-            const i = !horizontal ? rows + l : rows;
-            const j = horizontal ? cols + l : cols;
+            const i = !horizontal ? startRow + l : startRow;
+            const j = horizontal ? startCol + l : startCol;
 
             this.ships[i][j] = ship;
         }
 
         this.shipsInventory.placed.add(type);
+
         return true;
     }
 
@@ -61,6 +53,7 @@ class Gameboard {
         if (!this.placeShip(col, row, horizontal, type)) {
             this.placeShipRandom(type);
         }
+
         return true;
     }
 
@@ -86,6 +79,7 @@ class Gameboard {
         }
 
         this.ships[row][col] = '·';
+
         return 'Water';
     }
 }
