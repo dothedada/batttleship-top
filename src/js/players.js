@@ -56,10 +56,10 @@ class Player {
     }
 
     attackAuto() {
-        if (!this.name && this.nextAttack.queue) {
-            // this.queueAttack();
-        } else {
+        if (this.name || !this.nextAttack.queue) {
             this.attackRandom();
+        } else {
+            // this.queueAttack();
         }
     }
 
@@ -69,6 +69,7 @@ class Player {
         for (let i = 0; i < 100; i++) {
             const row = Math.floor(i / 10);
             const col = i % 10;
+
             if (!this.myAttacks[row][col]) {
                 target.push([row, col]);
             }
@@ -77,43 +78,16 @@ class Player {
         const [rRow, rCol] = target[Math.floor(Math.random() * target.length)];
 
         this.attack(rCol, rRow);
+        this.#setNextAttack(rCol, rRow)
+
     }
 
-    // attack(col, row) {
-    //     if (col > 9 || row > 9 || this.board.attacks[row][col]) {
-    //         return false;
-    //     }
-    //
-    //     const itsAHit = this.#hitOrMiss(col, row);
-    //     this.board.attacks[row][col] = itsAHit ? 'X' : '·';
-    //
-    //     if (!this.human && itsAHit) {
-    //         const neighbors = [-10, 1, 10, -1];
-    //
-    //     const lastHit = this.nextAttack.hits[this.nextAttack.hits.length - 1];
-    //
-    //         this.nextAttack.hits.push(`${row}${col}`.padStart(2, '0'));
-    //         this.nextAttack.queue =
-    //             this.nextAttack.queue ??
-    //             neighbors.reduce((availabe, position) => {
-    //                 const [nRow, nCol] = `${+lastHit + position}`.padStart(
-    //                     2,
-    //                     '0',
-    //                 );
-    //
-    //                 if (!this.attacksBoard[nRow][nCol]) {
-    //                     availabe.push(`${nRow}${nCol}`.padStart(2, '0'));
-    //                 }
-    //
-    //                 return availabe;
-    //             }, []);
-    //     }
-    //
-    //     return true;
-    // }
-    //
-    //
-    //
+    #setNextAttack(fromCol, fromRow) {
+        if (this.name || this.myAttacks[fromRow][fromCol] !== 'X') {
+            return;
+        }
+    }
+
     // queueAttack() {
     //     const lastHit = this.nextAttack.hits[this.nextAttack.hits.length - 1];
     //     const hitSecuence = this.nextAttack.hits;

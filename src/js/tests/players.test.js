@@ -91,7 +91,7 @@ describe('Interacciones entre jugadores', () => {
     });
 });
 
-describe('Comportamiento de los ataque automatizados', () => {
+describe('Comportamiento de los ataques automatizados', () => {
     test('Luego de 100 disparos aleatorios ha cubierto todo el tablero', () => {
         for (let i = 0; i < 100; i++) {
             player2.attackAuto();
@@ -100,10 +100,19 @@ describe('Comportamiento de los ataque automatizados', () => {
             player2.myAttacks.flat().filter((e) => e === false).length,
         ).toBe(0);
     });
+
+    test('Al impactar un barco, registra las coordenadas del disparo', () => {
+        //
+    })
+
+    test('El primer impacto crea el queue de exploración', () => {
+        //
+    })
+
+    test('El primer impacto crea el queue de exploración', () => {
+        //
+    })
 });
-// describe('Setup base para el Jugador automático', () => {
-//
-// });
 
 // describe('Comportamiento de los disparos de la computadora desde el impacto hasta hundir un bote', () => {
 //     test('Con el primer impacto marca el punto y la secuencia de ataque a seguir', () => {
