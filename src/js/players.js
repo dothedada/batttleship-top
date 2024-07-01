@@ -54,15 +54,31 @@ class Player {
 
         return true;
     }
-    //
-    // #hitOrMiss(col, row) {
-    //     if (typeof this.#adversary.shipsBoard[row][col] === 'object') {
-    //         this.#adversary.board.receiveAttack(col, row);
-    //         return true;
-    //     }
-    //     return false;
-    // }
-    //
+
+    attackAuto() {
+        if (!this.name && this.nextAttack.queue) {
+            // this.queueAttack();
+        } else {
+            this.attackRandom();
+        }
+    }
+
+    attackRandom() {
+        const target = [];
+
+        for (let i = 0; i < 100; i++) {
+            const row = Math.floor(i / 10);
+            const col = i % 10;
+            if (!this.myAttacks[row][col]) {
+                target.push([row, col]);
+            }
+        }
+
+        const [rRow, rCol] = target[Math.floor(Math.random() * target.length)];
+
+        this.attack(rCol, rRow);
+    }
+
     // attack(col, row) {
     //     if (col > 9 || row > 9 || this.board.attacks[row][col]) {
     //         return false;
@@ -96,32 +112,7 @@ class Player {
     //     return true;
     // }
     //
-    // autoAtack() {
-    //     if (!this.human && this.nextAttack.hits.length) {
-    //         this.queueAttack();
-    //     } else {
-    //         this.randomAttack();
-    //     }
-    // }
     //
-    // randomAttack() {
-    //     const availableShoots = this.attacksBoard
-    //         .flat()
-    //         .reduce((sum, cell, index) => {
-    //             if (!cell) {
-    //                 sum.push(`${index}`.padStart(2, 0));
-    //             }
-    //
-    //             return sum;
-    //         }, []);
-    //
-    //     const [randomRow, randomCol] =
-    //         availableShoots[
-    //             Math.floor(Math.random() * availableShoots.length)
-    //         ].split('');
-    //
-    //     this.attack(+randomCol, +randomRow);
-    // }
     //
     // queueAttack() {
     //     const lastHit = this.nextAttack.hits[this.nextAttack.hits.length - 1];
@@ -151,14 +142,6 @@ class Player {
     //         }
     //     }
     //     //
-    // }
-    //
-    // get shipsBoard() {
-    //     return this.board.ships;
-    // }
-    //
-    // get attacksBoard() {
-    //     return this.board.attacks;
     // }
 }
 

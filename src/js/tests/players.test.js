@@ -91,22 +91,18 @@ describe('Interacciones entre jugadores', () => {
     });
 });
 
+describe('Comportamiento de los ataque automatizados', () => {
+    test('Luego de 100 disparos aleatorios ha cubierto todo el tablero', () => {
+        for (let i = 0; i < 100; i++) {
+            player2.attackAuto();
+        }
+        expect(
+            player2.myAttacks.flat().filter((e) => e === false).length,
+        ).toBe(0);
+    });
+});
 // describe('Setup base para el Jugador automático', () => {
-//     test('Crea attackQueue para jugador automatico', () => {
-//         expect(typeof playerC.nextAttack === 'object').toBe(true);
-//         expect(playerC.nextAttack.hits).toBeTruthy();
-//         expect(playerC.nextAttack.queue).toBeUndefined();
-//         expect(player1.nextAttack).toBeUndefined();
-//     });
 //
-//     test('Luego de 100 disparos aleatorios ha cubierto todo el tablero', () => {
-//         for (let i = 0; i < 100; i++) {
-//             playerC.autoAtack();
-//         }
-//         expect(
-//             playerC.attacksBoard.flat().filter((e) => e === false).length,
-//         ).toBe(0);
-//     });
 // });
 
 // describe('Comportamiento de los disparos de la computadora desde el impacto hasta hundir un bote', () => {
