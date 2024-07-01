@@ -37,6 +37,23 @@ class Player {
             }
         }
     }
+
+    attack(col, row) {
+        if (col > 9 || row > 9 || this.myAttacks[row][col]) {
+            return false;
+        }
+
+        const typeOfHit = this.#adversary.board.receiveAttack(col, row);
+
+        this.myAttacks[row][col] = typeOfHit === 'Water' ? '·' : 'X';
+
+        if (typeOfHit === 'Sunk') {
+            this.score = this.#adversary.board.shipsInventory.sank.size;
+            return 'Sunk';
+        }
+
+        return true;
+    }
     //
     // #hitOrMiss(col, row) {
     //     if (typeof this.#adversary.shipsBoard[row][col] === 'object') {
