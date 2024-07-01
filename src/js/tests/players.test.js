@@ -4,15 +4,15 @@ import Player from '../players';
 const player1 = new Player('Miguel');
 const player2 = new Player('Andrea');
 const playerC = new Player();
-const playerC2 = new Player('Arturito');
+const player3 = new Player('Arturito');
 
-describe('Métodos para el Jugador humano', () => {
+describe('Tablero de juego para cada juugador', () => {
     test('Cada jugador tiene su tablero y los jugadores humanos un nombre', () => {
         expect(Array.isArray(player1.myShips)).toBe(true);
         expect(Array.isArray(player1.myAttacks)).toBe(true);
         expect(player1.board instanceof Gameboard).toBe(true);
-        expect(player1).toHaveProperty('name')
-        expect(playerC).not.toHaveProperty('name')
+        expect(player1).toHaveProperty('name');
+        expect(playerC).not.toHaveProperty('name');
     });
 
     test('Crea queue para jugadas automatizadas del jugador automático', () => {
@@ -22,61 +22,55 @@ describe('Métodos para el Jugador humano', () => {
     });
 
     test('Vincula los adversarios', () => {
-        player1.setAdversary(player2)
-        playerC.setAdversary(playerC2)
+        player1.setAdversary(player2);
+        playerC.setAdversary(player3);
 
-        expect(player1.adversaryName).toBe('Andrea')
-        expect(player2.adversaryName).toBe('Miguel')
-        expect(playerC.adversaryName).toBe('Arturito')
-        expect(playerC2.adversaryName).toBe('AutoPlayer')
+        expect(player1.adversaryName).toBe('Andrea');
+        expect(player2.adversaryName).toBe('Miguel');
+        expect(playerC.adversaryName).toBe('Arturito');
+        expect(player3.adversaryName).toBe('AutoPlayer');
     });
 
-    // test('la información ')
-    //
-    // test('Cada jugador dispone de 5 barcos al iniciar el tablero', () => {
-    //     expect(player1.board.shipsLeftToPlace()).toBe(5);
-    // });
-    //
-    // test('El contador se actualiza cada que ubica un barco', () => {
-    //     expect(player1.board.placeShip(0, 2, false, 'Carrier')).toBe(true);
-    //     expect(player1.board.shipsLeftToPlace()).toBe(4);
-    //     expect(player1.board.placeShip(7, 0, true, 'Battleship')).toBe(true);
-    //     expect(player1.board.shipsLeftToPlace()).toBe(3);
-    //     expect(player1.board.placeShip(7, 0, false, 'Cruiser')).toBe(false);
-    //     expect(player1.board.shipsLeftToPlace()).toBe(3);
-    //     expect(player1.board.placeShip(7, 6, false, 'Cruiser')).toBe(true);
-    //     expect(player1.board.shipsLeftToPlace()).toBe(2);
-    //     expect(player1.board.placeShip(4, 9, true, 'Submarine')).toBe(true);
-    //     expect(player1.board.shipsLeftToPlace()).toBe(1);
-    //     expect(player1.board.placeShip(1, 5, false, 'Destroyer')).toBe(true);
-    //     expect(player1.board.shipsLeftToPlace()).toBe(0);
-    // });
-    //
-    // test('No permite ningun disparo fuera del tablero', () => {
-    //     expect(player1.attack(0, 0)).toBe(true);
-    //     expect(player1.attack(10, 10)).toBe(false);
-    //     expect(player1.board.attacks[0][0]).toBe('·');
-    // });
-    //
-    // test('No permite disparos en donde ya han disparado', () => {
-    //     expect(player1.attack(0, 0)).toBe(false);
-    // });
-    //
-    // test('Muestra la ubicación de los barcos y disparos recibidos', () => {
-    //     expect(Array.isArray(player1.shipsBoard)).toBe(true);
-    // });
-    //
-    // test('Muestra la ubicación de los disparos realizados', () => {
-    //     expect(Array.isArray(player1.attacksBoard)).toBe(true);
-    // });
-    //
-    // test('Marca los disparos que dieron en algun barco del enemigo', () => {
-    //     player2.board.placeShip(3, 2, true, 'Carrier');
-    //     expect(player1.attack(3, 2)).toBe(true);
-    //     expect(player1.board.attacks[2][3]).toBe('X');
-    //     expect(player2.board.ships[2][3]).toBe('X');
-    // });
+    test('Permite ubicar automaticamente todos los barcos', () => {
+        playerC.placeAllShips();
+        expect(playerC.myShips.flat().filter((e) => e.type).length).toBe(17);
+        expect(playerC.board.shipsInventory.placed.size).toBe(5);
+    });
 });
+// test('El tablero de ataques únicamente muestra disparos posibles, fallidos o acertados', () => {
+//     player1.board.placeShip(0, 2, false, 'Carrier')
+//     player1.board.placeShip(7, 0, true, 'Battleship')
+//     player1.board.placeShip(7, 0, false, 'Cruiser')
+//     player1.board.placeShip(7, 6, false, 'Cruiser')
+//     player1.board.placeShip(0, 0, false, 'Cruiser')
+//     player1.board.placeShip(4, 9, true, 'Submarine')
+//     player1.board.placeShip(1, 5, false, 'Destroyer')
+// });
+//
+// test('No permite ningun disparo fuera del tablero', () => {
+//     expect(player1.attack(0, 0)).toBe(true);
+//     expect(player1.attack(10, 10)).toBe(false);
+//     expect(player1.board.attacks[0][0]).toBe('·');
+// });
+//
+// test('No permite disparos en donde ya han disparado', () => {
+//     expect(player1.attack(0, 0)).toBe(false);
+// });
+//
+// test('Muestra la ubicación de los barcos y disparos recibidos', () => {
+//     expect(Array.isArray(player1.shipsBoard)).toBe(true);
+// });
+//
+// test('Muestra la ubicación de los disparos realizados', () => {
+//     expect(Array.isArray(player1.attacksBoard)).toBe(true);
+// });
+//
+// test('Marca los disparos que dieron en algun barco del enemigo', () => {
+//     player2.board.placeShip(3, 2, true, 'Carrier');
+//     expect(player1.attack(3, 2)).toBe(true);
+//     expect(player1.board.attacks[2][3]).toBe('X');
+//     expect(player2.board.ships[2][3]).toBe('X');
+// });
 
 // describe('Setup base para el Jugador automático', () => {
 //     test('Crea attackQueue para jugador automatico', () => {
@@ -84,10 +78,6 @@ describe('Métodos para el Jugador humano', () => {
 //         expect(playerC.nextAttack.hits).toBeTruthy();
 //         expect(playerC.nextAttack.queue).toBeUndefined();
 //         expect(player1.nextAttack).toBeUndefined();
-//     });
-//     test('ubica sus 5 barcos de forma aleatoria', () => {
-//         playerC.placeAllShips();
-//         expect(playerC.shipsBoard.flat().filter((e) => e.type).length).toBe(17);
 //     });
 //
 //     test('Luego de 100 disparos aleatorios ha cubierto todo el tablero', () => {

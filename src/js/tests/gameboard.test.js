@@ -58,6 +58,10 @@ describe('Administración y posicionamiento de barcos', () => {
         }
     });
 
+    test('No permite ubicar dos veces el mismo tipo de barco', () => {
+        expect(board.placeShip(0, 0, true, 'Cruiser')).toBe(false);
+    });
+
     test('Mantiene el inventario de los barcos ubicados', () => {
         expect(board.shipsInventory.placed.size).toBe(3);
     });
