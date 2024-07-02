@@ -7,6 +7,7 @@ class Player {
         this.myShips = this.board.ships;
         this.myAttacks = Gameboard.boardGenerator();
         this.adversaryName = undefined;
+        this.score = 0
 
         if (name) {
             this.name = name;
@@ -44,6 +45,7 @@ class Player {
         }
 
         const typeOfHit = this.#adversary.board.receiveAttack(col, row);
+        this.score = this.#adversary.board.shipsInventory.sank.size;
 
         this.myAttacks[row][col] = typeOfHit === 'Water' ? '·' : 'X';
 
@@ -52,7 +54,6 @@ class Player {
         }
 
         if (typeOfHit === 'Sunk') {
-            this.score = this.#adversary.board.shipsInventory.sank.size;
 
             if (!this.name) {
                 this.nextAttack.posibleShips--;
@@ -71,9 +72,9 @@ class Player {
 
     attackAuto() {
         if (this.name || !this.nextAttack.posibleShips) {
-            this.attackRandom();
+            return this.attackRandom();
         } else {
-            this.#attackQueued();
+            return this.#attackQueued();
         }
     }
 
@@ -88,7 +89,7 @@ class Player {
 
         const [rRow, rCol] = target[Math.floor(Math.random() * target.length)];
 
-        this.attack(rCol, rRow);
+        return this.attack(rCol, rRow);
     }
 
     #setNextAttack(fromCol, fromRow) {
@@ -140,7 +141,7 @@ class Player {
 
     #attackQueued() {
         const [row, col] = this.nextAttack.queue.shift();
-        this.attack(col, row);
+        return this.attack(col, row);
     }
 }
 

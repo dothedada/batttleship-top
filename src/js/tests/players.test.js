@@ -1,3 +1,5 @@
+import { describe, expect, test } from '@jest/globals'
+
 import Gameboard from '../gameboard';
 import Player from '../players';
 
@@ -5,7 +7,6 @@ const player1 = new Player('Miguel');
 const player2 = new Player('Andrea');
 const playerC = new Player();
 const player3 = new Player('Arturito');
-
 const playerC1 = new Player();
 const playerC2 = new Player();
 
@@ -102,7 +103,7 @@ playerC2.board.placeShip(0, 6, false, 'Submarine');
 playerC2.board.placeShip(1, 5, false, 'Destroyer');
 
 describe('Comportamiento de los ataques automatizados', () => {
-    test.skip('Luego de 100 disparos aleatorios ha cubierto todo el tablero', () => {
+    test('Luego de 100 disparos aleatorios ha cubierto todo el tablero', () => {
         for (let i = 0; i < 100; i++) {
             player2.attackAuto();
         }
@@ -138,16 +139,19 @@ describe('Comportamiento de los ataques automatizados', () => {
         expect(playerC1.myAttacks[4][7]).toBe('X');
         playerC1.attackAuto()
         expect(playerC1.myAttacks[4][8]).toBe('·');
+    })
+
+    test('luego de 7 disparos un Carrier horizontal es hundido', () => {
         playerC1.attackAuto()
-        playerC1.attackAuto()
-        playerC1.attackAuto()
-        playerC1.attackAuto()
-        playerC1.attackAuto()
-        playerC1.attackAuto()
-        playerC1.attackAuto()
-        playerC1.attackAuto()
-        playerC1.attackAuto()
-        console.table(playerC2.myShips);
+        expect(playerC1.attackAuto()).toBe('Sunk')
+        expect(playerC1.score).toBe(1)
+        console.table(playerC2.myShips)
+    })
+
+    test('Al hundir un barco y sin sonspechas de más barcos, borra el attack queue', () => {
+        expect(playerC1.nextAttack.hits.length).toBe(0)
+        expect(playerC1.nextAttack.queue.length).toBe(0)
+        expect(playerC1.nextAttack.posibleShips).toBe(0)
     })
 });
 
