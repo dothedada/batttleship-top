@@ -47,19 +47,22 @@ class Player {
 
         this.myAttacks[row][col] = typeOfHit === 'Water' ? '·' : 'X';
 
-        if (!this.name && typeOfHit !== 'Water') {
+        if (typeOfHit !== 'Water' && !this.name) {
             this.#setNextAttack(col, row);
-        }
-        if (!this.name && typeOfHit === 'Sunk') {
-            this.nextAttack.posibleShips--;
-            if (!this.nextAttack.posibleShips) {
-                this.nextAttack.hits = [];
-                this.nextAttack.queue = [];
-            }
         }
 
         if (typeOfHit === 'Sunk') {
             this.score = this.#adversary.board.shipsInventory.sank.size;
+
+            if (!this.name) {
+                this.nextAttack.posibleShips--;
+
+                if (!this.nextAttack.posibleShips) {
+                    this.nextAttack.hits = [];
+                    this.nextAttack.queue = [];
+                }
+            }
+
             return 'Sunk';
         }
 
@@ -119,11 +122,9 @@ class Player {
 
         const [inAxis, offAxis] = attackSecuence.reduce(
             ([align, misalign], attack) => {
-                if (attack[dirIndex] === dirValue) {
-                    align.push(attack);
-                } else {
-                    misalign.push(attack);
-                }
+                attack[dirIndex] === dirValue
+                    ? align.push(attack)
+                    : misalign.push(attack);
                 return [align, misalign];
             },
             [[], []],
