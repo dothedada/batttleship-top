@@ -60,14 +60,14 @@ describe('Interacciones entre jugadores', () => {
     player2.board.placeShip(1, 5, true, 'Destroyer');
 
     test('No permite ningun disparo fuera del tablero', () => {
-        expect(player1.attack(0, 0)).toBe(true);
+        expect(player1.attack(0, 0)).toBeTruthy();
         expect(player1.attack(10, 10)).toBe(false);
         expect(player1.myAttacks[0][0]).toBe('·');
     });
 
     test('Marca de igual manera los disparos en el tablero del attacante y del defensor', () => {
         expect(player2.myShips[0][0]).toBe('·');
-        expect(player1.attack(0, 2)).toBe(true);
+        expect(player1.attack(0, 2)).toBe('Ship');
         expect(player1.myAttacks[2][0]).toBe('X');
     });
 
@@ -84,11 +84,11 @@ describe('Interacciones entre jugadores', () => {
     });
 
     test('Informa al atacante cuando ha hundido un barco', () => {
-        expect(player1.attack(1, 2)).toBe(true);
+        expect(player1.attack(1, 2)).toBeTruthy();
         expect(player1.myAttacks[2][1]).toBe('X');
-        expect(player1.attack(2, 2)).toBe(true);
+        expect(player1.attack(2, 2)).toBeTruthy();
         expect(player1.myAttacks[2][2]).toBe('X');
-        expect(player1.attack(3, 2)).toBe(true);
+        expect(player1.attack(3, 2)).toBeTruthy();
         expect(player1.myAttacks[2][3]).toBe('X');
         expect(player1.attack(4, 2)).toBe('Sunk');
         expect(player1.myAttacks[2][1]).toBe('X');

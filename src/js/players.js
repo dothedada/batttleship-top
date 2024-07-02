@@ -63,11 +63,9 @@ class Player {
                     this.nextAttack.queue = [];
                 }
             }
-
-            return 'Sunk';
         }
 
-        return true;
+        return typeOfHit;
     }
 
     attackAuto() {
