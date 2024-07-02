@@ -67,7 +67,6 @@ describe('Interacciones entre jugadores', () => {
     test('Marca de igual manera los disparos en el tablero del attacante y del defensor', () => {
         expect(player2.myShips[0][0]).toBe('·');
         expect(player1.attack(0, 2)).toBe(true);
-        console.table(player2.myShips)
         expect(player1.myAttacks[2][0]).toBe('X');
     });
 
@@ -120,7 +119,6 @@ describe('Comportamiento de los ataques automatizados', () => {
     });
 
     test('El primer impacto crea el queue de exploración', () => {
-        console.table(playerC2.myShips);
         expect(playerC1.nextAttack.queue.length).toBe(4);
         expect(playerC1.nextAttack.queue[0].join('')).toBe('35');
         expect(playerC1.nextAttack.queue[1].join('')).toBe('46');
@@ -130,10 +128,27 @@ describe('Comportamiento de los ataques automatizados', () => {
 
     test('Los disparos siguientes a un impacto siguen el queue', () => {
         playerC1.attackAuto();
-        expect(playerC1.myAttacks[3][5]).toBeTruthy();
+        expect(playerC1.myAttacks[3][5]).not.toBe('X');
         playerC1.attackAuto();
-        expect(playerC1.myAttacks[4][6]).toBeTruthy();
+        expect(playerC1.myAttacks[4][6]).toBe('X');
     });
+
+    test('desde el segundo impacto se priorizan los ataques en ese eje', () => {
+        playerC1.attackAuto()
+        expect(playerC1.myAttacks[4][7]).toBe('X');
+        playerC1.attackAuto()
+        expect(playerC1.myAttacks[4][8]).toBe('·');
+        playerC1.attackAuto()
+        playerC1.attackAuto()
+        playerC1.attackAuto()
+        playerC1.attackAuto()
+        playerC1.attackAuto()
+        playerC1.attackAuto()
+        playerC1.attackAuto()
+        playerC1.attackAuto()
+        playerC1.attackAuto()
+        console.table(playerC2.myShips);
+    })
 });
 
 // describe('Comportamiento de los disparos de la computadora desde el impacto hasta hundir un bote', () => {

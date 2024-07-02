@@ -11,7 +11,7 @@ class Player {
         if (name) {
             this.name = name;
         } else {
-            this.nextAttack = { hits: [], queue: undefined };
+            this.nextAttack = { hits: [], queue: [], posibleShips: 0 };
         }
     }
 
@@ -50,18 +50,24 @@ class Player {
         if (!this.name && typeOfHit !== 'Water') {
             this.#setNextAttack(col, row);
         }
+        if (!this.name && typeOfHit === 'Sunk') {
+            this.nextAttack.posibleShips--;
+            if (!this.nextAttack.posibleShips) {
+                this.nextAttack.hits = [];
+                this.nextAttack.queue = [];
+            }
+        }
 
         if (typeOfHit === 'Sunk') {
             this.score = this.#adversary.board.shipsInventory.sank.size;
             return 'Sunk';
         }
 
-
         return true;
     }
 
     attackAuto() {
-        if (this.name || !this.nextAttack.queue) {
+        if (this.name || !this.nextAttack.posibleShips) {
             this.attackRandom();
         } else {
             this.#attackQueued();
@@ -83,56 +89,58 @@ class Player {
     }
 
     #setNextAttack(fromCol, fromRow) {
-        this.nextAttack.hits.push([fromCol, fromRow]);
+        const secuence = [
+            [-1, 0],
+            [0, 1],
+            [1, 0],
+            [0, -1],
+        ];
 
-        if (this.nextAttack.hits.length === 1) {
-            const attackSecuence = [
-                [-1, 0],
-                [0, 1],
-                [1, 0],
-                [0, -1],
-            ];
+        const attackSecuence = secuence
+            .map(([row, col]) => [fromRow + row, fromCol + col])
+            .filter(([row, col]) => this.myAttacks[row]?.[col] === false);
 
-            this.nextAttack.queue = attackSecuence.map((attack) => {
-                return [fromRow + attack[0], fromCol + attack[1]];
-            });
+        const nextAttack = this.nextAttack;
+        nextAttack.hits.push([fromRow, fromCol]);
+
+        if (nextAttack.hits.length === 1) {
+            nextAttack.queue = attackSecuence;
+            nextAttack.posibleShips++;
+            return;
+        }
+
+        const isHorizontal = nextAttack.hits[0][1] === nextAttack.hits[1][1];
+        const dirIndex = isHorizontal ? 1 : 0;
+        const dirValue = nextAttack.hits[0][dirIndex];
+
+        if (nextAttack.hits.length === 2) {
+            nextAttack.queue.sort((a) => (a[dirIndex] === dirValue ? -1 : 0));
+        }
+
+        const [inAxis, offAxis] = attackSecuence.reduce(
+            ([align, misalign], attack) => {
+                if (attack[dirIndex] === dirValue) {
+                    align.push(attack);
+                } else {
+                    misalign.push(attack);
+                }
+                return [align, misalign];
+            },
+            [[], []],
+        );
+
+        nextAttack.queue.unshift(...inAxis);
+        nextAttack.queue.push(...offAxis);
+
+        if (!inAxis.length) {
+            nextAttack.posibleShips = nextAttack.hits.length;
         }
     }
 
     #attackQueued() {
-        const [row, col] = this.nextAttack.queue.shift()
-        this.attack(col, row)
+        const [row, col] = this.nextAttack.queue.shift();
+        this.attack(col, row);
     }
-
-    // queueAttack() {
-    //     const lastHit = this.nextAttack.hits[this.nextAttack.hits.length - 1];
-    //     const hitSecuence = this.nextAttack.hits;
-    //
-    //     if (!this.nextAttack.queue && this.nextAttack.hits.length === 1) {
-    //     } else {
-    //         hitSecuence.sort((a, b) => a - b);
-    //
-    //         const [first, second, previous, last] = [
-    //             +hitSecuence[0],
-    //             +hitSecuence[1],
-    //             +hitSecuence[hitSecuence.length - 2],
-    //             +hitSecuence[hitSecuence.length - 1],
-    //         ];
-    //
-    //         const follow = `${last + (last - previous)}`.padStart(2, '0');
-    //         const fallback = `${first - (second - first)}`.padStart(2, '0');
-    //
-    //         this.nextAttack.queue = [];
-    //
-    //         if (this.attacksBoard[follow[0]][follow[1]] === false) {
-    //             this.nextAttack.queue.push(follow);
-    //         }
-    //         if (this.attacksBoard[fallback[0]][fallback[1]] === false) {
-    //             this.nextAttack.queue.push(fallback);
-    //         }
-    //     }
-    //     //
-    // }
 }
 
 export default Player;
