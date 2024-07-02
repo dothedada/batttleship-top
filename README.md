@@ -9,16 +9,18 @@ Usar nvim y pasar tanto tiempo en la terminal tienen consecuencias, aunque este 
     - [-] Ships es un objeto con la propiedades length, hits y sunk
     - [-] debe tener un método hit() para marcar los impactos
     - [-] debe tener un método isSunk() para detectar si un barco fue hundido
-- [] Crear los test propios y el objeto Gameboard
-    - [] El tablero esta construido por un array de 2 dimensiones y 10 de length en cada dimensión, y cada celda está estructurada de la siguiente forma, [ attacked<boolean>, ship<object> || false ]
-    - [] debe tener el método placeShip(col<number>, row<number>, dir<boolean>, shipType<string>) que ubica el punto inicial del barco en col y row, y su direccion dir (true: horizontal, false: vertical), si las cordenadas marcadas estan por fuera del cuadro, ubicar en la posible más cercana
-    - [] Debe tener el método receiveAttack(col<number>, row<number>), que determina si algun barco fue impactado le envía la señal de hit() y/o marcar en el tablero el impacto
-    - [] debe tener el método shipsLeft() que indica cuántos botes aún quedan flotando.
-    - [] debe tener un método randomPlaceShips() que ubica en un lugar aleatorio los barcons que todavía no han sido ubicados
+- [-] Crear los test propios y el objeto Gameboard
+    - [-] El tablero esta construido por un array de 2 dimensiones y 10 de length en cada dimensión, y cada celda está estructurada de la siguiente forma, [ attacked<boolean>, ship<object> || false ]
+    - [-] debe tener el método placeShip(col<number>, row<number>, dir<boolean>, shipType<string>) que ubica el punto inicial del barco en col y row, y su direccion dir (true: horizontal, false: vertical), si las cordenadas marcadas estan por fuera del cuadro, ubicar en la posible más cercana
+    - [-] Debe tener el método receiveAttack(col<number>, row<number>), que determina si algun barco fue impactado le envía la señal de hit() y/o marcar en el tablero el impacto
+    - [-] debe tener el método shipsLeft() que indica cuántos botes aún quedan flotando.
+    - [-] debe tener un método randomPlaceShips() que ubica en un lugar aleatorio los barcons que todavía no han sido ubicados
 - [] Crear los test propios y el objeto Player
-    - [] crea un jugador con un nombre, sus barcos disponibles y su tablero
-    - [] cada jugador debe tener un contador de barcos disponibles para ubicar
-    - [] debe tener los métodos getShipsBoard() y getAttacksBoard() que retorna los tableros para renderizar
+    - [-] crea un jugador con un nombre, sus barcos disponibles y su tablero
+    - [-] cada jugador debe tener un contador de barcos disponibles para ubicar
+    - [-] Existe la posibilidad de disparar aleatoriamente
+    - [-] Crea un queue para los atawue automatizados luego de dar en el blanco
+    - [] el queue se adapta a cuando el ataque da con un cluster de barcos
 - [] Crea el archivo que integra los tres objetos y determina el gameflow
     - [] el gameflow se determina solo por los métodos
     - [] Posibilidad de jugar contra el cpu
