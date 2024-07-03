@@ -59,7 +59,7 @@ describe('Administración y posicionamiento de barcos', () => {
     });
 
     test('No permite ubicar dos veces el mismo tipo de barco', () => {
-        expect(board.placeShip(0, 0, true, 'Cruiser')).toBe(false);
+        expect(board.placeShip(0, 6, true, 'Cruiser')).toBe(false);
     });
 
     test('Mantiene el inventario de los barcos ubicados', () => {
@@ -91,12 +91,21 @@ describe('Administración y posicionamiento de barcos', () => {
         expect([1, 10]).toContain(differenceOfIndexes);
     });
 
-    test('Sólo son marcadas las celdas ocupadas por kos barcos 2', () => {
+    test('Sólo son marcadas las celdas ocupadas por los barcos 2', () => {
         expect(shipCells(board.ships)).toBe(83);
+    });
+
+    test('Permite ubicar los barcos restantes de forma aleatoria', () => {
+        const randomBoard = new Gameboard()
+        randomBoard.placeShip(0, 0, false, 'Carrier');
+        randomBoard.placeShip(1, 0, false, 'Submarine');
+        randomBoard.placeRemainignShipsRandom();
+        expect(randomBoard.ships.flat().filter((e) => e.type).length).toBe(17);
+        expect(randomBoard.shipsInventory.placed.size).toBe(5);
     });
 });
 
-describe('Elementos del juego', () => {
+describe('Recibir ataques', () => {
     test('Marca en el disparo en una celda desocupada', () => {
         expect(board.receiveAttack(4, 0)).toBe('Water');
         expect(board.ships[0][4]).toBe('·');
