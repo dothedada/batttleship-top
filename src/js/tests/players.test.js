@@ -159,7 +159,7 @@ describe('Comportamiento de los ataques automatizados', () => {
         playerC1.attackAuto();
         playerC1.attackAuto();
         // playerC1.attackAuto();
-        console.table(playerC1.myAttacks)
+        // console.table(playerC1.myAttacks)
 
     });
 

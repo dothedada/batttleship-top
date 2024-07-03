@@ -19,10 +19,6 @@ class Player {
     #adversary = undefined;
 
     setAdversary(player) {
-        if (!(player instanceof Player) || this.adversaryName) {
-            return;
-        }
-
         this.#adversary = player;
         this.adversaryName = this.#adversary.name ?? 'AutoPlayer';
 
@@ -45,42 +41,56 @@ class Player {
         }
 
         const typeOfHit = this.#adversary.board.receiveAttack(col, row);
-        this.score = this.#adversary.board.shipsInventory.sank.size;
 
+        this.score = this.#adversary.board.shipsInventory.sank.size;
         this.myAttacks[row][col] = typeOfHit === 'Water' ? '·' : 'X';
 
         if (!this.name) {
-            this.#autoplayerFeedback[typeOfHit](col, row);
+            this.#feedbackAutoplayer[typeOfHit](col, row);
         }
 
         return typeOfHit;
     }
 
-    #autoplayerFeedback = {
+    #feedbackAutoplayer = {
         Water: () => {
             if (this.nextAttack.hits.length > 1) {
-                this.suspect();
+                this.#suspect();
             }
         },
+
         Ship: (fromCol, fromRow) => {
             this.#setNextAttack(fromCol, fromRow);
         },
+
         Sunk: () => {
             this.nextAttack.posibleShips--;
 
             if (!this.nextAttack.posibleShips) {
                 this.nextAttack.hits = [];
                 this.nextAttack.queue = [];
+            } else {
+                const [dirIndex, dirValue] = this.#targetDirection();
+                //borra los ships del mismo eje
+                this.nextAttack.hits = this.nextAttack.filter((attack) => {
+                    return attack[dirIndex] !== dirValue;
+                });
+                // filtra repetidos
+                // this.nextAttack.queue = [
+                //     ...new Set(
+                //         this.nextAttack.queue.map((attack) => attack.join('')),
+                //     ),
+                // ].map((attack) => attack.split('').map(Number));
             }
         },
     };
 
     attackAuto() {
-        if (this.name || !this.nextAttack.posibleShips) {
+        if (!this.nextAttack?.posibleShips) {
             return this.attackRandom();
-        } else {
-            return this.#attackQueued();
         }
+
+        return this.#attackQueued();
     }
 
     attackRandom() {
@@ -118,13 +128,15 @@ class Player {
             return;
         }
 
-        const isHorizontal = nextAttack.hits[0][1] === nextAttack.hits[1][1];
-        const dirIndex = isHorizontal ? 1 : 0;
-        const dirValue = nextAttack.hits[0][dirIndex];
+        const [dirIndex, dirValue] = this.#targetDirection();
 
         if (nextAttack.hits.length === 2) {
             nextAttack.queue.sort((a) => (a[dirIndex] === dirValue ? -1 : 0));
         }
+
+        // if (nextAttack.posibleShips > 1) {
+        //     console.log('Ordenar nuevos a nuevos ejes');
+        // }
 
         const [inAxis, offAxis] = attackSecuence.reduce(
             ([align, misalign], attack) => {
@@ -136,8 +148,6 @@ class Player {
             [[], []],
         );
 
-        // console.log('inAxis:', inAxis, ' queue:', nextAttack.queue)
-
         nextAttack.queue.unshift(...inAxis);
         nextAttack.queue.push(...offAxis);
     }
@@ -147,16 +157,24 @@ class Player {
         return this.attack(col, row);
     }
 
-    suspect() {
-        const nextAttack = this.nextAttack;
-        // const isHorizontal = nextAttack.hits[0][1] === nextAttack.hits[1][1];
-        // const dirIndex = isHorizontal ? 1 : 0;
-        // const dirValue = nextAttack.hits[0][dirIndex];
+    #targetDirection() {
+        const impacts = this.nextAttack.hits;
+        const dirIndex =
+            impacts[0][1] === impacts[impacts.length - 1][1] ? 1 : 0;
+        const dirValue = impacts[0][dirIndex];
 
-        console.log('crear sospecha');
-        // if (!nextAttack.queue.filter(att => att[dirIndex] === dirValue).length) {
-        //     console.log('crear sospecha')
-        // }
+        return [dirIndex, dirValue];
+    }
+
+    #suspect() {
+        const attacksQueue = this.nextAttack.queue;
+        const [dirIndex, dirValue] = this.#targetDirection();
+
+        if (attacksQueue.filter((att) => att[dirIndex] === dirValue).length) {
+            return;
+        }
+
+        this.nextAttack.posibleShips = this.nextAttack.hits.length;
     }
 }
 
