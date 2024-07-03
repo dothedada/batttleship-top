@@ -49,23 +49,31 @@ class Player {
 
         this.myAttacks[row][col] = typeOfHit === 'Water' ? '·' : 'X';
 
-        if (typeOfHit === 'Ship' && !this.name) {
-            this.#setNextAttack(col, row);
-        }
-
-        if (typeOfHit === 'Sunk') {
-            if (!this.name) {
-                this.nextAttack.posibleShips--;
-
-                if (!this.nextAttack.posibleShips) {
-                    this.nextAttack.hits = [];
-                    this.nextAttack.queue = [];
-                }
-            }
+        if (!this.name) {
+            this.#autoplayerFeedback[typeOfHit](col, row);
         }
 
         return typeOfHit;
     }
+
+    #autoplayerFeedback = {
+        Water: () => {
+            if (this.nextAttack.hits.length > 1) {
+                this.suspect();
+            }
+        },
+        Ship: (fromCol, fromRow) => {
+            this.#setNextAttack(fromCol, fromRow);
+        },
+        Sunk: () => {
+            this.nextAttack.posibleShips--;
+
+            if (!this.nextAttack.posibleShips) {
+                this.nextAttack.hits = [];
+                this.nextAttack.queue = [];
+            }
+        },
+    };
 
     attackAuto() {
         if (this.name || !this.nextAttack.posibleShips) {
@@ -118,12 +126,6 @@ class Player {
             nextAttack.queue.sort((a) => (a[dirIndex] === dirValue ? -1 : 0));
         }
 
-        if (
-            !nextAttack.queue.filter((att) => att[dirIndex] === dirValue).length
-        ) {
-            console.log('crear sospecha');
-        }
-
         const [inAxis, offAxis] = attackSecuence.reduce(
             ([align, misalign], attack) => {
                 attack[dirIndex] === dirValue
@@ -134,6 +136,8 @@ class Player {
             [[], []],
         );
 
+        // console.log('inAxis:', inAxis, ' queue:', nextAttack.queue)
+
         nextAttack.queue.unshift(...inAxis);
         nextAttack.queue.push(...offAxis);
     }
@@ -143,19 +147,17 @@ class Player {
         return this.attack(col, row);
     }
 
-    // #createSuspicion() {
-    //     if (this.nextAttack.hits.length < 2 || Array.isArray(this.nextAttack.hits[0][0])) {
-    //         return
-    //     }
-    //     const nextAttack = this.nextAttack
-    //     const isHorizontal = nextAttack.hits[0][1] === nextAttack.hits[1][1];
-    //     const dirIndex = isHorizontal ? 1 : 0;
-    //     const dirValue = nextAttack.hits[0][dirIndex];
-    //
-    //     if (!nextAttack.queue.filter(att => att[dirIndex] === dirValue).length) {
-    //         console.log('crear sospecha')
-    //     }
-    // }
+    suspect() {
+        const nextAttack = this.nextAttack;
+        // const isHorizontal = nextAttack.hits[0][1] === nextAttack.hits[1][1];
+        // const dirIndex = isHorizontal ? 1 : 0;
+        // const dirValue = nextAttack.hits[0][dirIndex];
+
+        console.log('crear sospecha');
+        // if (!nextAttack.queue.filter(att => att[dirIndex] === dirValue).length) {
+        //     console.log('crear sospecha')
+        // }
+    }
 }
 
 export default Player;
