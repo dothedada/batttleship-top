@@ -150,7 +150,7 @@ describe('Comportamiento de los ataques automatizados', () => {
     test('Al hundir un barco borra el attack queue', () => {
         expect(playerC1.nextAttack.hits.length).toBe(0);
         expect(playerC1.nextAttack.queue.length).toBe(0);
-        expect(playerC1.nextAttack.posibleShips).toBe(0);
+        expect(playerC1.nextAttack.foundShips).toBe(0);
     });
 
     test('tras explorar todas las casillas en el sentido de un ataque, crea una sospecha, barcos posible = impaactos', () => {
@@ -158,8 +158,14 @@ describe('Comportamiento de los ataques automatizados', () => {
         playerC1.attackAuto();
         playerC1.attackAuto();
         playerC1.attackAuto();
-        // playerC1.attackAuto();
-        // console.table(playerC1.myAttacks)
+        playerC1.attackAuto();
+        playerC1.attackAuto();
+        playerC1.attackAuto();
+        playerC1.attackAuto();
+        playerC1.attackAuto();
+        playerC1.attackAuto();
+        playerC1.attackAuto();
+        console.table(playerC1.myAttacks)
 
     });
 

@@ -12,7 +12,7 @@ class Player {
         if (name) {
             this.name = name;
         } else {
-            this.nextAttack = { hits: [], queue: [], posibleShips: 0 };
+            this.nextAttack = { hits: [], queue: [], foundShips: 0 };
         }
     }
 
@@ -64,29 +64,31 @@ class Player {
         },
 
         Sunk: () => {
-            this.nextAttack.posibleShips--;
+            this.nextAttack.foundShips--;
 
-            if (!this.nextAttack.posibleShips) {
+            if (!this.nextAttack.foundShips) {
                 this.nextAttack.hits = [];
                 this.nextAttack.queue = [];
             } else {
                 const [dirIndex, dirValue] = this.#targetDirection();
-                //borra los ships del mismo eje
-                this.nextAttack.hits = this.nextAttack.filter((attack) => {
+                const filteredQueue = [
+                    ...new Set(
+                        this.nextAttack.queue.map((attack) => attack.join(',')),
+                    ),
+                ];
+
+                this.nextAttack.hits = this.nextAttack.hits.filter((attack) => {
                     return attack[dirIndex] !== dirValue;
                 });
-                // filtra repetidos
-                // this.nextAttack.queue = [
-                //     ...new Set(
-                //         this.nextAttack.queue.map((attack) => attack.join('')),
-                //     ),
-                // ].map((attack) => attack.split('').map(Number));
+                this.nextAttack.queue = filteredQueue.map((attack) =>
+                    attack.split(',').map(Number),
+                );
             }
         },
     };
 
     attackAuto() {
-        if (!this.nextAttack?.posibleShips) {
+        if (!this.nextAttack?.foundShips || !this.nextAttack.queue) {
             return this.attackRandom();
         }
 
@@ -124,7 +126,7 @@ class Player {
 
         if (nextAttack.hits.length === 1) {
             nextAttack.queue = attackSecuence;
-            nextAttack.posibleShips++;
+            nextAttack.foundShips++;
             return;
         }
 
@@ -133,10 +135,6 @@ class Player {
         if (nextAttack.hits.length === 2) {
             nextAttack.queue.sort((a) => (a[dirIndex] === dirValue ? -1 : 0));
         }
-
-        // if (nextAttack.posibleShips > 1) {
-        //     console.log('Ordenar nuevos a nuevos ejes');
-        // }
 
         const [inAxis, offAxis] = attackSecuence.reduce(
             ([align, misalign], attack) => {
@@ -174,7 +172,7 @@ class Player {
             return;
         }
 
-        this.nextAttack.posibleShips = this.nextAttack.hits.length;
+        this.nextAttack.foundShips = this.nextAttack.hits.length;
     }
 }
 
