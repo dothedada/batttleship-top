@@ -11,7 +11,7 @@ class Player {
         if (name) {
             this.name = name;
         } else {
-            this.nextAttack = { hits: [], queue: [], foundShips: 0 };
+            this.nextAttack = { hits: [], queue: [], suspicious: 0 };
         }
     }
 
@@ -54,13 +54,14 @@ class Player {
             this.#setNextAttack(fromCol, fromRow);
         },
 
-        Sunk: () => {
-            this.nextAttack.foundShips--;
+        Sunk: (fromCol, fromRow) => {
+            this.nextAttack.suspicious--;
 
-            if (!this.nextAttack.foundShips) {
+            if (!this.nextAttack.suspicious) {
                 this.nextAttack.hits = [];
                 this.nextAttack.queue = [];
             } else {
+                this.nextAttack.hits.push([fromRow, fromCol]);
                 const [dirIndex, dirValue] = this.#targetDirection();
                 const nonRedundantQueue = [
                     ...new Set(
@@ -79,7 +80,7 @@ class Player {
     };
 
     attackAuto() {
-        if (!this.nextAttack?.foundShips || !this.nextAttack.queue) {
+        if (!this.nextAttack?.suspicious || !this.nextAttack.queue) {
             return this.attackRandom();
         }
 
@@ -117,7 +118,7 @@ class Player {
 
         if (nextAttack.hits.length === 1) {
             nextAttack.queue = attackSecuence;
-            nextAttack.foundShips++;
+            nextAttack.suspicious++;
             return;
         }
 
@@ -163,7 +164,7 @@ class Player {
             return;
         }
 
-        this.nextAttack.foundShips = this.nextAttack.hits.length;
+        this.nextAttack.suspicious = this.nextAttack.hits.length;
     }
 }
 
