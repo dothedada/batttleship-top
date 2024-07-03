@@ -1,5 +1,4 @@
 import Gameboard from './gameboard';
-import Ship from './ships';
 
 class Player {
     constructor(name = undefined) {
@@ -24,14 +23,6 @@ class Player {
 
         if (!player.adversaryName) {
             player.setAdversary(this);
-        }
-    }
-
-    placeAllShips() {
-        for (const ship of Object.keys(Ship.shipsAndSize)) {
-            if (!this.board.shipsInventory.placed.has(ship)) {
-                this.board.placeShipRandom(ship);
-            }
         }
     }
 
@@ -71,18 +62,18 @@ class Player {
                 this.nextAttack.queue = [];
             } else {
                 const [dirIndex, dirValue] = this.#targetDirection();
-                const filteredQueue = [
+                const nonRedundantQueue = [
                     ...new Set(
                         this.nextAttack.queue.map((attack) => attack.join(',')),
                     ),
-                ];
+                ].map((attack) => attack.split(',').map(Number));
 
                 this.nextAttack.hits = this.nextAttack.hits.filter((attack) => {
                     return attack[dirIndex] !== dirValue;
                 });
-                this.nextAttack.queue = filteredQueue.map((attack) =>
-                    attack.split(',').map(Number),
-                );
+                this.nextAttack.queue = nonRedundantQueue.filter((attack) => {
+                    return attack[dirIndex] !== dirValue;
+                });
             }
         },
     };

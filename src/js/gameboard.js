@@ -57,6 +57,15 @@ class Gameboard {
         return true;
     }
 
+    placeRemainignShipsRandom() {
+        for (const ship of Object.keys(Ship.shipsAndSize)) {
+            if (this.shipsInventory.placed.has(ship)) {
+                continue
+            }
+            this.placeShipRandom(ship);
+        }
+    }
+
     receiveAttack(col, row) {
         const cell = this.ships[row][col];
         if (cell && typeof cell !== 'object') {
