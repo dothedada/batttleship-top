@@ -7,7 +7,7 @@ class Player {
         this.myShips = this.board.ships;
         this.myAttacks = Gameboard.boardGenerator();
         this.adversaryName = undefined;
-        this.score = 0
+        this.score = 0;
 
         if (name) {
             this.name = name;
@@ -49,12 +49,11 @@ class Player {
 
         this.myAttacks[row][col] = typeOfHit === 'Water' ? '·' : 'X';
 
-        if (typeOfHit !== 'Water' && !this.name) {
+        if (typeOfHit === 'Ship' && !this.name) {
             this.#setNextAttack(col, row);
         }
 
         if (typeOfHit === 'Sunk') {
-
             if (!this.name) {
                 this.nextAttack.posibleShips--;
 
@@ -119,6 +118,12 @@ class Player {
             nextAttack.queue.sort((a) => (a[dirIndex] === dirValue ? -1 : 0));
         }
 
+        if (
+            !nextAttack.queue.filter((att) => att[dirIndex] === dirValue).length
+        ) {
+            console.log('crear sospecha');
+        }
+
         const [inAxis, offAxis] = attackSecuence.reduce(
             ([align, misalign], attack) => {
                 attack[dirIndex] === dirValue
@@ -131,16 +136,26 @@ class Player {
 
         nextAttack.queue.unshift(...inAxis);
         nextAttack.queue.push(...offAxis);
-
-        if (!inAxis.length) {
-            nextAttack.posibleShips = nextAttack.hits.length;
-        }
     }
 
     #attackQueued() {
         const [row, col] = this.nextAttack.queue.shift();
         return this.attack(col, row);
     }
+
+    // #createSuspicion() {
+    //     if (this.nextAttack.hits.length < 2 || Array.isArray(this.nextAttack.hits[0][0])) {
+    //         return
+    //     }
+    //     const nextAttack = this.nextAttack
+    //     const isHorizontal = nextAttack.hits[0][1] === nextAttack.hits[1][1];
+    //     const dirIndex = isHorizontal ? 1 : 0;
+    //     const dirValue = nextAttack.hits[0][dirIndex];
+    //
+    //     if (!nextAttack.queue.filter(att => att[dirIndex] === dirValue).length) {
+    //         console.log('crear sospecha')
+    //     }
+    // }
 }
 
 export default Player;

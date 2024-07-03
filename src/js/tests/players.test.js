@@ -1,4 +1,4 @@
-import { describe, expect, test } from '@jest/globals'
+import { describe, expect, test } from '@jest/globals';
 
 import Gameboard from '../gameboard';
 import Player from '../players';
@@ -135,42 +135,35 @@ describe('Comportamiento de los ataques automatizados', () => {
     });
 
     test('desde el segundo impacto se priorizan los ataques en ese eje', () => {
-        playerC1.attackAuto()
+        playerC1.attackAuto();
         expect(playerC1.myAttacks[4][7]).toBe('X');
-        playerC1.attackAuto()
+        playerC1.attackAuto();
         expect(playerC1.myAttacks[4][8]).toBe('·');
-    })
+    });
 
     test('luego de 7 disparos un Carrier horizontal es hundido', () => {
-        playerC1.attackAuto()
-        expect(playerC1.attackAuto()).toBe('Sunk')
-        expect(playerC1.score).toBe(1)
-    })
+        playerC1.attackAuto();
+        expect(playerC1.attackAuto()).toBe('Sunk');
+        expect(playerC1.score).toBe(1);
+    });
 
     test('Al hundir un barco borra el attack queue', () => {
-        expect(playerC1.nextAttack.hits.length).toBe(0)
-        expect(playerC1.nextAttack.queue.length).toBe(0)
-        expect(playerC1.nextAttack.posibleShips).toBe(0)
-    })
+        expect(playerC1.nextAttack.hits.length).toBe(0);
+        expect(playerC1.nextAttack.queue.length).toBe(0);
+        expect(playerC1.nextAttack.posibleShips).toBe(0);
+    });
 
     test('tras explorar todas las casillas en el sentido de un ataque, crea una sospecha, barcos posible = impaactos', () => {
-        playerC1.attack(0, 6)
-        playerC1.attackAuto()
-        playerC1.attackAuto()
-        playerC1.attackAuto()
-        playerC1.attackAuto()
+        playerC1.attack(0, 6);
+        playerC1.attackAuto();
+        playerC1.attackAuto();
+        playerC1.attackAuto();
+        // playerC1.attackAuto();
+        console.table(playerC1.myAttacks)
 
-        console.table(playerC2.myShips)
-        
-        const impacts = playerC1.nextAttack.hits.length
+    });
 
-        expect(playerC1.nextAttack.posibleShips).toBe(impacts)
-    })
-
-    test('Al crearse una sospecha, se añade una nueva dimensión al array de hits, en el que cada disparo es la sospecha de un barco', ()=> {
-        
-
-    })
+    test('Al crearse una sospecha, se añade una nueva dimensión al array de hits, en el que cada disparo es la sospecha de un barco', () => {});
 });
 
 // describe('Comportamiento de los disparos de la computadora desde el impacto hasta hundir un bote', () => {
