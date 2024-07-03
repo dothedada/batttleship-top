@@ -54,14 +54,6 @@ describe('Tablero de juego para cada jugador', () => {
         expect(playerC.myShips.flat().filter((e) => e.type).length).toBe(17);
         expect(playerC.board.shipsInventory.placed.size).toBe(5);
     });
-
-    // test('Permite ubicar los barcos restantes de forma aleatoria', () => {
-    //     player3.board.placeShip(0, 0, false, 'Carrier');
-    //     player3.board.placeShip(1, 0, false, 'Submarine');
-    //     player3.board.placeRemainignShipsRandom();
-    //     expect(playerC.myShips.flat().filter((e) => e.type).length).toBe(17);
-    //     expect(playerC.board.shipsInventory.placed.size).toBe(5);
-    // });
 });
 
 describe('Interacciones entre jugadores', () => {
@@ -168,7 +160,7 @@ describe('Comportamiento de Autoplayer frente a un cluster de barcos', () => {
     test('Crea una sospecha al no haber casillas en el queue para la direccion del ataque', () => {
         playerC1.attack(0, 6);
         for (let i = 0; i < 4; i++) {
-            playerC1.attackAuto()
+            playerC1.attackAuto();
         }
         expect(
             playerC1.nextAttack.hits.length === playerC1.nextAttack.suspicious,
@@ -191,7 +183,6 @@ describe('Comportamiento de Autoplayer frente a un cluster de barcos', () => {
         playerC1.attackAuto();
         expect(playerC1.nextAttack.suspicious).toBe(1);
     });
-
 });
 describe('Fin de partida', () => {
     test('El ataque reporta cuando un jugador se ha quedado sin barcos', () => {
@@ -199,4 +190,4 @@ describe('Fin de partida', () => {
         playerC1.attackAuto();
         expect(playerC1.attackAuto()).toBe('No ships left');
     });
-})
+});
