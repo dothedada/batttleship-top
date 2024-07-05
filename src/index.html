@@ -1,16 +1,86 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Testeo battleship</title>
+    </head>
 
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Testeo battleship</title>
-</head>
+    <body>
+        <h1>La cumbancha</h1>
+        <div class="board">
+            <span class="board__coordenates"></span>
+            <span class="board__coordenates">A</span>
+            <span class="board__coordenates">B</span>
+            <span class="board__coordenates">C</span>
+            <span class="board__coordenates">D</span>
+            <span class="board__coordenates">E</span>
+            <span class="board__coordenates">F</span>
+            <span class="board__coordenates">G</span>
+            <span class="board__coordenates">H</span>
+            <span class="board__coordenates">I</span>
+            <span class="board__coordenates">J</span>
 
-<body>
-	<h1>carenalga666</h1>
+            <span class="board__coordenates">10</span>
+            <button class="board__cell" type="button" data-impact="ship" disabled>X</button>
+            <button class="board__cell" type="button" data-impact="water" disabled>-</button>
+            <button class="board__cell" type="button">-</button>
+            <button class="board__cell" type="button">-</button>
+            <button class="board__cell" type="button">X</button>
+            <button class="board__cell" type="button">-</button>
+            <button class="board__cell" type="button">X</button>
+            <button class="board__cell" type="button">-</button>
+            <button class="board__cell" type="button">-</button>
+            <button class="board__cell" type="button">-</button>
 
-	<script type="module" src="/src/js/main.js"></script>
-</body>
+            <span class="board__coordenates">2</span>
+            <button class="board__cell" type="button">-</button>
+            <button class="board__cell" type="button">-</button>
+            <button class="board__cell" type="button">-</button>
+            <button class="board__cell" type="button">-</button>
+            <button class="board__cell" type="button"></button>
+            <button class="board__cell" type="button">-</button>
+            <button class="board__cell" type="button"></button>
+            <button class="board__cell" type="button">-</button>
+            <button class="board__cell" type="button">-</button>
+            <button class="board__cell" type="button">-</button>
 
+            <span class="board__coordenates">3</span>
+            <button class="board__cell" type="button">X</button>
+            <button class="board__cell" type="button">-</button>
+            <button class="board__cell" type="button">-</button>
+            <button class="board__cell" type="button">-</button>
+            <button class="board__cell" type="button">X</button>
+            <button class="board__cell" type="button">-</button>
+            <button class="board__cell" type="button">X</button>
+            <button class="board__cell" type="button">-</button>
+            <button class="board__cell" type="button">-</button>
+            <button class="board__cell" type="button">-</button>
+        </div>
+
+        <p>
+            Lorem ipsum dolor sit amet consectetur, adipisicing elit.
+            Exercitationem officia autem repellat atque fugit. Veritatis
+            repudiandae accusantium vero illo obcaecati minima dolor temporibus
+            sed, itaque optio corrupti. Earum necessitatibus natus, perspiciatis
+            distinctio nemo doloremque minus sapiente sed recusandae vero
+            laborum a reprehenderit cumque aut, quas tempore delectus similique
+            ipsam dicta mollitia ab illo velit! Ullam excepturi quibusdam
+            reiciendis quisquam adipisci.
+        </p>
+
+        <form>
+            <label
+                >Coordenadas del ataque:
+                <input
+                    type="text"
+                    placeholder="X(Columna) Y(Fila) H?(horizontal) Y?(vertical)"
+                />
+            </label>
+
+            <button type="button" class="set">¡¡¡Disparar!!!</button>
+        </form>
+
+        <script type="module" src="/src/js/main.js"></script>
+    </body>
 </html>

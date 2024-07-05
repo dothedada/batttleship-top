@@ -25,7 +25,7 @@
 
     --font: 'M Plus 1 Code', monospace;
     --lineheight: calc(1ex / 0.32);
-    --cell-size: 5ch;
+    /* --cell-size: 5ch; */
 }
 html {
     hanging-punctuation: first last;
@@ -52,6 +52,7 @@ p {
 h1,
 h2 {
     font-size: 1rem;
+    text-transform: uppercase;
     font-weight: 700;
     text-wrap: balance;
 }
@@ -86,32 +87,46 @@ body {
 }
 
 .board {
-    margin: calc(var(--lineheight) / 2) 2px;
-    border: solid 2px var(--text);
+    border: solid 1px var(--text);
+
+    margin: calc(var(--lineheight) / 2) 0;
+    width: min(100%, 55ch);
+    aspect-ratio: 1;
+
     display: grid;
-    grid-template-columns: repeat(10, var(--cell-size));
-    grid-template-rows: repeat(3, var(--cell-size));
+    grid-template-columns: 4ch repeat(10, 1fr);
+    grid-template-rows: 4ch repeat(10, 1fr);
     gap: 0;
-    width: max-content;
     justify-items: stretch;
     align-items: stretch;
 }
-.cell {
+.board__coordenates {
+    align-self: center;
+    justify-self: center;
+}
+.board__cell {
     border: none;
     background: none;
     outline: solid 1px var(--text);
     color: var(--text);
 }
-
-.cell:hover {
+.board__cell:hover {
     background-color: var(--text);
     color: var(--background);
 }
-.cell:hover:focus-within {
+.board__cell:hover:focus-within {
     outline-color: var(--background);
 }
-.cell:focus-within {
+.board__cell:focus-within {
     outline-offset: -4px;
+}
+.board__cell:disabled {
+    background-color: var(--primary);
+    color: var(--background);
+    cursor: not-allowed;
+}
+.board__cell:disabled[data-impact='ship'] {
+    background-color: var(--text);
 }
 
 input {
