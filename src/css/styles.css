@@ -3,26 +3,29 @@
     font-family: 'M Plus 1 Code';
     font-weight: 400;
     font-style: normal;
-    src: local('M Plus 1 Code'),
+    src:
+        local('M Plus 1 Code'),
         url('../assets/fonts/MPLUS1Code-Regular.woff2') format('woff2'),
-        url('../assets/fonts/MPLUS1Code-Regular.woff') format('woff'),
+        url('../assets/fonts/MPLUS1Code-Regular.woff') format('woff');
 }
 @font-face {
     font-family: 'M Plus 1 Code';
     font-weight: 700;
     font-style: normal;
-    src: local('M Plus 1 Code'),
+    src:
+        local('M Plus 1 Code'),
         url('../assets/fonts/MPLUS1Code-Bold.woff2') format('woff2'),
-        url('../assets/fonts/MPLUS1Code-Bold.woff') format('woff'),
+        url('../assets/fonts/MPLUS1Code-Bold.woff') format('woff');
 }
 :root {
-    --text: hsl(55, 66%, 65%); 
+    --text: hsl(55, 66%, 65%);
     --background: hsl(147, 94%, 6%);
-	--primary: hsl(54, 19%, 71%);
-	--secondary: hsl(54, 55%, 49%);
+    --primary: hsl(54, 19%, 71%);
+    --secondary: hsl(54, 55%, 49%);
 
-    --font: 'M Plus 1 Code', monospace; 
+    --font: 'M Plus 1 Code', monospace;
     --lineheight: calc(1ex / 0.32);
+    --cell-size: 5ch;
 }
 html {
     hanging-punctuation: first last;
@@ -42,15 +45,15 @@ h2,
 p {
     line-height: var(--lineheight);
     margin: 0 0 var(--lineheight);
-	font-weight: 400;
-	max-width: 65ch;
+    font-weight: 400;
+    max-width: 65ch;
     text-wrap: pretty;
 }
 h1,
 h2 {
-	font-size: 1rem;
-	font-weight: 700;
-	text-wrap: balance;
+    font-size: 1rem;
+    font-weight: 700;
+    text-wrap: balance;
 }
 strong {
     font-weight: 700;
@@ -60,18 +63,55 @@ a,
 button {
     cursor: pointer;
 }
+:focus-visible {
+    outline: solid 1px var(--text);
+    outline-offset: 2px;
+}
 input,
 textarea,
 button,
 select {
     font: inherit;
 }
+::selection {
+    background-color: var(--primary);
+    color: var(--background);
+}
 /* Secciones */
 body {
-	padding: 1rem;
+    padding: 1rem;
     font-family: var(--font);
     background-color: var(--background);
     color: var(--text);
+}
+
+.board {
+    margin: calc(var(--lineheight) / 2) 2px;
+    border: solid 2px var(--text);
+    display: grid;
+    grid-template-columns: repeat(10, var(--cell-size));
+    grid-template-rows: repeat(3, var(--cell-size));
+    gap: 0;
+    width: max-content;
+    justify-items: stretch;
+    align-items: stretch;
+}
+.cell {
+    border: none;
+    background: none;
+    outline: solid 1px var(--text);
+    color: var(--text);
+}
+
+.cell:hover {
+    background-color: var(--text);
+    color: var(--background);
+}
+.cell:hover:focus-within {
+    outline-color: var(--background);
+}
+.cell:focus-within {
+    outline-offset: -4px;
 }
 
 input {
@@ -79,8 +119,8 @@ input {
     color: var(--text);
     border: none;
     border-bottom: solid 1px var(--text);
-    margin: calc((var(--lineheight) /4) + 1px) 0;
-    padding: calc(var(--lineheight) /4) 1ch;
+    margin: calc((var(--lineheight) / 4) + 1px) 0;
+    padding: calc(var(--lineheight) / 4) 1ch;
 }
 input::placeholder {
     color: var(--primary);
@@ -88,11 +128,25 @@ input::placeholder {
 input:focus-visible {
     background-color: var(--text);
     color: var(--background);
-    outline: solid 1px var(--text);
-    outline-offset: 2px;
 }
 input:focus-visible::placeholder {
     color: unset;
+}
+.set {
+    background-color: var(--background);
+    color: var(--text);
+    border: solid 1px var(--text);
+    margin: calc((var(--lineheight) / 4) + 1px) 0;
+    padding: calc(var(--lineheight) / 4) 1ch;
+}
+.set:hover,
+.set:focus-visible {
+    background-color: var(--text);
+    color: var(--background);
+}
+.set:active {
+    background-color: var(--secondary);
+    transform: scale(0.95);
 }
 
 /* Accesibilidad del contenido*/
