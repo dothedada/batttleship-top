@@ -22,6 +22,7 @@
 	--secondary: hsl(54, 55%, 49%);
 
     --font: 'M Plus 1 Code', monospace; 
+    --lineheight: calc(1ex / 0.32);
 }
 html {
     hanging-punctuation: first last;
@@ -39,8 +40,8 @@ html {
 h1,
 h2,
 p {
-    line-height: calc(1ex / 0.32);
-    margin: 0 0 calc(1ex / 0.32);
+    line-height: var(--lineheight);
+    margin: 0 0 var(--lineheight);
 	font-weight: 400;
 	max-width: 65ch;
     text-wrap: pretty;
@@ -71,6 +72,27 @@ body {
     font-family: var(--font);
     background-color: var(--background);
     color: var(--text);
+}
+
+input {
+    background-color: var(--background);
+    color: var(--text);
+    border: none;
+    border-bottom: solid 1px var(--text);
+    margin: calc((var(--lineheight) /4) + 1px) 0;
+    padding: calc(var(--lineheight) /4) 1ch;
+}
+input::placeholder {
+    color: var(--primary);
+}
+input:focus-visible {
+    background-color: var(--text);
+    color: var(--background);
+    outline: solid 1px var(--text);
+    outline-offset: 2px;
+}
+input:focus-visible::placeholder {
+    color: unset;
 }
 
 /* Accesibilidad del contenido*/
