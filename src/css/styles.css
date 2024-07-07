@@ -25,7 +25,7 @@
 
     --font: 'M Plus 1 Code', monospace;
     --lineheight: calc(1ex / 0.32);
-    /* --cell-size: 5ch; */
+    --rotation-angle: 0deg /* --cell-size: 5ch; */;
 }
 html {
     hanging-punctuation: first last;
@@ -80,10 +80,13 @@ select {
 }
 /* Secciones */
 body {
+    position: relative;
     padding: 1rem;
     font-family: var(--font);
     background-color: var(--background);
     color: var(--text);
+    /* animation: alarm 1s linear alternate infinite; */
+    animation: radar 1s linear alternate infinite;
 }
 
 .board {
@@ -109,10 +112,14 @@ body {
     background: none;
     outline: solid 1px var(--text);
     color: var(--text);
+    transform: rotate(var(--rotation));
+
+    transition: background-color 1.5s ease-out;
 }
 .board__cell:hover {
     background-color: var(--text);
     color: var(--background);
+    transition: background-color 0.3s ease-in;
 }
 .board__cell:hover:focus-within {
     outline-color: var(--background);
@@ -187,5 +194,20 @@ input:focus-visible::placeholder {
         transition: none !important;
         animation: none !important;
         scroll-behavior: auto !important;
+    }
+}
+
+@keyframes radar {
+    from {
+        background-image: conic-gradient(from 0deg, var(--background), var(--text));
+    }
+    to {
+        background-image: conic-gradient(from 45deg, var(--background), var(--text));
+    }
+}
+
+@keyframes alarm {
+    40%, 60% {
+        background-color: red;
     }
 }
