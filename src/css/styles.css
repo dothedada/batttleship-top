@@ -25,7 +25,6 @@
 
     --font: 'M Plus 1 Code', monospace;
     --lineheight: calc(1ex / 0.32);
-    --rotation-angle: 0deg /* --cell-size: 5ch; */;
 }
 html {
     hanging-punctuation: first last;
@@ -84,9 +83,29 @@ body {
     padding: 1rem;
     font-family: var(--font);
     background-color: var(--background);
+    min-height: 100vh;
     color: var(--text);
-    /* animation: alarm 1s linear alternate infinite; */
-    animation: radar 1s linear alternate infinite;
+}
+
+.radar {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+.radar__swep {
+    width: calc(max(100vh, 100vw) * 4);
+    aspect-ratio: 1;
+    background-image: conic-gradient(
+        var(--background),
+        var(--text) 357deg,
+        white 360deg
+    );
+    mix-blend-mode: hard-light;
+    animation: radar 2s infinite linear;
 }
 
 .board {
@@ -199,15 +218,16 @@ input:focus-visible::placeholder {
 
 @keyframes radar {
     from {
-        background-image: conic-gradient(from 0deg, var(--background), var(--text));
+        transform: translate(-50%, -50%) rotate(0turn);
     }
     to {
-        background-image: conic-gradient(from 45deg, var(--background), var(--text));
+        transform: translate(-50%, -50%) rotate(1turn);
     }
 }
 
 @keyframes alarm {
-    40%, 60% {
+    40%,
+    60% {
         background-color: red;
     }
 }
