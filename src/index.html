@@ -7,7 +7,98 @@
     </head>
 
     <body>
-        <div class="radar">
+        <!-- tablero para acomodar barcos -->
+
+        <header>
+            <h1>Jugador 1, acomoda tus barcos...</h1>
+            <button type="button">Acomodarlos aleatoriamente</button>
+        </header>
+
+        <nav>
+            <button type="button">Ver mis barcos</button>
+        </nav>
+
+        <main>
+            <div class="board">
+                <span class="board__coordenates"></span>
+                <span class="board__coordenates">A</span>
+                <span class="board__coordenates">B</span>
+                <span class="board__coordenates">C</span>
+                <span class="board__coordenates">D</span>
+                <span class="board__coordenates">E</span>
+                <span class="board__coordenates">F</span>
+                <span class="board__coordenates">G</span>
+                <span class="board__coordenates">H</span>
+                <span class="board__coordenates">I</span>
+                <span class="board__coordenates">J</span>
+
+                <span class="board__coordenates">1</span>
+                <span class="board__ships board__ships--empty">~</span>
+                <span class="board__ships board__ships--occupied">X</span>
+                <span class="board__ships board__ships--empty"></span>
+                <span class="board__ships board__ships--occupied"></span>
+                <span class="board__ships"></span>
+                <span class="board__ships"></span>
+                <span class="board__ships"></span>
+                <span class="board__ships"></span>
+                <span class="board__ships"></span>
+                <span class="board__ships"></span>
+
+                <span class="board__coordenates">2</span>
+                <span class="board__ships"></span>
+                <span class="board__ships"></span>
+                <span class="board__ships"></span>
+                <span class="board__ships"></span>
+                <span class="board__ships"></span>
+                <span class="board__ships"></span>
+                <span class="board__ships"></span>
+                <span class="board__ships"></span>
+                <span class="board__ships"></span>
+                <span class="board__ships"></span>
+
+                <span class="board__coordenates">3</span>
+                <span class="board__ships"></span>
+                <span class="board__ships"></span>
+                <span class="board__ships"></span>
+                <span class="board__ships"></span>
+                <span class="board__ships"></span>
+                <span class="board__ships"></span>
+                <span class="board__ships"></span>
+                <span class="board__ships"></span>
+                <span class="board__ships"></span>
+                <span class="board__ships"></span>
+            </div>
+
+            <form>
+                <p>
+                    Escribe las coordenadas para ubicar tu CARRIER seguidas de
+                    la letra (h) para horizontal o (v) para vertical, presiona
+                    [intro] para confirmar o escribe de nuevo las coordenadas
+                    para cambiarlo de lugar:
+                </p>
+                <p>
+                    Si no sabes dónde ubicarlo, puedes escribir NO SE o RANDOM.
+                </p>
+                <p>
+                    (Tambien puedes arrastrarlos desde el borde del tablero y
+                    darles clic para cambiar su dirección)
+                </p>
+                <span class="counter">00:00:15</span>
+                <label
+                    >escribe las coordenadas de tu ataque seguidas de [Enter]:
+                    <input
+                        type="text"
+                        placeholder="<A-B> <1-10> <(H)orizontal/(V)ertical>"
+                    />
+                </label>
+
+                <button type="button" class="set">¡¡¡Disparar!!!</button>
+                <button type="button" class="set">Disparo automático</button>
+            </form>
+        </main>
+        <!-- Tablero de ataque -->
+
+        <!-- <div class="radar">
             <div class="radar__swep"></div>
         </div>
 
@@ -135,7 +226,7 @@
                 <button type="button" class="set">¡¡¡Disparar!!!</button>
                 <button type="button" class="set">Disparo automático</button>
             </form>
-        </main>
+        </main> -->
 
         <script type="module" src="/src/js/main.js"></script>
     </body>
