@@ -22,6 +22,7 @@
     --background: hsl(147, 94%, 6%);
     --primary: hsl(54, 19%, 71%);
     --secondary: hsl(54, 55%, 49%);
+    --accent: hsl(0, 75%, 39%);
 
     --font: 'M Plus 1 Code', monospace;
     --lineheight: calc(1ex / 0.32);
@@ -183,7 +184,7 @@ nav button:disabled {
     background-color: var(--text);
     color: var(--background);
 
-    transition: background-color 0.3s ease-in;
+    transition: background-color 0.1s ease-in;
 }
 .board__attack:hover:focus-within {
     outline-color: var(--background);
@@ -200,6 +201,11 @@ nav button:disabled {
 .board__attack:disabled[data-impact='ship'] {
     color: var(--background);
     background-color: var(--text);
+}
+.board__attack:active {
+    transform: scale(1.2);
+    background-color: var(--accent);
+
 }
 
 .board__ships {
@@ -243,7 +249,7 @@ input:focus-visible::placeholder {
 }
 .counter {
     display: block;
-    color: red;
+    color: var(--accent);
     font-weight: 700;
 }
 .counter::after {
@@ -309,6 +315,6 @@ input:focus-visible::placeholder {
 @keyframes alarm {
     40%,
     60% {
-        background-color: red;
+        background-color: var(--accent);
     }
 }
