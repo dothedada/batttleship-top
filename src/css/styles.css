@@ -172,32 +172,48 @@ nav button:disabled {
     align-self: center;
     justify-self: center;
 }
-.board__cell {
+.board__attack {
     border: none;
     background: none;
     outline: solid 1px var(--text);
     color: var(--text);
-    transform: rotate(var(--rotation));
 
     transition: background-color 1.5s ease-out;
 }
-.board__cell:hover {
+.board__attack:hover {
     background-color: var(--text);
     color: var(--background);
     transition: background-color 0.3s ease-in;
 }
-.board__cell:hover:focus-within {
+.board__attack:hover:focus-within {
     outline-color: var(--background);
 }
-.board__cell:focus-within {
+.board__attack:focus-within {
     outline-offset: -4px;
 }
-.board__cell:disabled {
+.board__attack:disabled {
     background-color: var(--primary);
     color: var(--background);
     cursor: not-allowed;
 }
-.board__cell:disabled[data-impact='ship'] {
+.board__attack:disabled[data-impact='ship'] {
+    background-color: var(--text);
+}
+
+.board__ships {
+    border: none;
+    background: none;
+    outline: solid 1px var(--text);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.board__ships--empty {
+    color: var(--text);
+}
+.board__ships--occupied {
+    color: var(--background);
     background-color: var(--text);
 }
 
