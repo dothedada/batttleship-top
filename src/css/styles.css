@@ -13,25 +13,58 @@
 
 /* UI Elements */
 button {
+    position: relative;
     padding: calc(var(--lineheight) / 4) 1ch;
     background: none;
     border: 1px solid var(--text);
     color: var(--text);
-    font-weight: 700;
+    text-decoration: underline;
 }
 button:hover {
-    background-color: var(--text);
-    color: var(--background);
+    font-weight: 700;
+}
+button:hover::before,
+button:focus-visible::before {
+    position: absolute;
+    content: '>';
+    font-weight: 400;
+    background-color: var(--background);
+    transform: translateX(-2ch);
 }
 button:active {
     background-color: var(--accent);
     transform: scale(0.95);
+}
+button:active::before {
+    background-color: var(--accent);
 }
 
 button:disabled {
     color: var(--primary);
     text-decoration: line-through;
     pointer-events: none;
+}
+input {
+    box-sizing: border-box;
+    display: block;
+    width: min(100%, 55ch);
+    background-color: var(--background);
+    color: var(--text);
+    border: none;
+    border-bottom: solid 1px var(--text);
+    margin: calc((var(--lineheight) / 4) + 1px) 0;
+    padding: calc(var(--lineheight) / 4) 1ch;
+}
+input::placeholder {
+    color: var(--primary);
+    opacity: 1;
+}
+input:focus-visible {
+    background-color: var(--text);
+    color: var(--background);
+}
+input:focus-visible::placeholder {
+    color: unset;
 }
 
 /* Secciones */
@@ -77,7 +110,7 @@ nav > button:active {
 }
 .dialog__ship::before {
     position: absolute;
-    transform: translateX(-150%);
+    transform: translateX(-2ch);
     background-color: var(--background);
     font-weight: 400;
     content: '> ';
@@ -187,28 +220,6 @@ nav > button:active {
     justify-content: center;
 }
 
-input {
-    box-sizing: border-box;
-    display: block;
-    width: min(100%, 55ch);
-    background-color: var(--background);
-    color: var(--text);
-    border: none;
-    border-bottom: solid 1px var(--text);
-    margin: calc((var(--lineheight) / 4) + 1px) 0;
-    padding: calc(var(--lineheight) / 4) 1ch;
-}
-input::placeholder {
-    color: var(--primary);
-    opacity: 1;
-}
-input:focus-visible {
-    background-color: var(--text);
-    color: var(--background);
-}
-input:focus-visible::placeholder {
-    color: unset;
-}
 .counter {
     display: block;
     color: var(--accent);
