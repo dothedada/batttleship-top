@@ -65,11 +65,11 @@
             <div class="settings">
                 <nav>
                     <button type="button" disabled>Coordenadas</button>
-                    <button type="button">Drag n' Drop</button>
+                    <button type="button">Arrastrar y soltar</button>
                 </nav>
 
-                <div class="prompt">
-                    <div class="prompt__ship">Carrier(K), 1 de 5 barcos</div>
+                <div id="prompt" class="settigs__dialog">
+                    <div class="dialog__ship">Barco de batalla(K), 1 de 5 barcos</div>
                     <form>
                         <label>
                             Escribe las coordenadas y oprime [Enter] para confirmar.
@@ -82,7 +82,7 @@
                     </form>
                 </div>
 
-                <!-- <div class="drag">
+                <!-- <div id="dragNDrop" class="settigs__screen">
                     <h2>Puerto</h2>
                     <div class="dock">
                         <div class="ship" draggable="true" data-ship="kh">
@@ -101,13 +101,13 @@
                             Restantes en Aleatorio
                         </button>
                     </div>
-                </div> -->
+                </div>  -->
 
                 <div class="confirmation">
                     <button type="button" class="set">
                         Confirmar ubicaciones
                     </button>
-                    <button type="button" class="set">resetear</button>
+                    <button type="button" class="set">Reiniciar</button>
                 </div>
             </div>
         </main>
