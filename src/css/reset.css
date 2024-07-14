@@ -1,0 +1,104 @@
+/* Base styles */
+@font-face {
+    font-family: 'M Plus 1 Code';
+    font-weight: 400;
+    font-style: normal;
+    src:
+        local('M Plus 1 Code'),
+        url('../assets/fonts/MPLUS1Code-Regular.woff2') format('woff2'),
+        url('../assets/fonts/MPLUS1Code-Regular.woff') format('woff');
+}
+@font-face {
+    font-family: 'M Plus 1 Code';
+    font-weight: 700;
+    font-style: normal;
+    src:
+        local('M Plus 1 Code'),
+        url('../assets/fonts/MPLUS1Code-Bold.woff2') format('woff2'),
+        url('../assets/fonts/MPLUS1Code-Bold.woff') format('woff');
+}
+
+/* Reset styles */
+html {
+    hanging-punctuation: first last;
+    -webkit-text-size-adjust: none;
+    -moz-text-size-adjust: none;
+    text-size-adjust: none;
+}
+*:not(dialog),
+*::after,
+*::before {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Typography */
+h1,
+h2,
+label,
+p {
+    line-height: var(--lineheight);
+    margin: 0 0 var(--lineheight);
+    font-weight: 400;
+    max-width: 55ch;
+    text-wrap: pretty;
+}
+h1,
+h2 {
+    font-size: 1rem;
+    margin: 0;
+    text-transform: uppercase;
+    font-weight: 700;
+    text-wrap: balance;
+}
+strong {
+    font-weight: 700;
+}
+
+/* Hyperlinks and anchors */
+a,
+button {
+    cursor: pointer;
+}
+
+/* Fomrs */
+:focus-visible {
+    outline: solid 1px var(--text);
+    outline-offset: 2px;
+}
+input,
+textarea,
+button,
+select {
+    font: inherit;
+}
+::selection {
+    background-color: var(--primary);
+    color: var(--background);
+}
+
+/* A11y */
+.hidden,
+[hidden] {
+    display: none !important;
+}
+.sr-only:not(:focus):not(:active) {
+    clip: rect(0 0 0 0);
+
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+}
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        transition: none !important;
+        animation: none !important;
+        scroll-behavior: auto !important;
+    }
+}
