@@ -159,7 +159,7 @@ nav button:disabled {
 }
 
 form {
-    margin: 0 0 var(--lineheight) ;
+    margin: 0 0 var(--lineheight);
 }
 
 label {
@@ -176,7 +176,7 @@ label {
     aspect-ratio: 1;
 
     display: grid;
-    grid-template-columns: repeat(11, 1fr); 
+    grid-template-columns: repeat(11, 1fr);
     grid-template-rows: repeat(11, 1fr);
     gap: 0;
     justify-items: stretch;
@@ -221,32 +221,49 @@ label {
     background-color: var(--accent);
 }
 
+.draggable-ships {
+    width: min(100%, calc(var(--ship-section-size) * 11 + 2px));
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1ch;
+    background-color: blue;
+}
+.draggable-ships > .settings {
+    width: 45%;
+    text-align: center;
+    background-color: red;
+    margin: 0 1ch 0 0;
+}
+
 .dock {
     margin: calc(var(--lineheight) / 2) 0;
-    /* padding: 1ch; */
-    
-    width: min(calc(5 * var(--ship-section-size)), 45%);
+    padding: 1ch;
+
+    width: calc(min(calc(5 * var(--ship-section-size)), calc(45%)) + 2ch);
     aspect-ratio: 1;
 
     border: 1px solid var(--text);
     outline: 1px solid var(--text);
     outline-offset: 2px;
 
-    /* display: flex; */
-    /* align-items: center; */
-    /* justify-content: center; */
-    /* flex-direction: column; */
+    display: flex;
 }
 .ship {
-    display: flex;
     flex: 1;
-    background: red;
-    /* flex-direction: column; */
+    display: flex;
+    flex-direction: column;
+    align-self: flex-start;
+    justify-self: flex-start;
 }
 .ship__section {
-    flex: 1;
-    outline: 1px solid var(--text);
+    width: 20%;
     aspect-ratio: 1;
+    outline: 1px solid var(--background);
+
+    background-color: var(--text);
+    color: var(--background);
+
     display: flex;
     align-items: center;
     justify-content: center;
