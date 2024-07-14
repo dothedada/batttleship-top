@@ -12,19 +12,6 @@
         </header>
 
         <main>
-            <form>
-                <label>
-                    Escribe las coordenadas y la dirección para ubicar tu
-                    CARRIER(K), escribe 'No se' para ubicarlo aleatoriamente.
-                    Presiona [Enter] para confirmar.
-
-                    <input
-                        type="text"
-                        placeholder="<A-B> <1-10> <(H)orizontal/(V)ertical>"
-                    />
-                </label>
-            </form>
-
             <div class="board">
                 <span class="board__coordenates">\</span>
                 <span class="board__coordenates">A</span>
@@ -75,23 +62,48 @@
                 <span class="board__ships"></span>
             </div>
 
-            <div class="draggable-ships">
-                <div class="dock">
-                    <div class="ship" draggable="true" data-ship="kh">
-                        <div class="ship__section" data-position="1">K</div>
-                        <div class="ship__section" data-position="2">K</div>
-                        <div class="ship__section" data-position="3">K</div>
-                        <div class="ship__section" data-position="4">K</div>
-                        <div class="ship__section" data-position="5">K</div>
-                    </div>
+            <div class="settings">
+                <nav>
+                    <button type="button" disabled>Coordenadas</button>
+                    <button type="button">Drag n' Drop</button>
+                </nav>
+
+                <div class="prompt">
+                    <div class="prompt__ship">Carrier(K), 1 de 5 barcos</div>
+                    <form>
+                        <label>
+                            Escribe las coordenadas y oprime [Enter] para confirmar.
+
+                            <input
+                                type="text"
+                                placeholder="<A-B> <1-10> <(H)orizontal/(V)ertical>"
+                            />
+                        </label>
+                    </form>
                 </div>
-                <div class="settings">
-                    <button type="button" class="set">
-                        Actual en Aleatorio
-                    </button>
-                    <button type="button" class="set">
-                        Restantes en Aleatorio
-                    </button>
+
+                <!-- <div class="drag">
+                    <h2>Puerto</h2>
+                    <div class="dock">
+                        <div class="ship" draggable="true" data-ship="kh">
+                            <div class="ship__section" data-position="1">K</div>
+                            <div class="ship__section" data-position="2">K</div>
+                            <div class="ship__section" data-position="3">K</div>
+                            <div class="ship__section" data-position="4">K</div>
+                            <div class="ship__section" data-position="5">K</div>
+                        </div>
+                    </div>
+                    <div class="settings">
+                        <button type="button" class="set">
+                            Actual en Aleatorio
+                        </button>
+                        <button type="button" class="set">
+                            Restantes en Aleatorio
+                        </button>
+                    </div>
+                </div> -->
+
+                <div class="confirmation">
                     <button type="button" class="set">
                         Confirmar ubicaciones
                     </button>
