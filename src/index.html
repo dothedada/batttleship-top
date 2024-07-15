@@ -68,7 +68,7 @@
                     <button type="button">Arrastrar y soltar</button>
                 </nav>
 
-                <div id="prompt" class="settigs__dialog">
+                <!-- <div id="prompt" class="settigs__dialog">
                     <div class="dialog__ship">Barco de batalla(K), 1 de 5 barcos</div>
                     <form>
                         <label>
@@ -80,12 +80,15 @@
                             />
                         </label>
                     </form>
-                </div>
+                </div> -->
 
-                <!-- <div id="dragNDrop" class="settigs__screen">
-                    <h2>Puerto</h2>
-                    <div class="dock">
-                        <div class="ship" draggable="true" data-ship="kh">
+                <div id="dragNDrop" class="settigs__dialog">
+                    <div class="dialog__ship">
+                        Barco de batalla en muelle, 1 de 5
+                    </div>
+
+                    <div class="dialog__dock">
+                        <div class="dock__ship" draggable="true" data-ship="kh">
                             <div class="ship__section" data-position="1">K</div>
                             <div class="ship__section" data-position="2">K</div>
                             <div class="ship__section" data-position="3">K</div>
@@ -93,21 +96,18 @@
                             <div class="ship__section" data-position="5">K</div>
                         </div>
                     </div>
-                    <div class="settings">
-                        <button type="button" class="set">
-                            Actual en Aleatorio
-                        </button>
-                        <button type="button" class="set">
-                            Restantes en Aleatorio
-                        </button>
-                    </div>
-                </div>  -->
 
-                <div class="confirmation">
-                    <button type="button" class="set">
-                        Confirmar ubicaciones
-                    </button>
+                    <div class="dialog__options">
+                        <button type="button" class="set">Girar</button>
+                        <button type="button" class="set">Ubicación aleatoria</button>
+                    </div>
+                </div>
+
+                <div class="settings__confirmation">
                     <button type="button" class="set">Reiniciar</button>
+                    <button type="button" class="set">
+                        Confirmar mi tablero
+                    </button>
                 </div>
             </div>
         </main>

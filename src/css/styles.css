@@ -14,7 +14,7 @@
 /* UI Elements */
 button {
     position: relative;
-    padding: calc(var(--lineheight) / 4) 1ch;
+    padding: calc(var(--lineheight) / 4) 1.5ch;
     background: none;
     border: 1px solid var(--text);
     color: var(--text);
@@ -53,7 +53,7 @@ input {
     border: none;
     border-bottom: solid 1px var(--text);
     margin: calc((var(--lineheight) / 4) + 1px) 0;
-    padding: calc(var(--lineheight) / 4) 1ch;
+    padding: calc(var(--lineheight) / 4) 1.5ch;
 }
 input::placeholder {
     color: var(--primary);
@@ -83,37 +83,6 @@ header {
     justify-content: space-between;
     align-items: center;
     min-height: calc(var(--lineheight) * 2);
-}
-
-nav {
-    border-bottom: 1px solid var(--text);
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-}
-nav > button {
-    border-bottom: none;
-}
-nav > button:active {
-    transform-origin: bottom center;
-}
-
-.settigs__dialog {
-    padding: calc(var(--lineheight) / 4) 1ch;
-    border: 1px solid var(--text);
-    border-top: none;
-    margin: 0 0 calc(var(--lineheight) / 2);
-}
-.dialog__ship {
-    position: relative;
-    font-weight: 700;
-}
-.dialog__ship::before {
-    position: absolute;
-    transform: translateX(-2ch);
-    background-color: var(--background);
-    font-weight: 400;
-    content: '> ';
 }
 
 .board {
@@ -186,38 +155,72 @@ nav > button:active {
     background-color: var(--text);
 }
 
-.dock {
-    margin: calc(var(--lineheight) / 2) 0;
-    padding: 1ch;
+nav {
+    border-bottom: 1px solid var(--text);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+nav > button {
+    border-bottom: none;
+}
+nav > button:active {
+    transform-origin: bottom center;
+}
 
-    width: calc(min(calc(5 * var(--ship-section-size)), calc(45%)) + 2ch);
-    aspect-ratio: 1;
+.settings {
+    width: min(100%, calc(var(--ship-section-size) * 11 + 2px));
+}
 
+.settigs__dialog {
+    padding: calc(var(--lineheight) / 4) 1.5ch;
     border: 1px solid var(--text);
-    outline: 1px solid var(--text);
-    outline-offset: 2px;
+    border-top: none;
+    margin: 0 0 calc(var(--lineheight) / 2);
+}
+.dialog__ship {
+    position: relative;
+    font-weight: 700;
+}
+.dialog__ship::before {
+    position: absolute;
+    transform: translateX(-2ch);
+    background-color: var(--background);
+    font-weight: 400;
+    content: '> ';
+}
+
+.dialog__dock {
+    margin: calc(var(--lineheight) / 4 ) 0.5ch var(--lineheight);
 
     display: flex;
+    align-items: center;
+    justify-content: center;
+
 }
-.ship {
-    flex: 1;
+.dock__ship {
     display: flex;
     flex-direction: column;
-    align-self: flex-start;
-    justify-self: flex-start;
+}
+.dock__ship--vertical {
+    flex-direction: column;
 }
 .ship__section {
     cursor: grab;
-    width: 20%;
+    width: 4ch;
     aspect-ratio: 1;
     outline: 1px solid var(--background);
 
     background-color: var(--text);
     color: var(--background);
-
     display: flex;
     align-items: center;
     justify-content: center;
+}
+.dialog__options, 
+.settings__confirmation {
+    display: flex;
+    justify-content: space-between;
 }
 
 .counter {
@@ -229,28 +232,29 @@ nav > button:active {
     content: ' Segundos';
 }
 
-.settingsBTN {
-    background-color: var(--background);
-    font-weight: 700;
-    color: var(--text);
-    border: solid 1px var(--text);
-    margin: calc((var(--lineheight) / 4) + 1px) 0;
-    padding: calc(var(--lineheight) / 4) 1ch;
-}
-.settingsBTN:hover,
-.settingsBTN:focus-visible {
-    background-color: var(--text);
-    color: var(--background);
-}
-.settingsBTN:active {
-    background-color: var(--secondary);
-    transform: scale(0.95);
-}
-.settingsBTN:disabled {
-    background-color: var(--text);
-    color: var(--background);
-    pointer-events: none;
-}
+/* .settingsBTN { */
+/*     background-color: var(--background); */
+/*     font-weight: 700; */
+/*     color: var(--text); */
+/*     border: solid 1px var(--text); */
+/*     margin: calc((var(--lineheight) / 4) + 1px) 0; */
+/*     padding: calc(var(--lineheight) / 4) 1.5ch; */
+/* } */
+/* .settingsBTN:hover, */
+/* .settingsBTN:focus-visible { */
+/*     background-color: var(--text); */
+/*     color: var(--background); */
+/* } */
+/* .settingsBTN:active { */
+/*     background-color: var(--secondary); */
+/*     transform: scale(0.95); */
+/* } */
+/* .settingsBTN:disabled { */
+/*     background-color: var(--text); */
+/*     color: var(--background); */
+/*     pointer-events: none; */
+/* } */
+/**/
 
 /* Animations */
 .radar {
