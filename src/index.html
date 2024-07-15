@@ -7,7 +7,9 @@
     </head>
 
     <body>
-        <header>
+        <!-- Tablero para acomodar los barcos -->
+
+        <!-- <header>
             <h1>Jugador 1, ubica tus barcos...</h1>
         </header>
 
@@ -82,7 +84,7 @@
                     </form>
                 </div>
 
-                <!-- <div id="dragNDrop" class="settigs__dialog">
+                <div id="dragNDrop" class="settigs__dialog">
                     <div class="dialog__ship">
                         Barco de batalla en muelle, 1 de 5
                     </div>
@@ -101,7 +103,7 @@
                         <button type="button" class="set">Girar</button>
                         <button type="button" class="set">Ubicación aleatoria</button>
                     </div>
-                </div> -->
+                </div>
 
                 <div class="settings__confirmation">
                     <button type="button" class="set" disabled>Reiniciar</button>
@@ -110,22 +112,18 @@
                     </button>
                 </div>
             </div>
-        </main>
+        </main> -->
+
         <!-- Tablero de ataque -->
 
-        <!-- <div class="radar">
+        <div class="radar">
             <div class="radar__swep"></div>
         </div>
 
         <header>
             <h1>Jugador 1, tu turno de atacar...</h1>
-            <button type="button">Apagar radar</button>
+            <button type="button">Radar: on</button>
         </header>
-
-        <nav>
-            <button type="button" disabled>Ver mis disparos</button>
-            <button type="button">Ver mis barcos</button>
-        </nav>
 
         <main>
             <div class="board">
@@ -228,20 +226,29 @@
                 <span class="board__ships"></span>
             </div>
 
-            <form>
-                <span class="counter">00:00:15</span>
-                <label
-                    >Coordenadas para mi próximo ataque:
-                    <input
-                        type="text"
-                        placeholder="<A-B> <1-10> <(H)orizontal/(V)ertical>"
-                    />
-                </label>
+            <div class="settings">
+                <nav>
+                    <button type="button" disabled>Ver mis disparos</button>
+                    <button type="button">Ver mis barcos</button>
+                </nav>
 
-                <button type="button" class="set">¡¡¡Disparar!!!</button>
-                <button type="button" class="set">Disparo automático</button>
-            </form>
-        </main> -->
+                <form>
+                    <span class="counter">00:00:15</span>
+                    <label
+                        >Coordenadas para mi próximo ataque:
+                        <input
+                            type="text"
+                            placeholder="<A-B> <1-10> <(H)orizontal/(V)ertical>"
+                        />
+                    </label>
+
+                    <button type="button" class="set">¡¡¡Disparar!!!</button>
+                    <button type="button" class="set">
+                        Disparo automático
+                    </button>
+                </form>
+            </div>
+        </main>
 
         <script type="module" src="/src/js/main.js"></script>
     </body>
