@@ -88,7 +88,7 @@ header {
 }
 
 header > button {
-    flex-shrink: 0
+    flex-shrink: 0;
 }
 
 .board {
@@ -132,20 +132,22 @@ header > button {
     outline-offset: -4px;
 }
 .board__attack:disabled {
-    cursor: not-allowed;
     text-decoration: none;
-
-    background-color: var(--background);
     color: var(--text);
 }
 .board__attack:disabled[data-impact='ship'] {
     color: var(--background);
     background-color: var(--text);
 }
+.board__attack:hover::before,
+.board__attack:focus-visible::before {
+    display: none;
+}
 .board__attack:active {
     transform: scale(1.2);
     background-color: var(--accent);
 }
+
 .board__ships {
     border: none;
     background: none;
@@ -198,12 +200,11 @@ nav > button:active {
 }
 
 .dialog__dock {
-    margin: calc(var(--lineheight) / 4 ) 0.5ch var(--lineheight);
+    margin: calc(var(--lineheight) / 4) 0.5ch var(--lineheight);
 
     display: flex;
     align-items: center;
     justify-content: center;
-
 }
 .dock__ship {
     display: flex;
@@ -224,7 +225,7 @@ nav > button:active {
     align-items: center;
     justify-content: center;
 }
-.dialog__options, 
+.dialog__options,
 .settings__confirmation {
     display: flex;
     justify-content: space-between;
@@ -239,33 +240,9 @@ nav > button:active {
     content: ' Segundos';
 }
 
-/* .settingsBTN { */
-/*     background-color: var(--background); */
-/*     font-weight: 700; */
-/*     color: var(--text); */
-/*     border: solid 1px var(--text); */
-/*     margin: calc((var(--lineheight) / 4) + 1px) 0; */
-/*     padding: calc(var(--lineheight) / 4) 1.5ch; */
-/* } */
-/* .settingsBTN:hover, */
-/* .settingsBTN:focus-visible { */
-/*     background-color: var(--text); */
-/*     color: var(--background); */
-/* } */
-/* .settingsBTN:active { */
-/*     background-color: var(--secondary); */
-/*     transform: scale(0.95); */
-/* } */
-/* .settingsBTN:disabled { */
-/*     background-color: var(--text); */
-/*     color: var(--background); */
-/*     pointer-events: none; */
-/* } */
-/**/
-
 /* Animations */
 .radar {
-    display: none;
+    /* display: none; */
     position: absolute;
     width: 100%;
     height: 100%;
@@ -273,6 +250,7 @@ nav > button:active {
     left: 0;
     overflow: hidden;
     pointer-events: none;
+    /* z-index: 100; */
 }
 .radar__swep {
     width: calc(max(100vh, 100vw) * 3);
@@ -284,6 +262,7 @@ nav > button:active {
     );
     mix-blend-mode: hard-light;
     animation: radar 5s infinite linear;
+    /* isolation: isolate; */
 }
 .alarm {
     animation: alarm 1s linear infinite;
