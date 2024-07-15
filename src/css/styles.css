@@ -43,6 +43,7 @@ button:disabled {
     color: var(--primary);
     text-decoration: line-through;
     pointer-events: none;
+    border-color: var(--primary);
 }
 input {
     box-sizing: border-box;
