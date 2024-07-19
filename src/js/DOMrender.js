@@ -37,7 +37,7 @@ const renderInDOM = (() => {
         return element;
     };
 
-    const attackBoard = (player) => {
+    const boardFrame = () => {
         const board = wrapper('div', 'board');
 
         for (let i = 0; i < 11; i++) {
@@ -46,41 +46,34 @@ const renderInDOM = (() => {
             board.append(boardHeader);
         }
 
-        let row = 1;
-        player.myAttacks.flat().forEach((cell, index) => {
-            let dataImpact = '';
-            let disabled = false;
-            let buttonText = '';
+        return board;
+    };
 
+    const attackBoard = (player) => {
+        const board = boardFrame();
+        let row = 1;
+
+        player.myAttacks.flat().forEach((cell, index) => {
             if (index % 10 === 0) {
                 board.append(wrapper('span', 'board__coordenates', row));
                 row++;
             }
 
             if (cell) {
-                dataImpact = cell === 'X' ? 'ship' : 'water';
-                disabled = true;
-                buttonText = cell;
+                board.append(wrapper('span', 'board__ships', cell))
+                return 
             }
 
-            board.append(
-                button(buttonText, 'board__attack', dataImpact, disabled),
-            );
+            board.append(button('', 'board__attack', '', false));
         });
 
         return board;
     };
 
     const shipsBoard = (player) => {
-        const board = wrapper('div', 'board');
-
-        for (let i = 0; i < 11; i++) {
-            const text = i === 0 ? '\\' : String.fromCharCode(64 + i);
-            const boardHeader = wrapper('span', 'board__coordenates', text);
-            board.append(boardHeader);
-        }
-
+        const board = boardFrame();
         let row = 1;
+
         player.myShips.flat().forEach((cell, index) => {
             let text = '';
 
