@@ -70,7 +70,7 @@ input:focus-visible::placeholder {
 
 /* Secciones */
 body {
-    position: relative; /* Pra permitir la ubicación del radar */
+    position: relative; /* Para permitir la ubicación del radar */
     min-height: 100svh;
     padding: 2ch;
     background-color: var(--background);
@@ -185,7 +185,7 @@ nav > button:active {
     width: min(100%, calc(var(--ship-section-size) * 11 + 2px));
 }
 
-.settigs__dialog {
+.settings__dialog {
     padding: calc(var(--lineheight) / 4) 1.5ch;
     border: 1px solid var(--text);
     border-top: none;
