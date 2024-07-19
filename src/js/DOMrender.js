@@ -60,8 +60,14 @@ const renderInDOM = (() => {
             }
 
             if (cell) {
-                board.append(wrapper('span', 'board__ships', cell))
-                return 
+                let css = 'board__ships';
+
+                if (cell === 'X') {
+                    css += ' board__ships--occupied';
+                }
+
+                board.append(wrapper('span', css, cell));
+                return;
             }
 
             board.append(button('', 'board__attack', '', false));
@@ -75,18 +81,21 @@ const renderInDOM = (() => {
         let row = 1;
 
         player.myShips.flat().forEach((cell, index) => {
-            let text = '';
+            let text = !cell ? '' : cell;
+            const css = /\s|X/i.test(cell)
+                ? 'board__ships board__ships--occupied'
+                : 'board__ships';
 
             if (index % 10 === 0) {
                 board.append(wrapper('span', 'board__coordenates', row));
                 row++;
             }
 
-            if (cell) {
-                text = typeof cell === 'object' ? cell.type.slice(0, 2) : cell;
+            if (typeof cell === 'object') {
+                text = cell.type.slice(0, 2);
             }
 
-            board.append(wrapper('span', 'board__ships', text));
+            board.append(wrapper('span', css, text));
         });
 
         return board;

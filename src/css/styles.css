@@ -6,7 +6,8 @@
     --secondary: hsl(54, 55%, 49%);
     --accent: hsl(0, 75%, 39%);
 
-    --font: 'M Plus 1 Code', monospace;
+    /* --font: 'M Plus 1 Code', monospace; */
+    --font: monospace;
     --lineheight: calc(1ex / 0.32);
     --ship-section-size: 5ch;
 }
@@ -135,14 +136,14 @@ pre {
 .board__attack:focus-within {
     outline-offset: -4px;
 }
-.board__attack:disabled {
-    text-decoration: none;
-    color: var(--text);
-}
-.board__attack:disabled[data-impact='ship'] {
-    color: var(--background);
-    background-color: var(--text);
-}
+/* .board__attack:disabled { */
+/*     text-decoration: none; */
+/*     color: var(--text); */
+/* } */
+/* .board__attack:disabled[data-impact='ship'] { */
+/*     color: var(--background); */
+/*     background-color: var(--text); */
+/* } */
 .board__attack:hover::before,
 .board__attack:focus-visible::before {
     display: none;
