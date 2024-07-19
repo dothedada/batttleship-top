@@ -91,6 +91,10 @@ header > button {
     flex-shrink: 0;
 }
 
+pre {
+    font-family: inherit;
+}
+
 .board {
     border: solid 1px var(--text);
     outline: solid 1px var(--text);
