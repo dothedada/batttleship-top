@@ -1,5 +1,6 @@
 import '../css/reset.css';
 import '../css/styles.css';
+import landingScreen from './landing';
 
 const screen = (() => {
     const current = ['landing', 'setPlayers', 'encounter', 'aftermath'];
@@ -11,6 +12,7 @@ const screen = (() => {
         if (index > 3) {
             index = 0;
         }
+
     };
 
     const get = () => current[index];
@@ -18,12 +20,7 @@ const screen = (() => {
     return { set, get };
 })();
 
-console.log(screen.get());
-screen.set();
-console.log(screen.get());
-screen.set();
-console.log(screen.get());
-screen.set();
-console.log(screen.get());
-screen.set();
-console.log(screen.get());
+const renderPage = (page) => {
+    if (page === 'landing') { landingScreen() };
+}
+renderPage(screen.get());
