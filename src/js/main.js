@@ -4,33 +4,33 @@ import renderInDOM, { Screen } from './DOMrender';
 import asciiArt from './asciiArt';
 import Player from './players';
 
-const header = document.querySelector('#header');
-const app = document.querySelector('#app');
-
 const screenFlow = new Screen();
 
-let player1;
-let player2;
+class Game {
+    #player1 = undefined;
+    #player2 = undefined;
 
-const renderGame = {
-    startGame: () => {
+    header = document.querySelector('#header');
+    app = document.querySelector('#app');
+
+    startGame = () => {
         screenFlow.next();
-        renderGame[screenFlow.current]();
-    },
+        this[screenFlow.current]();
+    };
 
-    start: () => {
-        header.innerHTML = `<pre>${asciiArt.submarine}</pre><pre>${asciiArt.name}</pre>`;
-        app.innerHTML = `<p>Presiona cualquier tecla o haz clic para empezar</p><pre>${asciiArt.sea}</pre>`;
-        document.body.addEventListener('keydown', renderGame.startGame);
-        document.body.addEventListener('pointerdown', renderGame.startGame);
-    },
+    start = () => {
+        this.header.innerHTML = `<pre>${asciiArt.submarine}</pre><pre>${asciiArt.name}</pre>`;
+        this.app.innerHTML = `<p>Presiona cualquier tecla o haz clic para empezar</p><pre>${asciiArt.sea}</pre>`;
+        document.body.addEventListener('keydown', this.startGame);
+        document.body.addEventListener('pointerdown', this.startGame);
+    };
 
-    setUpPlayers: () => {
-        document.body.removeEventListener('keydown', renderGame.startGame);
-        document.body.removeEventListener('pointerdown', renderGame.startGame);
-        header.innerHTML = '';
-        app.textContent = '';
-        app.append(
+    setUpPlayers = () => {
+        document.body.removeEventListener('keydown', game.startGame);
+        document.body.removeEventListener('pointerdown', game.startGame);
+        this.header.innerHTML = '';
+        this.app.textContent = '';
+        this.app.append(
             renderInDOM.inputText(
                 '¿Quién arranca el juego?, deja vacío para que sea la computadora',
                 'Escibe el nombre',
@@ -45,13 +45,13 @@ const renderGame = {
 
         document.querySelector('button').addEventListener('pointerdown', () => {
             const [name1, name2] = document.querySelectorAll('input');
-            player1 = new Player(name1.value === '' ? undefined : name1.value)
-            player2 = new Player(name2.value === '' ? undefined : name2.value)
-            player1.setAdversary(player2)
-            console.log(player1.name)
-            console.log(player2.name)
+            this.#player1 = new Player(!name1.value ? undefined : name1.value)
+            this.#player2 = new Player(!name2.value ? undefined : name2.value)
+            this.#player1.setAdversary(this.#player2)
         });
-    },
-};
+    }
+}
 
-renderGame[screenFlow.current]();
+const game = new Game();
+
+game[screenFlow.current]();
