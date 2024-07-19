@@ -34,7 +34,7 @@ class Player {
         const typeOfHit = this.#adversary.board.receiveAttack(col, row);
 
         this.score = this.#adversary.board.shipsInventory.sank.size;
-        this.myAttacks[row][col] = typeOfHit === 'Water' ? '·' : 'X';
+        this.myAttacks[row][col] = typeOfHit === 'Water' ? '~' : 'X';
 
         if (!this.name && typeOfHit !== 'No ships left') {
             this.#feedbackAutoplayer[typeOfHit](col, row);

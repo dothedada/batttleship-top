@@ -87,7 +87,7 @@ class Gameboard {
             return 'Ship';
         }
 
-        this.ships[row][col] = '·';
+        this.ships[row][col] = '~';
 
         return 'Water';
     }
