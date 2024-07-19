@@ -1,63 +1,57 @@
 import '../css/reset.css';
 import '../css/styles.css';
-import landingScreen from './landing';
+import renderInDOM, { Screen } from './DOMrender';
+import asciiArt from './asciiArt';
 import Player from './players';
-import setPlayers from './setPlayers';
 
-const screen = (() => {
-    const current = ['landing', 'setPlayers', 'encounter', 'aftermath'];
-    let index = 0;
+const header = document.querySelector('#header');
+const app = document.querySelector('#app');
 
-    const next = () => {
-        index++;
+const screenFlow = new Screen();
 
-        if (index > 1) {
-            index = 0;
-        }
-    };
+let player1;
+let player2;
 
-    const get = () => current[index];
+const renderGame = {
+    startGame: () => {
+        screenFlow.next();
+        renderGame[screenFlow.current]();
+    },
 
-    const clear = () => {
-        document.querySelector('#header').textContent = '';
-        document.querySelector('#app').textContent = '';
-        document.body.removeEventListener('keydown', clear);
-        document.body.removeEventListener('pointerdown', clear);
+    start: () => {
+        header.innerHTML = `<pre>${asciiArt.submarine}</pre><pre>${asciiArt.name}</pre>`;
+        app.innerHTML = `<p>Presiona cualquier tecla o haz clic para empezar</p><pre>${asciiArt.sea}</pre>`;
+        document.body.addEventListener('keydown', renderGame.startGame);
+        document.body.addEventListener('pointerdown', renderGame.startGame);
+    },
 
-        renderPage(get());
-    };
-
-    return { next, get, clear };
-})();
-
-const renderPage = (page) => {
-    let player1;
-    let player2;
-
-    if (page === 'landing') {
-        landingScreen();
-
-        document.body.addEventListener('pointerdown', screen.clear);
-        document.body.addEventListener('keydown', screen.clear);
-
-        screen.next();
-
-        console.log(player1);
-    }
-
-    if (page === 'setPlayers') {
-        setPlayers();
+    setUpPlayers: () => {
+        document.body.removeEventListener('keydown', renderGame.startGame);
+        document.body.removeEventListener('pointerdown', renderGame.startGame);
+        header.innerHTML = '';
+        app.textContent = '';
+        app.append(
+            renderInDOM.inputText(
+                '¿Quién arranca el juego?, deja vacío para que sea la computadora',
+                'Escibe el nombre',
+            ),
+            renderInDOM.inputText(
+                '¿Quién sigue?, deja vacío para que sea la computadora',
+                'Escibe el nombre',
+            ),
+            renderInDOM.wrapper('h2', '', 'Debe haber al menos un nombre'),
+            renderInDOM.button('¡Iniciar el encuentro!'),
+        );
 
         document.querySelector('button').addEventListener('pointerdown', () => {
-            const [player1Name, player2Name] =
-                document.querySelectorAll('input');
-            player1 = new Player(player1Name);
-            player2 = new Player(player2Name);
-            player1.setAdversary(player2);
-            screen.clear();
+            const [name1, name2] = document.querySelectorAll('input');
+            player1 = new Player(name1.value === '' ? undefined : name1.value)
+            player2 = new Player(name2.value === '' ? undefined : name2.value)
+            player1.setAdversary(player2)
+            console.log(player1.name)
+            console.log(player2.name)
         });
-
-        screen.next();
-    }
+    },
 };
-renderPage(screen.get());
+
+renderGame[screenFlow.current]();
