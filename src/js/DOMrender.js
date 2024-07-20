@@ -20,7 +20,7 @@ const renderInDOM = (() => {
         buttonElement.textContent = buttonText;
 
         if (attribute) {
-            buttonElement.setAttribute('data-impact', attribute);
+            buttonElement.setAttribute('data-cell', attribute);
         }
         if (disabled) {
             buttonElement.disabled = true;
@@ -29,10 +29,14 @@ const renderInDOM = (() => {
         return buttonElement;
     };
 
-    const wrapper = (type, css = '', text = '') => {
+    const wrapper = (type, css = '', text = '', attribute = undefined) => {
         const element = document.createElement(type);
         element.className = css;
         element.textContent = text;
+
+        if (attribute) {
+            element.setAttribute('data-cell', attribute);
+        }
 
         return element;
     };
@@ -51,12 +55,15 @@ const renderInDOM = (() => {
 
     const attackBoard = (player) => {
         const board = boardFrame();
-        let row = 1;
+        let rowHeader = 1;
 
         player.myAttacks.flat().forEach((cell, index) => {
-            if (index % 10 === 0) {
-                board.append(wrapper('span', 'board__coordenates', row));
-                row++;
+            const row = index % 10 
+            const col = Math.floor(index / 10)
+
+            if (row === 0) {
+                board.append(wrapper('span', 'board__coordenates', rowHeader));
+                rowHeader++;
             }
 
             if (cell) {
@@ -66,11 +73,11 @@ const renderInDOM = (() => {
                     css += ' board__ships--occupied';
                 }
 
-                board.append(wrapper('span', css, cell));
+                board.append(wrapper('span', css, cell, `${col}-${row}`));
                 return;
             }
 
-            board.append(button('', 'board__attack', '', false));
+            board.append(button('', 'board__attack', `${col}-${row}`, false));
         });
 
         return board;
@@ -78,24 +85,26 @@ const renderInDOM = (() => {
 
     const shipsBoard = (player) => {
         const board = boardFrame();
-        let row = 1;
+        let rowHeader = 1;
 
         player.myShips.flat().forEach((cell, index) => {
+            const row = index % 10 
+            const col = Math.floor(index / 10)
             let text = !cell ? '' : cell;
             const css = /\s|X/i.test(cell)
                 ? 'board__ships board__ships--occupied'
                 : 'board__ships';
 
-            if (index % 10 === 0) {
-                board.append(wrapper('span', 'board__coordenates', row));
-                row++;
+            if (row === 0) {
+                board.append(wrapper('span', 'board__coordenates', rowHeader));
+                rowHeader++;
             }
 
             if (typeof cell === 'object') {
                 text = cell.type.slice(0, 2);
             }
 
-            board.append(wrapper('span', css, text));
+            board.append(wrapper('span', css, text, `${col}-${row}`));
         });
 
         return board;
