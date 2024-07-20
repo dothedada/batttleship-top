@@ -4,76 +4,83 @@ import renderInDOM from './DOMrender';
 import asciiArt from './asciiArt';
 import Player from './players';
 
-class Game {
-    #stage = ['start', 'setUpPlayers', 'placeShips', 'attack', 'passOver', 'end'];
-    #currentIndex = 0;
-    #player1 = undefined;
-    #player2 = undefined;
-    header = document.querySelector('#header');
-    app = document.querySelector('#app');
+const header = document.querySelector('#header');
+const app = document.querySelector('#app');
 
-    constructor() {
-        this.start()
-    }
+header.textContent = 'header';
+app.textContent = 'app';
 
-    #nextStage() {
-        this.#currentIndex = ++this.#currentIndex % this.#stage.length;
-    }
+const game = {
+    player1: undefined,
+    player2: undefined,
 
-    #nextTurn() {
-        this.#currentIndex = 3;
-    }
+    clearScreen: () => {
+        header.textContent = '';
+        app.textContent = '';
+    },
 
-    get #currentStage() {
-        return this.#stage[this.#currentIndex];
-    }
+    start: () => {
+        game.clearScreen();
 
-    startGame() {
-        console.log(this.#currentStage)
-        // this.#nextStage();
-        // document.body.removeEventListener('keydown', game.#startGame);
-        // document.body.removeEventListener('pointerdown', game.#startGame);
-        // this[this.#currentStage]();
-    };
+        document.body.removeEventListener('keydown', game.start);
+        document.body.removeEventListener('pointerdown', game.start);
 
-    start() {
-        this.header.innerHTML = `<pre>${asciiArt.submarine}</pre><pre>${asciiArt.name}</pre>`;
-        this.app.innerHTML = `<p>Presiona cualquier tecla o haz clic para empezar</p><pre>${asciiArt.sea}</pre>`;
-        
-        // document.body.addEventListener('keydown', this.startGame);
-        // document.body.addEventListener('pointerdown', this.startGame);
-    };
+        game.setPlayers();
+    },
 
-    // setUpPlayers() {
-    //     this.header.innerHTML = '';
-    //     this.app.textContent = '';
-    //     this.app.append(
-    //         renderInDOM.inputText(
-    //             '¿Quién arranca el juego?, deja vacío para que sea la computadora',
-    //             'Escibe el nombre',
-    //         ),
-    //         renderInDOM.inputText(
-    //             '¿Quién sigue?, deja vacío para que sea la computadora',
-    //             'Escibe el nombre',
-    //         ),
-    //         renderInDOM.wrapper('h2', '', 'Debe haber al menos un nombre'),
-    //         renderInDOM.button('¡Iniciar el encuentro!'),
-    //     );
-    //
-    //     document.querySelector('button').addEventListener('pointerdown', () => {
-    //         const [name1, name2] = document.querySelectorAll('input');
-    //         this.#player1 = new Player(!name1.value ? undefined : name1.value)
-    //         this.#player2 = new Player(!name2.value ? undefined : name2.value)
-    //         this.#player1.setAdversary(this.#player2)
-    //     });
-    // }
-    //
-    // placeShips() {
-    //     this.header.innerHTML = '';
-    //     this.app.textContent = '';
-    //
-    // }
-}
+    landing: () => {
+        header.innerHTML = `<pre>${asciiArt.submarine}</pre><pre>${asciiArt.name}</pre>`;
+        app.innerHTML = `<p>Presiona cualquier tecla o haz clic para iniciar...</p><pre>${asciiArt.sea}</pre>`;
 
-const game = new Game();
+        document.body.addEventListener('keydown', game.start);
+        document.body.addEventListener('pointerdown', game.start);
+    },
 
+    setPlayers: () => {
+        const setPlayersBTN = renderInDOM.button('¡Iniciar el encuentro!');
+
+        setPlayersBTN.addEventListener('pointerdown', () => {
+            const [name1, name2] = document.querySelectorAll('input');
+
+            if (!name1.value && !name2.value) {
+                header.append(
+                    renderInDOM.wrapper(
+                        'div',
+                        'warn',
+                        '¡Debe haber al menos una persona jugando!',
+                    ),
+                );
+            }
+
+            game.player1 = new Player(!name1.value ? undefined : name1.value);
+            game.player2 = new Player(!name2.value ? undefined : name2.value);
+            game.player1.setAdversary(game.player2);
+        });
+
+        app.append(
+            renderInDOM.inputText(
+                '¿Quién arranca el juego?, deja vacío para que sea la computadora',
+                'Escibe el nombre',
+            ),
+            renderInDOM.inputText(
+                '¿Quién sigue?, deja vacío para que sea la computadora',
+                'Escibe el nombre',
+            ),
+            setPlayersBTN,
+        );
+    },
+    setShips: () => {
+        //
+    },
+    attack: () => {
+        //
+    },
+    hangOver: () => {
+        //
+    },
+    aftermath: () => {
+        //
+    },
+};
+
+game.landing();
