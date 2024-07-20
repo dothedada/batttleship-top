@@ -237,7 +237,7 @@ nav > button:active {
     justify-content: space-between;
 }
 
-.counter {
+.warn {
     display: block;
     color: var(--accent);
     font-weight: 700;
