@@ -1,8 +1,14 @@
 import '../css/reset.css';
 import '../css/styles.css';
-import renderInDOM from './DOMrender';
-import asciiArt from './asciiArt';
 import Player from './players';
+import asciiArt from './asciiArt';
+import {
+    wrapper,
+    inputText,
+    button,
+    attackBoard,
+    shipsBoard,
+} from './DOMrender';
 
 const header = document.querySelector('#header');
 const app = document.querySelector('#app');
@@ -37,14 +43,14 @@ const game = {
     },
 
     setPlayers: () => {
-        const setPlayersBTN = renderInDOM.button('¡Iniciar el encuentro!');
+        const setPlayersBTN = button('¡Iniciar el encuentro!');
 
         setPlayersBTN.addEventListener('pointerdown', () => {
             const [name1, name2] = document.querySelectorAll('input');
 
             if (!name1.value && !name2.value) {
                 header.append(
-                    renderInDOM.wrapper(
+                    wrapper(
                         'div',
                         'warn',
                         '¡Debe haber al menos una persona jugando!',
@@ -55,14 +61,16 @@ const game = {
             game.player1 = new Player(!name1.value ? undefined : name1.value);
             game.player2 = new Player(!name2.value ? undefined : name2.value);
             game.player1.setAdversary(game.player2);
+
+            game.setShips();
         });
 
         app.append(
-            renderInDOM.inputText(
+            inputText(
                 '¿Quién arranca el juego?, deja vacío para que sea la computadora',
                 'Escibe el nombre',
             ),
-            renderInDOM.inputText(
+            inputText(
                 '¿Quién sigue?, deja vacío para que sea la computadora',
                 'Escibe el nombre',
             ),
@@ -70,8 +78,10 @@ const game = {
         );
     },
     setShips: () => {
-        //
+        game.clearScreen();
+
     },
+
     attack: () => {
         //
     },
