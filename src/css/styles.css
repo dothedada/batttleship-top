@@ -1,3 +1,5 @@
+@import url('reset.css'); 
+
 /* Globals */
 :root {
     --text: hsl(55, 66%, 65%);
