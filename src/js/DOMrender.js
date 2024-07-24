@@ -48,7 +48,7 @@ const boardFrame = () => {
 
     for (let i = 0; i < 11; i++) {
         const text = i === 0 ? '\\' : String.fromCharCode(64 + i);
-        const boardHeader = wrapper('span', '', 'board__coordenates', text);
+        const boardHeader = wrapper('span', text, 'board__coordenates');
         board.append(boardHeader);
     }
 
@@ -64,7 +64,7 @@ const attackBoard = (player) => {
         const col = Math.floor(index / 10);
 
         if (row === 0) {
-            board.append(wrapper('span', '', 'board__coordenates', rowHeader));
+            board.append(wrapper('span', rowHeader, 'board__coordenates' ));
             rowHeader++;
         }
 
@@ -98,7 +98,7 @@ const shipsBoard = (player) => {
             : 'board__ships';
 
         if (row === 0) {
-            board.append(wrapper('span', '', 'board__coordenates', rowHeader));
+            board.append(wrapper('span', rowHeader, 'board__coordenates' ));
             rowHeader++;
         }
 
