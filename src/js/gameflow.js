@@ -7,12 +7,7 @@ import {
     shipsBoard,
 } from './DOMrender';
 
-const app = document.querySelector('#app')
-
 export default class Game {
-    #clearScreen() {
-        app.textContent = ''
-    }
 
     constructor(player_1, player_2) {
         this.player1 = new Player(player_1 !== '' ? player_1 : undefined)
@@ -22,7 +17,6 @@ export default class Game {
     }
 
     setShips(player){
-        this.#clearScreen()
         //
     }
 

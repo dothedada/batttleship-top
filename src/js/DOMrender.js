@@ -1,3 +1,7 @@
+const clearApp = () => {
+    document.querySelector('#app').textContent = ''
+}
+
 const wrapper = (type, textContent = '', css = '', data = undefined) => {
     const element = document.createElement(type);
     element.className = css;
@@ -108,4 +112,4 @@ const shipsBoard = (player) => {
     return board;
 };
 
-export { wrapper, inputText, button, attackBoard, shipsBoard }
+export { clearApp, wrapper, inputText, button, attackBoard, shipsBoard }
