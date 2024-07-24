@@ -1,4 +1,4 @@
-@import url('reset.css'); 
+@import url('reset.css');
 
 /* Globals */
 :root {
@@ -16,8 +16,10 @@
 
 /* UI Elements */
 button {
+    font-size: 1rem;
     position: relative;
-    padding: calc(var(--lineheight) / 4) 1.5ch;
+    margin: calc(var(--lineheight) / 2) 0;
+    padding: calc(var(--lineheight) / 2) 1.5ch;
     background: none;
     border: 1px solid var(--text);
     color: var(--text);
