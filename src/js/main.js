@@ -55,6 +55,6 @@ const configGame = () => {
         }
 
         const game = new Game(player1.value, player2.value);
-        game.setShips();
+        game.setShips(game.player1);
     });
 };

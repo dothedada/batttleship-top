@@ -18,16 +18,26 @@ export default class Game {
         this.player1.setAdversary(this.player2);
     }
 
-    setShips() {
-        // TODO: 
-        // 1, que solo se cargue el tablero de los jugadores humanos... 
+    setShips(player) {
+        // TODO:
+        // 1, que solo se cargue el tablero de los jugadores humanos...
+        // 1.a, ordenar codigo
         // 2, que muestre donde va a acomodar el barco antes de ubicarlo
         // 3, drag n' drop
         //
 
-        clearApp();
+        if (!player.name) {
+            player.board.placeRemainignShipsRandom();
 
-        this.player1.board.placeRemainignShipsRandom()
+            if (player === this.player1) {
+                this.setShips(this.player2);
+            } else {
+                console.log('listo pa arrancar');
+            }
+            return;
+        }
+
+        clearApp();
 
         const settings = wrapper('div', '', 'settings');
 
@@ -47,7 +57,7 @@ export default class Game {
 
         const form = wrapper('form');
         const input = inputText(
-            'Escribe las coordenadas y presiona [Enter] para confirmar la ubicación:',
+            'Ingresa las coordenadas y presiona [Enter] para confirmar o, escribe <No sé> para ubicar aleatoriamente',
             '<A-B> <1-10> <(H)orizontal/(V)ertical>',
         );
         form.append(input);
@@ -63,12 +73,16 @@ export default class Game {
         settings.append(nav, dialog, confirmation);
 
         app.append(
-            wrapper(
-                'p',
-                `${this.player1.name}, ubica tus barcos...`,
-            ),
-            shipsBoard(this.player1),
+            wrapper('p', `${player.name}, ubica tus barcos...`),
+            shipsBoard(player),
             settings,
+        );
+
+        nav.querySelector('button:not(:disabled)').addEventListener(
+            'pointerdown',
+            () => {
+                console.log('carajo');
+            },
         );
     }
 
