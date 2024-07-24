@@ -16,7 +16,6 @@
 
 /* UI Elements */
 button {
-    font-size: 1rem;
     position: relative;
     margin: calc(var(--lineheight) / 2) 0;
     padding: calc(var(--lineheight) / 2) 1.5ch;
@@ -59,7 +58,7 @@ input {
     border: none;
     border-bottom: solid 1px var(--text);
     margin: calc((var(--lineheight) / 4) + 1px) 0;
-    padding: calc(var(--lineheight) / 4) 1.5ch;
+    padding: calc(var(--lineheight) / 4) 1ch;
 }
 input::placeholder {
     color: var(--primary);
@@ -75,9 +74,10 @@ input:focus-visible::placeholder {
 
 /* Secciones */
 body {
+    font-size: 1rem;
     position: relative; /* Para permitir la ubicación del radar */
     min-height: 100svh;
-    padding: 2ch;
+    padding: 1ch;
     background-color: var(--background);
     color: var(--text);
     font-family: var(--font);
@@ -122,6 +122,7 @@ pre {
     justify-self: center;
 }
 .board__attack {
+    margin: 0;
     border: none;
     background: none;
     outline: solid 1px var(--text);
@@ -172,6 +173,8 @@ pre {
 .board__ships--occupied {
     color: var(--background);
     background-color: var(--text);
+    outline: 1px solid var(--background);
+    outline-offset: -3px ;
 }
 
 nav {
@@ -182,6 +185,7 @@ nav {
 }
 nav > button {
     border-bottom: none;
+    margin-bottom: 0;
 }
 nav > button:active {
     transform-origin: bottom center;
