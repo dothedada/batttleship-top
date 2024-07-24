@@ -1,9 +1,20 @@
 const renderInDOM = (() => {
+    const wrapper = (type, textContent = '', css = '', data = undefined) => {
+        const element = document.createElement(type);
+        element.className = css;
+        element.textContent = textContent;
+
+        if (data) {
+            element.setAttribute('data-cell', data);
+        }
+
+        return element;
+    };
+
     const inputText = (labelText, placeholderText) => {
-        const label = document.createElement('label');
+        const label = wrapper('label', labelText);
         const inputElement = document.createElement('input');
 
-        label.textContent = labelText;
         inputElement.type = 'text';
         inputElement.placeholder = placeholderText;
 
@@ -29,24 +40,12 @@ const renderInDOM = (() => {
         return buttonElement;
     };
 
-    const wrapper = (type, css = '', text = '', attribute = undefined) => {
-        const element = document.createElement(type);
-        element.className = css;
-        element.textContent = text;
-
-        if (attribute) {
-            element.setAttribute('data-cell', attribute);
-        }
-
-        return element;
-    };
-
     const boardFrame = () => {
-        const board = wrapper('div', 'board');
+        const board = wrapper('div', '', 'board');
 
         for (let i = 0; i < 11; i++) {
             const text = i === 0 ? '\\' : String.fromCharCode(64 + i);
-            const boardHeader = wrapper('span', 'board__coordenates', text);
+            const boardHeader = wrapper('span', '', 'board__coordenates', text);
             board.append(boardHeader);
         }
 
@@ -58,11 +57,13 @@ const renderInDOM = (() => {
         let rowHeader = 1;
 
         player.myAttacks.flat().forEach((cell, index) => {
-            const row = index % 10 
-            const col = Math.floor(index / 10)
+            const row = index % 10;
+            const col = Math.floor(index / 10);
 
             if (row === 0) {
-                board.append(wrapper('span', 'board__coordenates', rowHeader));
+                board.append(
+                    wrapper('span', '', 'board__coordenates', rowHeader),
+                );
                 rowHeader++;
             }
 
@@ -73,7 +74,7 @@ const renderInDOM = (() => {
                     css += ' board__ships--occupied';
                 }
 
-                board.append(wrapper('span', css, cell, `${col}-${row}`));
+                board.append(wrapper('span', cell, css, `${col}-${row}`));
                 return;
             }
 
@@ -88,15 +89,15 @@ const renderInDOM = (() => {
         let rowHeader = 1;
 
         player.myShips.flat().forEach((cell, index) => {
-            const row = index % 10 
-            const col = Math.floor(index / 10)
+            const row = index % 10;
+            const col = Math.floor(index / 10);
             let text = !cell ? '' : cell;
             const css = /\s|X/i.test(cell)
                 ? 'board__ships board__ships--occupied'
                 : 'board__ships';
 
             if (row === 0) {
-                board.append(wrapper('span', 'board__coordenates', rowHeader));
+                board.append(wrapper('span', '', 'board__coordenates', rowHeader));
                 rowHeader++;
             }
 
@@ -104,7 +105,7 @@ const renderInDOM = (() => {
                 text = cell.type.slice(0, 2);
             }
 
-            board.append(wrapper('span', css, text, `${col}-${row}`));
+            board.append(wrapper('span', text, css, `${col}-${row}`));
         });
 
         return board;
