@@ -21,76 +21,40 @@ app.append(
 
 const startGame = (event) => {
     if (event.type === 'pointerdown' || event.key === 'Enter') {
-        console.log('blablablablablablabla')
-        clearApp()
-
-        app.removeEventListener('pointerdown', startGame)
-        document.body.removeEventListener('keydown', startGame)
-
-        app.textContent = 'nnnn'
+        clearApp();
+        app.removeEventListener('pointerdown', startGame);
+        document.body.removeEventListener('keydown', startGame);
+        configGame();
     }
+};
 
+app.addEventListener('pointerdown', startGame);
+document.body.addEventListener('keydown', startGame);
 
+const configGame = () => {
+    app.append(
+        wrapper(
+            'p',
+            'Escribe el nombre de los jugadores o deja un espacio en blanco para jugar contra la computadora...',
+        ),
+        inputText('¿Quién inicia el juego?', 'Nombre'),
+        inputText('¿Quiés es el contrincante?', 'Nombre'),
+        button('¡Iniciar el encuentro!'),
+    );
 
+    document.querySelector('button').addEventListener('pointerdown', () => {
+        const [player1, player2] = document.querySelectorAll('input');
 
+        if (!player1.value && !player2.value) {
+            app.insertBefore(
+                wrapper('h2', '¡Debe haber al menos una persona!', 'warn'),
+                app.querySelector('label'),
+            );
 
-}
-app.addEventListener('pointerdown', startGame)
-document.body.addEventListener('keydown', startGame)
+            return;
+        }
 
-
-
-// const game = {
-//     start: () => {
-//         game.clearScreen();
-//
-//         document.body.removeEventListener('keydown', game.start);
-//         document.body.removeEventListener('pointerdown', game.start);
-//
-//         game.setPlayers();
-//     },
-//
-//     landing: () => {
-//
-//         document.body.addEventListener('keydown', game.start);
-//         document.body.addEventListener('pointerdown', game.start);
-//     },
-//
-//     setPlayers: () => {
-//         const setPlayersBTN = button('¡Iniciar el encuentro!');
-//
-//         setPlayersBTN.addEventListener('pointerdown', () => {
-//             const [name1, name2] = document.querySelectorAll('input');
-//
-//             if (!name1.value && !name2.value) {
-//                 header.append(
-//                     wrapper(
-//                         'div',
-//                         'warn',
-//                         '¡Debe haber al menos una persona jugando!',
-//                     ),
-//                 );
-//             }
-//
-//             game.player1 = new Player(!name1.value ? undefined : name1.value);
-//             game.player2 = new Player(!name2.value ? undefined : name2.value);
-//             game.player1.setAdversary(game.player2);
-//
-//             game.setShips();
-//         });
-//
-//         app.append(
-//             inputText(
-//                 '¿Quién arranca el juego?, deja vacío para que sea la computadora',
-//                 'Escibe el nombre',
-//             ),
-//             inputText(
-//                 '¿Quién sigue?, deja vacío para que sea la computadora',
-//                 'Escibe el nombre',
-//             ),
-//             setPlayersBTN,
-//         );
-//     },
-// };
-//
-// game.landing();
+        const game = new Game(player1.value, player2.value);
+        game.setShips();
+    });
+};

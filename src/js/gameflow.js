@@ -19,7 +19,17 @@ export default class Game {
     }
 
     setShips() {
+        // TODO: 
+        // 1, que solo se cargue el tablero de los jugadores humanos... 
+        // 2, que muestre donde va a acomodar el barco antes de ubicarlo
+        // 3, drag n' drop
+        //
+
         clearApp();
+
+        this.player1.board.placeRemainignShipsRandom()
+
+        const settings = wrapper('div', '', 'settings');
 
         const nav = wrapper('nav');
         nav.append(
@@ -30,14 +40,14 @@ export default class Game {
         const dialog = wrapper('div', '', 'settings__dialog');
 
         const ship = wrapper(
-            'div',
+            'p',
             'Barco de batalla(B), 1 de 5 barcos',
             'dialog__ship',
         );
 
         const form = wrapper('form');
         const input = inputText(
-            'Escribe las coordenadas y oprime [Enter] para confirmar la ubicación',
+            'Escribe las coordenadas y presiona [Enter] para confirmar la ubicación:',
             '<A-B> <1-10> <(H)orizontal/(V)ertical>',
         );
         form.append(input);
@@ -47,10 +57,19 @@ export default class Game {
         const confirmation = wrapper('div', '', 'settings__confirmation');
         confirmation.append(
             button('Reiniciar', 'set'),
-            button('Confirmar la ubicacion de mis barcos', 'set', '', true),
+            button('Confirmar', 'set', '', true),
         );
 
-        app.append(shipsBoard(this.player1), nav, dialog, confirmation);
+        settings.append(nav, dialog, confirmation);
+
+        app.append(
+            wrapper(
+                'p',
+                `${this.player1.name}, ubica tus barcos...`,
+            ),
+            shipsBoard(this.player1),
+            settings,
+        );
     }
 
     playerAttack(player) {
