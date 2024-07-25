@@ -19,30 +19,17 @@ export default class Game {
         this.player1.setAdversary(this.player2);
     }
 
-    setShips(player) {
-        // TODO:
-        // 2, secuencia de ubicacion de barcos
-        // revisar el enter cuando no es una coordenada válida
-        // 3, drag n' drop
-        //
+    getShip(player) {
+        const shipsLeft = player.board.shipsInventory.available.length;
+        const shipToPlace = player.board.shipsInventory.available.shift();
+        const shipSize = Ship.shipsAndSize[shipToPlace];
+        return { shipsLeft, shipToPlace, shipSize };
+    }
+
+    renderShipPlacementScreen(player, shipsAvailable) {
         clearApp();
 
-        if (!player.name) {
-            player.board.placeRemainignShipsRandom();
-
-            if (player === this.player1) {
-                this.setShips(this.player2);
-            } else {
-                // TODO:
-                // puente a la etapa de ataques
-                console.log('listo pa arrancar');
-            }
-            return;
-        }
-
-        const remainingShips = player.board.shipsInventory.available.length;
-        const shipToPlace = player.board.shipsInventory.available.shift();
-        const shipToPlaceLength = Ship.shipsAndSize[shipToPlace];
+        const { shipsLeft, shipToPlace } = shipsAvailable;
 
         const header = wrapper('p', `${player.name}, ubica tus barcos...`);
         const shipsPlacement = shipsBoard(player);
@@ -57,7 +44,7 @@ export default class Game {
         const instructions = wrapper('div', '', 'settings__dialog');
         const ship = wrapper(
             'p',
-            `${shipToPlace} (${shipToPlace.slice(0, 2)}), quedan ${remainingShips} barcos por ubicar.`,
+            `${shipToPlace} (${shipToPlace.slice(0, 2)}), quedan ${shipsLeft} barcos por ubicar.`,
             'dialog__ship',
         );
         const form = wrapper('form');
@@ -75,80 +62,113 @@ export default class Game {
         confirmation.append(resetBTN, confirmBTN);
 
         app.append(header, shipsPlacement, settings, confirmation);
+    }
+
+    setShips(player) {
+        // TODO:
+        // 3, drag n' drop
+        if (player.board.shipsInventory.placed.size === 5) {
+            console.log('Inicio de método setShips, no quedan barcos por poner')
+        }
+
+        const { shipsLeft, shipToPlace, shipSize } = this.getShip(player);
+        this.renderShipPlacementScreen(player, {
+            shipsLeft,
+            shipToPlace,
+            shipSize,
+        });
+
+        if (!shipToPlace) {
+            console.log('renderizado justo depues de obtener barcos')
+        }
 
         const coordenates = document.querySelector('input');
-        coordenates.addEventListener('input', () => {
-            if (document.querySelector('[data-current]')) {
-                const cellRemove = document.querySelectorAll('[data-current]');
-                cellRemove.forEach((cell) => {
-                    cell.removeAttribute('data-current');
-                    cell.className = 'board__ships';
-                    cell.textContent = '';
-                });
+
+        let setShipIn = null;
+
+        coordenates.addEventListener('input', (event) => {
+            this.clearShipPreview();
+            const position = event.target;
+            setShipIn = null;
+
+            const rowRegex = position.value.match(/(10|[1-9])/);
+            const colRegex = position.value.match(/\b[a-j]\b/i);
+            const dirRegex = position.value.match(/\b(hor|ver)/i);
+
+            if (!rowRegex || !colRegex || !dirRegex) {
+                return;
             }
-            if (document.querySelectorAll('.board__ships--warn')) {
-                document
-                    .querySelectorAll('.board__ships--warn')
-                    .forEach((cell) => {
-                        cell.classList.remove('board__ships--warn');
-                    });
-            }
-            const rowRegex = coordenates.value.match(/(10|[1-9])/);
-            const colRegex = coordenates.value.match(/[a-j]/i);
-            const dirRegex = coordenates.value.match(/(hor|ver)/i);
 
-            if (rowRegex && colRegex && dirRegex) {
-                const dirValue = dirRegex[0] === 'hor';
+            const rowBase = +rowRegex[0] - 1;
+            const colBase = +colRegex[0].toLowerCase().charCodeAt(0) - 97;
+            const dirValue = dirRegex[0] === 'hor';
 
-                const colBase = +colRegex[0].toLowerCase().charCodeAt(0) - 97;
-                const rowBase = +rowRegex[0] - 1;
+            const colValue =
+                dirValue && colBase + shipSize > 10 ? 10 - shipSize : colBase;
+            const rowValue =
+                !dirValue && rowBase + shipSize > 10 ? 10 - shipSize : rowBase;
 
-                const colValue =
-                    dirValue && colBase + shipToPlaceLength > 10
-                        ? 10 - shipToPlaceLength
-                        : colBase;
-                const rowValue =
-                    !dirValue && rowBase + shipToPlaceLength > 10
-                        ? 10 - shipToPlaceLength
-                        : rowBase;
+            setShipIn = this.renderShipPreview(
+                rowValue,
+                colValue,
+                dirValue,
+                shipSize,
+                shipToPlace,
+            );
+        });
 
-                for (let l = 0; l < shipToPlaceLength; l++) {
-                    const i = !dirValue ? rowValue + l : rowValue;
-                    const j = dirValue ? colValue + l : colValue;
-                    const cell = document.querySelector(
-                        `[data-cell="${i}-${j}"]`,
-                    );
-
-                    if (!cell.textContent) {
-                        cell.setAttribute('data-current', true);
-                        cell.className += ' board__ships--occupied';
-                        cell.textContent = `${shipToPlace.slice(0, 2)}`;
-                    } else {
-                        cell.classList.add('board__ships--warn');
-                    }
-                }
-
-                coordenates.addEventListener('keydown', (event) => {
-                    if (event.key === 'Enter' && !document.querySelector('.board__ships--warn')) {
-                        player.board.placeShip(
-                            colValue,
-                            rowValue,
-                            dirValue,
-                            shipToPlace,
-                        );
-                        if (remainingShips > 0) {
-                            this.setShips(player);
-                        }
-                    } else {
-                        console.log('carajo')
-                    }
-                });
+        coordenates.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' && setShipIn) {
+                const { colValue, rowValue, dirValue, shipToPlace } = setShipIn;
+                player.board.placeShip(
+                    colValue,
+                    rowValue,
+                    dirValue,
+                    shipToPlace,
+                );
+                // if (shipsLeft > 0) {
+                //     console.log('boton de siguiente')
+                    this.setShips(player);
+                // }
+            } else if (event.key === 'Enter') {
+                event.preventDefault();
             }
         });
     }
 
-    renderPosition(col, row, horizontal, ship) {
+    clearShipPreview() {
+        if (document.querySelector('[data-current]')) {
+            document.querySelectorAll('[data-current]').forEach((cell) => {
+                cell.removeAttribute('data-current');
+                cell.className = 'board__ships';
+                cell.textContent = '';
+            });
+        }
+        if (document.querySelectorAll('.board__ships--warn')) {
+            document.querySelectorAll('.board__ships--warn').forEach((cell) => {
+                cell.classList.remove('board__ships--warn');
+            });
+        }
+    }
 
+    renderShipPreview(rowValue, colValue, dirValue, shipSize, shipToPlace) {
+        for (let l = 0; l < shipSize; l++) {
+            const i = !dirValue ? rowValue + l : rowValue;
+            const j = dirValue ? colValue + l : colValue;
+            const cell = document.querySelector(`[data-cell="${i}-${j}"]`);
+
+            if (!cell.textContent) {
+                cell.setAttribute('data-current', true);
+                cell.className += ' board__ships--occupied';
+                cell.textContent = `${shipToPlace.slice(0, 2)}`;
+            } else {
+                cell.classList.add('board__ships--warn');
+            }
+        }
+
+        return document.querySelector('.board__ships--warn')
+            ? null
+            : { colValue, rowValue, dirValue, shipToPlace };
     }
 
     playerAttack(player) {
