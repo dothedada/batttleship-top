@@ -3,7 +3,6 @@ import Gameboard from './gameboard';
 class Player {
     constructor(name = undefined) {
         this.board = new Gameboard();
-        this.myShips = this.board.ships;
         this.myAttacks = Gameboard.boardGenerator();
         this.adversaryName = undefined;
         this.score = 0;

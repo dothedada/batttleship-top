@@ -62,6 +62,11 @@ export default class Game {
         const confirmBTN = button('Confirmar', 'set', '', true);
         confirmation.append(resetBTN, confirmBTN);
 
+        resetBTN.addEventListener('pointerdown', () => {
+            player.board.resetShips()
+            this.setShips(player)
+        });
+
         app.append(header, shipsPlacement, settings, confirmation);
     }
 
@@ -190,7 +195,7 @@ export default class Game {
             'pre',
             type === 'attack' ? asciiArt.ship1 : asciiArt.ship1,
         );
-        const mensaje = wrapper(
+        const msg = wrapper(
             'p',
             `${playerFrom.name}, ahora le toca a ${playerFrom.adversaryName}...`,
         );
@@ -211,7 +216,7 @@ export default class Game {
                 this.playerAttack(playerTo);
             });
         }
-        app.append(mensaje, btn, draw);
+        app.append(msg, btn, draw);
     }
 
     afterMath() {

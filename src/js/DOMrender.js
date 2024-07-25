@@ -89,7 +89,7 @@ const shipsBoard = (player) => {
     const board = boardFrame();
     let rowHeader = 1;
 
-    player.myShips.flat().forEach((cell, index) => {
+    player.board.ships.flat().forEach((cell, index) => {
         const row = index % 10;
         const col = Math.floor(index / 10);
         let text = !cell ? '' : cell;

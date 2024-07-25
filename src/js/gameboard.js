@@ -16,10 +16,6 @@ class Gameboard {
     };
 
     placeShip(col, row, horizontal, type) {
-        if (this.shipsInventory.placed.has(type)) {
-            return false;
-        }
-
         const ship = new Ship(type);
         const maxPosition = 10 - ship.length;
         const startCol = horizontal && col > maxPosition ? maxPosition : col;
@@ -61,10 +57,16 @@ class Gameboard {
     placeRemainignShipsRandom() {
         for (const ship of Object.keys(Ship.shipsAndSize)) {
             if (this.shipsInventory.placed.has(ship)) {
-                continue
+                continue;
             }
             this.placeShipRandom(ship);
         }
+    }
+
+    resetShips() {
+        this.ships = Gameboard.boardGenerator()
+        this.shipsInventory.available = Object.keys(Ship.shipsAndSize);
+        this.shipsInventory.placed = new Set();
     }
 
     receiveAttack(col, row) {
