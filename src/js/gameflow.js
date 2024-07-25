@@ -7,6 +7,7 @@ import {
     shipsBoard,
     clearApp,
 } from './DOMrender';
+import Ship from './ships';
 
 const app = document.querySelector('#app');
 
@@ -20,11 +21,11 @@ export default class Game {
 
     setShips(player) {
         // TODO:
-        // 1, que solo se cargue el tablero de los jugadores humanos...
-        // 1.a, ordenar codigo
-        // 2, que muestre donde va a acomodar el barco antes de ubicarlo
+        // 2, secuencia de ubicacion de barcos
+        // revisar el enter cuando no es una coordenada válida
         // 3, drag n' drop
         //
+        clearApp();
 
         if (!player.name) {
             player.board.placeRemainignShipsRandom();
@@ -32,58 +33,122 @@ export default class Game {
             if (player === this.player1) {
                 this.setShips(this.player2);
             } else {
+                // TODO:
+                // puente a la etapa de ataques
                 console.log('listo pa arrancar');
             }
             return;
         }
 
-        clearApp();
+        const remainingShips = player.board.shipsInventory.available.length;
+        const shipToPlace = player.board.shipsInventory.available.shift();
+        const shipToPlaceLength = Ship.shipsAndSize[shipToPlace];
+
+        const header = wrapper('p', `${player.name}, ubica tus barcos...`);
+        const shipsPlacement = shipsBoard(player);
 
         const settings = wrapper('div', '', 'settings');
 
         const nav = wrapper('nav');
-        nav.append(
-            button('Coordenadas', '', '', true),
-            button('Arrastrar y soltar'),
-        );
+        const coordenatesBTN = button('Coordenadas', '', '', true);
+        const dragNDropBTN = button('Arrastrar y soltar');
+        nav.append(coordenatesBTN, dragNDropBTN);
 
-        const dialog = wrapper('div', '', 'settings__dialog');
-
+        const instructions = wrapper('div', '', 'settings__dialog');
         const ship = wrapper(
             'p',
-            'Barco de batalla(B), 1 de 5 barcos',
+            `${shipToPlace} (${shipToPlace.slice(0, 2)}), quedan ${remainingShips} barcos por ubicar.`,
             'dialog__ship',
         );
-
         const form = wrapper('form');
         const input = inputText(
             'Ingresa las coordenadas y presiona [Enter] para confirmar o, escribe <No sé> para ubicar aleatoriamente',
             '<A-B> <1-10> <(H)orizontal/(V)ertical>',
         );
         form.append(input);
-
-        dialog.append(ship, form);
+        instructions.append(ship, form);
+        settings.append(nav, instructions);
 
         const confirmation = wrapper('div', '', 'settings__confirmation');
-        confirmation.append(
-            button('Reiniciar', 'set'),
-            button('Confirmar', 'set', '', true),
-        );
+        const resetBTN = button('Reiniciar', 'set');
+        const confirmBTN = button('Confirmar', 'set', '', true);
+        confirmation.append(resetBTN, confirmBTN);
 
-        settings.append(nav, dialog, confirmation);
+        app.append(header, shipsPlacement, settings, confirmation);
 
-        app.append(
-            wrapper('p', `${player.name}, ubica tus barcos...`),
-            shipsBoard(player),
-            settings,
-        );
+        const coordenates = document.querySelector('input');
+        coordenates.addEventListener('input', () => {
+            if (document.querySelector('[data-current]')) {
+                const cellRemove = document.querySelectorAll('[data-current]');
+                cellRemove.forEach((cell) => {
+                    cell.removeAttribute('data-current');
+                    cell.className = 'board__ships';
+                    cell.textContent = '';
+                });
+            }
+            if (document.querySelectorAll('.board__ships--warn')) {
+                document
+                    .querySelectorAll('.board__ships--warn')
+                    .forEach((cell) => {
+                        cell.classList.remove('board__ships--warn');
+                    });
+            }
+            const rowRegex = coordenates.value.match(/(10|[1-9])/);
+            const colRegex = coordenates.value.match(/[a-j]/i);
+            const dirRegex = coordenates.value.match(/(hor|ver)/i);
 
-        nav.querySelector('button:not(:disabled)').addEventListener(
-            'pointerdown',
-            () => {
-                console.log('carajo');
-            },
-        );
+            if (rowRegex && colRegex && dirRegex) {
+                const dirValue = dirRegex[0] === 'hor';
+
+                const colBase = +colRegex[0].toLowerCase().charCodeAt(0) - 97;
+                const rowBase = +rowRegex[0] - 1;
+
+                const colValue =
+                    dirValue && colBase + shipToPlaceLength > 10
+                        ? 10 - shipToPlaceLength
+                        : colBase;
+                const rowValue =
+                    !dirValue && rowBase + shipToPlaceLength > 10
+                        ? 10 - shipToPlaceLength
+                        : rowBase;
+
+                for (let l = 0; l < shipToPlaceLength; l++) {
+                    const i = !dirValue ? rowValue + l : rowValue;
+                    const j = dirValue ? colValue + l : colValue;
+                    const cell = document.querySelector(
+                        `[data-cell="${i}-${j}"]`,
+                    );
+
+                    if (!cell.textContent) {
+                        cell.setAttribute('data-current', true);
+                        cell.className += ' board__ships--occupied';
+                        cell.textContent = `${shipToPlace.slice(0, 2)}`;
+                    } else {
+                        cell.classList.add('board__ships--warn');
+                    }
+                }
+
+                coordenates.addEventListener('keydown', (event) => {
+                    if (event.key === 'Enter' && !document.querySelector('.board__ships--warn')) {
+                        player.board.placeShip(
+                            colValue,
+                            rowValue,
+                            dirValue,
+                            shipToPlace,
+                        );
+                        if (remainingShips > 0) {
+                            this.setShips(player);
+                        }
+                    } else {
+                        console.log('carajo')
+                    }
+                });
+            }
+        });
+    }
+
+    renderPosition(col, row, horizontal, ship) {
+
     }
 
     playerAttack(player) {

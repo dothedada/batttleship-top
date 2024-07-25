@@ -176,6 +176,10 @@ pre {
     outline: 1px solid var(--background);
     outline-offset: -3px ;
 }
+.board__ships--warn {
+    background-color: var(--accent);
+    color: var(--text);
+}
 
 nav {
     border-bottom: 1px solid var(--text);

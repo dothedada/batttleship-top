@@ -10,6 +10,7 @@ class Gameboard {
     }
 
     shipsInventory = {
+        available: Object.keys(Ship.shipsAndSize),
         placed: new Set(),
         sank: new Set(),
     };
