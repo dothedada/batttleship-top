@@ -67,8 +67,19 @@ export default class Game {
     setShips(player) {
         // TODO:
         // 3, drag n' drop
+        //
+        if (!player.name) {
+            player.board.placeRemainignShipsRandom();
+        }
+
         if (player.board.shipsInventory.placed.size === 5) {
-            console.log('Inicio de método setShips, no quedan barcos por poner')
+            if (player === this.player1) {
+                this.setShips(this.player2);
+            } else {
+                clearApp()
+                this.playerAttack(this.player1);
+            }
+            return;
         }
 
         const { shipsLeft, shipToPlace, shipSize } = this.getShip(player);
@@ -79,7 +90,7 @@ export default class Game {
         });
 
         if (!shipToPlace) {
-            console.log('renderizado justo depues de obtener barcos')
+            console.log('renderizado justo depues de obtener barcos');
         }
 
         const coordenates = document.querySelector('input');
@@ -128,7 +139,7 @@ export default class Game {
                 );
                 // if (shipsLeft > 0) {
                 //     console.log('boton de siguiente')
-                    this.setShips(player);
+                this.setShips(player);
                 // }
             } else if (event.key === 'Enter') {
                 event.preventDefault();
@@ -172,6 +183,7 @@ export default class Game {
     }
 
     playerAttack(player) {
+        console.log(player.name ?? 'compu', ' al ataque');
         //
     }
 
