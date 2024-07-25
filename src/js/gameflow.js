@@ -65,9 +65,6 @@ export default class Game {
     }
 
     setShips(player) {
-        // TODO:
-        // 3, drag n' drop
-        //
         if (!player.name) {
             player.board.placeRemainignShipsRandom();
         }
@@ -92,37 +89,54 @@ export default class Game {
             this.clearShipPreview();
 
             const input = event.target;
-            const rowRegex = input.value.match(/(10|[1-9])/);
-            const colRegex = input.value.match(/\b[a-j]\b/i);
-            const dirRegex = input.value.match(/\b(hor|ver)/i);
+
+            const randomRgx = input.value.match(/random|aleatorio|no s[eé]/i);
+            const rowRgx = input.value.match(/(10|[1-9])/);
+            const colRgx = input.value.match(/\b[a-j]\b/i);
+            const dirRgx = input.value.match(/\b(hor|ver)/i);
             setShipIn = null;
 
-            if (!rowRegex || !colRegex || !dirRegex) {
+            if (randomRgx) {
+                setShipIn = 'random';
                 return;
             }
 
-            const rowBase = +rowRegex[0] - 1;
-            const colBase = +colRegex[0].toLowerCase().charCodeAt(0) - 97;
-            const hor = /hor/i.test(dirRegex[0]);
+            if (!rowRgx || !colRgx || !dirRgx) {
+                return;
+            }
 
-            const col = hor && colBase + size > 10 ? 10 - size : colBase;
-            const row = !hor && rowBase + size > 10 ? 10 - size : rowBase;
+            const rowBase = +rowRgx[0] - 1;
+            const colBase = +colRgx[0].toLowerCase().charCodeAt(0) - 97;
+            const horizon = /hor/i.test(dirRgx[0]);
 
-            this.shipPreview(row, col, hor, ship, size);
+            const col = horizon && colBase + size > 10 ? 10 - size : colBase;
+            const row = !horizon && rowBase + size > 10 ? 10 - size : rowBase;
+
+            this.shipPreview(col, row, horizon, ship, size);
 
             setShipIn = document.querySelector('.board__ships--warn')
                 ? null
-                : { row, col, hor, ship };
+                : { row, col, horizon, ship };
         });
 
         coordenates.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter' && setShipIn) {
-                const { col, row, hor, ship } = setShipIn;
-                player.board.placeShip(col, row, hor, ship);
-                this.setShips(player);
-            } else if (event.key === 'Enter') {
-                event.preventDefault();
+            if (event.key !== 'Enter') {
+                return;
             }
+            event.preventDefault();
+
+            if (!setShipIn) {
+                return;
+            }
+
+            if (setShipIn === 'random') {
+                player.board.placeShipRandom(ship);
+            } else if (setShipIn.ship) {
+                const { col, row, horizon, ship } = setShipIn;
+                player.board.placeShip(col, row, horizon, ship);
+            }
+
+            this.setShips(player);
         });
     }
 
@@ -141,7 +155,7 @@ export default class Game {
         }
     }
 
-    shipPreview(rowValue, colValue, dirValue, shipToPlace, shipSize) {
+    shipPreview(colValue, rowValue, dirValue, shipToPlace, shipSize) {
         for (let l = 0; l < shipSize; l++) {
             const i = !dirValue ? rowValue + l : rowValue;
             const j = dirValue ? colValue + l : colValue;
@@ -163,6 +177,7 @@ export default class Game {
     }
 
     switcher(type, playerFrom, playerTo) {
+        // TODO: mejorar la lógica del switch
         if (type === 'shipPlacement') {
             clearApp();
             const mensaje = wrapper(
