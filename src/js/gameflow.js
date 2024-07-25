@@ -19,17 +19,17 @@ export default class Game {
         this.player1.setAdversary(this.player2);
     }
 
-    getShip(player) {
+    getShips(player) {
         const shipsLeft = player.board.shipsInventory.available.length;
-        const shipToPlace = player.board.shipsInventory.available.shift();
-        const shipSize = Ship.shipsAndSize[shipToPlace];
-        return { shipsLeft, shipToPlace, shipSize };
+        const ship = player.board.shipsInventory.available.shift();
+        const size = Ship.shipsAndSize[ship];
+        return { shipsLeft, ship, size };
     }
 
-    renderShipPlacementScreen(player, shipsAvailable) {
+    renderShipsPositioningScreen(player, shipsAvailable) {
         clearApp();
 
-        const { shipsLeft, shipToPlace } = shipsAvailable;
+        const { shipsLeft, ship } = shipsAvailable;
 
         const header = wrapper('p', `${player.name}, ubica tus barcos...`);
         const shipsPlacement = shipsBoard(player);
@@ -42,9 +42,9 @@ export default class Game {
         nav.append(coordenatesBTN, dragNDropBTN);
 
         const instructions = wrapper('div', '', 'settings__dialog');
-        const ship = wrapper(
+        const shipInventory = wrapper(
             'p',
-            `${shipToPlace} (${shipToPlace.slice(0, 2)}), quedan ${shipsLeft} barcos por ubicar.`,
+            `${ship} (${ship.slice(0, 2)}), quedan ${shipsLeft} barcos por ubicar.`,
             'dialog__ship',
         );
         const form = wrapper('form');
@@ -53,7 +53,7 @@ export default class Game {
             '<A-B> <1-10> <(H)orizontal/(V)ertical>',
         );
         form.append(input);
-        instructions.append(ship, form);
+        instructions.append(shipInventory, form);
         settings.append(nav, instructions);
 
         const confirmation = wrapper('div', '', 'settings__confirmation');
@@ -73,38 +73,29 @@ export default class Game {
         }
 
         if (player.board.shipsInventory.placed.size === 5) {
+            // TODO: activar el botón de confirmación si es persona, saltar a siguiente si no
             if (player === this.player1) {
-                this.setShips(this.player2);
+                this.switcher('shipPlacement', this.player1, this.player2);
             } else {
-                clearApp()
+                clearApp();
                 this.playerAttack(this.player1);
             }
             return;
         }
 
-        const { shipsLeft, shipToPlace, shipSize } = this.getShip(player);
-        this.renderShipPlacementScreen(player, {
-            shipsLeft,
-            shipToPlace,
-            shipSize,
-        });
-
-        if (!shipToPlace) {
-            console.log('renderizado justo depues de obtener barcos');
-        }
-
+        const { shipsLeft, ship, size } = this.getShips(player);
+        this.renderShipsPositioningScreen(player, { shipsLeft, ship, size });
         const coordenates = document.querySelector('input');
-
         let setShipIn = null;
 
         coordenates.addEventListener('input', (event) => {
             this.clearShipPreview();
-            const position = event.target;
-            setShipIn = null;
 
-            const rowRegex = position.value.match(/(10|[1-9])/);
-            const colRegex = position.value.match(/\b[a-j]\b/i);
-            const dirRegex = position.value.match(/\b(hor|ver)/i);
+            const input = event.target;
+            const rowRegex = input.value.match(/(10|[1-9])/);
+            const colRegex = input.value.match(/\b[a-j]\b/i);
+            const dirRegex = input.value.match(/\b(hor|ver)/i);
+            setShipIn = null;
 
             if (!rowRegex || !colRegex || !dirRegex) {
                 return;
@@ -112,35 +103,23 @@ export default class Game {
 
             const rowBase = +rowRegex[0] - 1;
             const colBase = +colRegex[0].toLowerCase().charCodeAt(0) - 97;
-            const dirValue = dirRegex[0] === 'hor';
+            const hor = /hor/i.test(dirRegex[0]);
 
-            const colValue =
-                dirValue && colBase + shipSize > 10 ? 10 - shipSize : colBase;
-            const rowValue =
-                !dirValue && rowBase + shipSize > 10 ? 10 - shipSize : rowBase;
+            const col = hor && colBase + size > 10 ? 10 - size : colBase;
+            const row = !hor && rowBase + size > 10 ? 10 - size : rowBase;
 
-            setShipIn = this.renderShipPreview(
-                rowValue,
-                colValue,
-                dirValue,
-                shipSize,
-                shipToPlace,
-            );
+            this.shipPreview(row, col, hor, ship, size);
+
+            setShipIn = document.querySelector('.board__ships--warn')
+                ? null
+                : { row, col, hor, ship };
         });
 
         coordenates.addEventListener('keydown', (event) => {
             if (event.key === 'Enter' && setShipIn) {
-                const { colValue, rowValue, dirValue, shipToPlace } = setShipIn;
-                player.board.placeShip(
-                    colValue,
-                    rowValue,
-                    dirValue,
-                    shipToPlace,
-                );
-                // if (shipsLeft > 0) {
-                //     console.log('boton de siguiente')
+                const { col, row, hor, ship } = setShipIn;
+                player.board.placeShip(col, row, hor, ship);
                 this.setShips(player);
-                // }
             } else if (event.key === 'Enter') {
                 event.preventDefault();
             }
@@ -162,7 +141,7 @@ export default class Game {
         }
     }
 
-    renderShipPreview(rowValue, colValue, dirValue, shipSize, shipToPlace) {
+    shipPreview(rowValue, colValue, dirValue, shipToPlace, shipSize) {
         for (let l = 0; l < shipSize; l++) {
             const i = !dirValue ? rowValue + l : rowValue;
             const j = dirValue ? colValue + l : colValue;
@@ -176,10 +155,6 @@ export default class Game {
                 cell.classList.add('board__ships--warn');
             }
         }
-
-        return document.querySelector('.board__ships--warn')
-            ? null
-            : { colValue, rowValue, dirValue, shipToPlace };
     }
 
     playerAttack(player) {
@@ -187,8 +162,22 @@ export default class Game {
         //
     }
 
-    hangScreen() {
-        //
+    switcher(type, playerFrom, playerTo) {
+        if (type === 'shipPlacement') {
+            clearApp();
+            const mensaje = wrapper(
+                'p',
+                `${playerFrom.name}, entrégale el dispositivo a ${playerFrom.adversaryName}...`,
+            );
+            const btn = button(
+                `${playerTo.name}, clic aquí para ubicar tus barcos`,
+            );
+            app.append(mensaje, btn);
+
+            btn.addEventListener('pointerdown', () => {
+                this.setShips(playerTo);
+            });
+        }
     }
 
     afterMath() {
