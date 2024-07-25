@@ -1,4 +1,5 @@
 import Player from './players';
+import asciiArt from './asciiArt';
 import {
     wrapper,
     inputText,
@@ -67,6 +68,12 @@ export default class Game {
     setShips(player) {
         if (!player.name) {
             player.board.placeRemainignShipsRandom();
+
+            if (this.player1 === player) {
+                this.setShips(this.player2);
+            } else {
+                this.playerAttack(this.player1);
+            }
         }
 
         if (player.board.shipsInventory.placed.size === 5) {
@@ -74,8 +81,7 @@ export default class Game {
             if (player === this.player1) {
                 this.switcher('shipPlacement', this.player1, this.player2);
             } else {
-                clearApp();
-                this.playerAttack(this.player1);
+                this.switcher('attack', this.player2, this.player1);
             }
             return;
         }
@@ -178,21 +184,34 @@ export default class Game {
 
     switcher(type, playerFrom, playerTo) {
         // TODO: mejorar la lógica del switch
+        clearApp();
+
+        const draw = wrapper(
+            'pre',
+            type === 'attack' ? asciiArt.ship1 : asciiArt.ship1,
+        );
+        const mensaje = wrapper(
+            'p',
+            `${playerFrom.name}, ahora le toca a ${playerFrom.adversaryName}...`,
+        );
+        let btn;
+
         if (type === 'shipPlacement') {
-            clearApp();
-            const mensaje = wrapper(
-                'p',
-                `${playerFrom.name}, entrégale el dispositivo a ${playerFrom.adversaryName}...`,
-            );
-            const btn = button(
-                `${playerTo.name}, clic aquí para ubicar tus barcos`,
-            );
-            app.append(mensaje, btn);
+            btn = button(`${playerTo.name}, clic aquí para ubicar tus barcos`);
 
             btn.addEventListener('pointerdown', () => {
                 this.setShips(playerTo);
             });
         }
+
+        if (type === 'attack') {
+            btn = button(`${playerTo.name}, clic aquí para realizar tu ataque`);
+
+            btn.addEventListener('pointerdown', () => {
+                this.playerAttack(playerTo);
+            });
+        }
+        app.append(mensaje, btn, draw);
     }
 
     afterMath() {
