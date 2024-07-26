@@ -270,7 +270,7 @@ nav > button:active {
     pointer-events: none;
     /* z-index: 100; */
 }
-.radar__swep {
+.radar__sweep {
     width: calc(max(100vh, 100vw) * 3);
     aspect-ratio: 1;
     background-image: repeating-conic-gradient(
