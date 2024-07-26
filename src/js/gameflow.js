@@ -77,6 +77,7 @@ export default class Game {
         if (!player.name) {
             player.board.placeRemainignShipsRandom();
             this.switcher('shipsPlacement', player);
+            console.table(player.board.ships);
             return;
         }
 
@@ -161,7 +162,7 @@ export default class Game {
                 player.board.placeShip(col, row, horizon, ship);
             }
 
-            this.setShips(player);
+            this.switcher('shipsPlacement', player);
         });
     }
 
@@ -233,16 +234,54 @@ export default class Game {
 
     renderReceiveAttack(player) {
         clearApp();
-        app.append(wrapper('div', `${player.name} recibe ataque`));
-        //
+
+        const radar = wrapper('div', '', 'radar');
+        const radarSweep = wrapper('div', '', 'radar__sweep');
+        radar.append(radarSweep);
+
+        const header = wrapper('header');
+        const headerTXT = wrapper('h1', `¡${player.name}, te atacan!`);
+        const headerBTN = button('apagar radar', '', 'radar');
+        header.append(headerTXT, headerBTN);
+
+        const myShips = shipsBoard(player);
+
+        app.append(radar, header, myShips);
+    }
+
+    delayFunction(ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    async receiveAttack(receiver, attacker) {
+        this.renderReceiveAttack(receiver);
+        document.body.classList.add('alarm');
+
+        let attackResult;
+
+        do {
+            attackResult = attacker.attackAuto();
+            await this.delayFunction(Math.random() * 2000 + 500);
+            const newShipsBoard = shipsBoard(receiver);
+            const oldShipsBoard = document.querySelector('.board');
+            const boardParent = oldShipsBoard.parentNode;
+            boardParent.replaceChild(newShipsBoard, oldShipsBoard);
+            await this.delayFunction(1500);
+        } while (attackResult !== 'Water');
+
+        document.body.classList.remove('alarm');
+        this.switcher('attack', attacker);
     }
 
     playerAttack(player) {
         this.renderSendAttack(player);
 
+        const radarBTN = document.querySelector('[data-cell="radar"]');
+        const attackBTNs = document.querySelectorAll('.board__attack');
+        const attackRndBTN = document.querySelector('[data-cell="attackRND"]');
+        const attackInput = document.querySelector('input');
         let targetSet = null;
 
-        const radarBTN = document.querySelector('[data-cell="radar"]');
         radarBTN.addEventListener('pointerdown', () => {
             const radar = document.querySelector('.radar');
             radar.classList.toggle('hidden');
@@ -251,14 +290,15 @@ export default class Game {
                 : 'Apagar radar';
         });
 
-        const attackBTNs = document.querySelectorAll('.board__attack');
-
         const sendAttack = (row, col) => {
-            attackBTNs.forEach((btn) => {
-                btn.disabled = true;
-            });
+            const buttons = document.querySelectorAll('button');
             const attackResult = player.attack(+col, +row);
             const cell = document.querySelector(`[data-cell="${row}-${col}"]`);
+
+            buttons.forEach((btn) => {
+                btn.disabled = true;
+            });
+
             setTimeout(
                 () => {
                     document.body.classList.toggle(
@@ -272,7 +312,7 @@ export default class Game {
                         replaceAttackCell(cell.getAttribute('data-cell'));
                     }
 
-                    attackBTNs.forEach((btn) => {
+                    buttons.forEach((btn) => {
                         btn.disabled = false;
                     });
 
@@ -283,13 +323,13 @@ export default class Game {
         };
 
         attackBTNs.forEach((btn) => {
-            btn.addEventListener('pointerdown', () => {
+            btn.addEventListener('pointerdown', (event) => {
+                event.target.classList.add('board__attack--aim');
                 const [row, col] = btn.getAttribute('data-cell').split('-');
                 sendAttack(row, col);
             });
         });
 
-        const attackRndBTN = document.querySelector('[data-cell="attackRND"]');
         attackRndBTN.addEventListener('pointerdown', () => {
             const { rRow, rCol } = player.getRandomCoordenates();
             const target = document.querySelector(
@@ -299,8 +339,6 @@ export default class Game {
 
             sendAttack(rRow, rCol);
         });
-
-        const attackInput = document.querySelector('input');
 
         attackInput.addEventListener('input', () => {
             targetSet = null;
@@ -341,11 +379,7 @@ export default class Game {
         });
 
         attackInput.addEventListener('keydown', (event) => {
-            if (event.key !== 'Enter') {
-                return;
-            }
-
-            if (!targetSet) {
+            if (event.key !== 'Enter' || !targetSet) {
                 return;
             }
 
@@ -370,10 +404,14 @@ export default class Game {
                     this.switcherScreen('attack', this.player2, this.player1);
                 }
             } else if (onlyPlayer1) {
-                this.playerAttack(this.player1);
+                if (from === this.player1) {
+                    this.setShips(this.player2);
+                } else {
+                    this.playerAttack(to);
+                }
             } else if (onlyPlayer2) {
                 if (from === this.player2) {
-                    this.renderReceiveAttack(this.player2);
+                    this.receiveAttack(this.player2, this.player1);
                 } else {
                     this.setShips(this.player2);
                 }
@@ -383,7 +421,7 @@ export default class Game {
                 this.switcherScreen('attack', from, to);
             } else if (onlyPlayer1) {
                 if (fromPlayer === this.player1) {
-                    this.renderReceiveAttack(this.player1);
+                    this.receiveAttack(this.player1, this.player2);
                 } else {
                     this.playerAttack(this.player1);
                 }
@@ -391,7 +429,7 @@ export default class Game {
                 if (fromPlayer === this.player1) {
                     this.playerAttack(this.player2);
                 } else {
-                    this.renderReceiveAttack(this.player2);
+                    this.receiveAttack(this.player2, this.player1);
                 }
             }
         }
