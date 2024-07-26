@@ -279,7 +279,7 @@ nav > button:active {
         white 180deg
     );
     mix-blend-mode: hard-light;
-    animation: radar 5s infinite linear;
+    animation: radar 10s infinite linear;
     /* isolation: isolate; */
 }
 .alarm {

@@ -5,6 +5,7 @@ import {
     inputText,
     button,
     attackBoard,
+    replaceAttackCell,
     shipsBoard,
     clearApp,
 } from './DOMrender';
@@ -257,10 +258,21 @@ export default class Game {
 
         const attackBTNs = document.querySelectorAll('.board__attack');
         attackBTNs.forEach((btn) => {
-            btn.addEventListener('pointerdown', () => {
+            btn.addEventListener('pointerdown', (event) => {
                 const [row, col] = btn.getAttribute('data-cell').split('-');
-                console.log(player.attack(+col, +row))
-                this.playerAttack(player)
+                const attackResult = player.attack(+col, +row)
+
+                if (attackResult === 'Water') {
+                    this.playerAttack(player)
+                    document.body.classList.remove('alarm')
+                    // this.switcher('attack', player, this.player2)
+                } else if(attackResult === 'Ship') {
+                    document.body.classList.add('alarm')
+                    replaceAttackCell(event.target.getAttribute('data-cell'))
+                } else if(attackResult === 'Sunk') {
+                    document.body.classList.remove('alarm')
+                    replaceAttackCell(event.target.getAttribute('data-cell'))
+                }
             });
         });
     }

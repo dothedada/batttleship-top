@@ -1,6 +1,6 @@
 const clearApp = () => {
-    document.querySelector('#app').textContent = ''
-}
+    document.querySelector('#app').textContent = '';
+};
 
 const wrapper = (type, textContent = '', css = '', data = undefined) => {
     const element = document.createElement(type);
@@ -64,7 +64,7 @@ const attackBoard = (player) => {
         const col = Math.floor(index / 10);
 
         if (row === 0) {
-            board.append(wrapper('span', rowHeader, 'board__coordenates' ));
+            board.append(wrapper('span', rowHeader, 'board__coordenates'));
             rowHeader++;
         }
 
@@ -85,6 +85,20 @@ const attackBoard = (player) => {
     return board;
 };
 
+const replaceAttackCell = (coordenates) => {
+    const [row, col] = coordenates.split('-');
+    const newSpan = wrapper(
+        'span',
+        'X',
+        'board__ships board__ships--occupied',
+        coordenates,
+    );
+    const replaceBTN = document.querySelector(`[data-cell="${row}-${col}"]`);
+    const parent = replaceBTN.parentNode;
+
+    parent.replaceChild(newSpan, replaceBTN);
+};
+
 const shipsBoard = (player) => {
     const board = boardFrame();
     let rowHeader = 1;
@@ -98,7 +112,7 @@ const shipsBoard = (player) => {
             : 'board__ships';
 
         if (row === 0) {
-            board.append(wrapper('span', rowHeader, 'board__coordenates' ));
+            board.append(wrapper('span', rowHeader, 'board__coordenates'));
             rowHeader++;
         }
 
@@ -112,4 +126,12 @@ const shipsBoard = (player) => {
     return board;
 };
 
-export { clearApp, wrapper, inputText, button, attackBoard, shipsBoard }
+export {
+    clearApp,
+    wrapper,
+    inputText,
+    button,
+    attackBoard,
+    replaceAttackCell,
+    shipsBoard,
+};
