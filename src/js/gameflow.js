@@ -240,6 +240,8 @@ export default class Game {
     playerAttack(player) {
         this.renderSendAttack(player);
 
+        let targetSet = null;
+
         const radarBTN = document.querySelector('[data-cell="radar"]');
         radarBTN.addEventListener('pointerdown', () => {
             const radar = document.querySelector('.radar');
@@ -250,35 +252,82 @@ export default class Game {
         });
 
         const attackBTNs = document.querySelectorAll('.board__attack');
-        attackBTNs.forEach((btn) => {
-            btn.addEventListener('pointerdown', (event) => {
-                const [row, col] = btn.getAttribute('data-cell').split('-');
-                const attackResult = player.attack(+col, +row);
 
-                attackBTNs.forEach((btn) => (btn.disabled = true));
-
-                setTimeout(
-                    () => {
-                        if (attackResult === 'Water') {
-                            this.playerAttack(player);
-                            document.body.classList.remove('alarm');
-                            this.switcher('attack', player);
-                        } else if (attackResult === 'Ship') {
-                            document.body.classList.add('alarm');
-                            replaceAttackCell(
-                                event.target.getAttribute('data-cell'),
-                            );
-                        } else if (attackResult === 'Sunk') {
-                            document.body.classList.remove('alarm');
-                            replaceAttackCell(
-                                event.target.getAttribute('data-cell'),
-                            );
-                        }
-                        attackBTNs.forEach((btn) => (btn.disabled = false));
-                    },
-                    Math.random() * 2000 + 500,
-                );
+        const sendAttack = (row, col) => {
+            attackBTNs.forEach((btn) => {
+                btn.disabled = true;
             });
+            const attackResult = player.attack(+col, +row);
+            const cell = document.querySelector(`[data-cell="${row}-${col}"]`);
+            setTimeout(
+                () => {
+                    document.body.classList.toggle(
+                        'alarm',
+                        attackResult === 'Ship',
+                    );
+
+                    if (attackResult === 'Water') {
+                        this.switcher('attack', player);
+                    } else {
+                        replaceAttackCell(cell.getAttribute('data-cell'));
+                    }
+
+                    attackBTNs.forEach((btn) => {
+                        btn.disabled = false;
+                    });
+
+                    attackInput.value = ''
+                },
+                Math.random() * 2000 + 500,
+            );
+        };
+
+        attackBTNs.forEach((btn) => {
+            btn.addEventListener('pointerdown', () => {
+                const [row, col] = btn.getAttribute('data-cell').split('-');
+                sendAttack(row, col);
+            });
+        });
+
+        const attackInput = document.querySelector('input');
+        attackInput.addEventListener('input', () => {
+            targetSet = null;
+
+            const colRgx = attackInput.value.match(/[a-j]/i);
+            const rowRgx = attackInput.value.match(/(10|[1-9])/i);
+            document
+                .querySelector('.board__attack--aim')
+                ?.classList.remove('board__attack--aim');
+
+            if (!rowRgx || !colRgx) {
+                return;
+            }
+
+            const row = +rowRgx[0] - 1;
+            const col = +colRgx[0].toLowerCase().charCodeAt(0) - 97;
+
+            const target = document.querySelector(
+                `button[data-cell="${row}-${col}"]`,
+            );
+            if (!target) {
+                return
+            }
+            target.classList.add('board__attack--aim');
+
+            targetSet = { row, col };
+        });
+
+        attackInput.addEventListener('keydown', (event) => {
+            if (event.key !== 'Enter') {
+                return;
+            }
+
+            if (!targetSet) {
+                return;
+            }
+
+            const {row, col} = targetSet
+            sendAttack(row, col)
         });
     }
 

@@ -130,6 +130,7 @@ pre {
 
     transition: background-color 1.5s ease-out;
 }
+.board__attack--aim,
 .board__attack:hover {
     background-color: var(--text);
     color: var(--background);
