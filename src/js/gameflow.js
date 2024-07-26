@@ -232,8 +232,8 @@ export default class Game {
     }
 
     renderReceiveAttack(player) {
-        clearApp()
-        app.append(wrapper('div', `${player.name} recibe ataque`))
+        clearApp();
+        app.append(wrapper('div', `${player.name} recibe ataque`));
         //
     }
 
@@ -255,17 +255,29 @@ export default class Game {
                 const [row, col] = btn.getAttribute('data-cell').split('-');
                 const attackResult = player.attack(+col, +row);
 
-                if (attackResult === 'Water') {
-                    this.playerAttack(player);
-                    document.body.classList.remove('alarm');
-                    // this.switcher('attack', player, this.player2)
-                } else if (attackResult === 'Ship') {
-                    document.body.classList.add('alarm');
-                    replaceAttackCell(event.target.getAttribute('data-cell'));
-                } else if (attackResult === 'Sunk') {
-                    document.body.classList.remove('alarm');
-                    replaceAttackCell(event.target.getAttribute('data-cell'));
-                }
+                attackBTNs.forEach((btn) => (btn.disabled = true));
+
+                setTimeout(
+                    () => {
+                        if (attackResult === 'Water') {
+                            this.playerAttack(player);
+                            document.body.classList.remove('alarm');
+                            this.switcher('attack', player);
+                        } else if (attackResult === 'Ship') {
+                            document.body.classList.add('alarm');
+                            replaceAttackCell(
+                                event.target.getAttribute('data-cell'),
+                            );
+                        } else if (attackResult === 'Sunk') {
+                            document.body.classList.remove('alarm');
+                            replaceAttackCell(
+                                event.target.getAttribute('data-cell'),
+                            );
+                        }
+                        attackBTNs.forEach((btn) => (btn.disabled = false));
+                    },
+                    Math.random() * 2000 + 500,
+                );
             });
         });
     }
@@ -289,10 +301,9 @@ export default class Game {
                 this.playerAttack(this.player1);
             } else if (onlyPlayer2) {
                 if (from === this.player2) {
-                    this.renderReceiveAttack(this.player2)
+                    this.renderReceiveAttack(this.player2);
                 } else {
                     this.setShips(this.player2);
-
                 }
             }
         } else if (type === 'attack') {
