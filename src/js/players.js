@@ -86,7 +86,7 @@ class Player {
         return this.#attackQueued();
     }
 
-    attackRandom() {
+    getRandomCoordenates() {
         const target = this.myAttacks.flatMap((row, rowNumber) => {
             return row
                 .map((cell, colNumber) =>
@@ -96,6 +96,11 @@ class Player {
         });
 
         const [rRow, rCol] = target[Math.floor(Math.random() * target.length)];
+        return { rCol, rRow };
+    }
+
+    attackRandom() {
+        const { rCol, rRow } = this.getRandomCoordenates();
 
         return this.attack(rCol, rRow);
     }
