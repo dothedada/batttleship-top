@@ -15,8 +15,8 @@ const app = document.querySelector('#app');
 app.append(
     wrapper('pre', asciiArt.submarine),
     wrapper('pre', asciiArt.name),
-    wrapper('p', 'Presiona [Enter] o haz clic aquí para empezar'),
     wrapper('pre', asciiArt.sea),
+    wrapper('p', 'Presiona [Enter] o haz clic aquí para empezar...'),
 );
 
 const startGame = (event) => {

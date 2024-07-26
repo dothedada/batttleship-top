@@ -27,47 +27,47 @@ export default class Game {
         return { shipsLeft, ship, size };
     }
 
-    renderShipsPositioningScreen(player, shipsAvailable) {
+    renderShipsBoard(player, shipsAvailable, confirm = undefined) {
         clearApp();
 
-        const { shipsLeft, ship } = shipsAvailable;
-
-        const header = wrapper('p', `${player.name}, ubica tus barcos...`);
+        const headerTXT = !confirm
+            ? `${player.name}, ubica tus barcos...`
+            : `${player.name}, ¿Quieres esta disposición para tu flota?`;
+        const header = wrapper('p', headerTXT);
         const shipsPlacement = shipsBoard(player);
-
         const settings = wrapper('div', '', 'settings');
 
-        const nav = wrapper('nav');
-        const coordenatesBTN = button('Coordenadas', '', '', true);
-        const dragNDropBTN = button('Arrastrar y soltar');
-        nav.append(coordenatesBTN, dragNDropBTN);
+        if (!confirm) {
+            const nav = wrapper('nav');
+            const coordenatesBTN = button('Coordenadas', '', '', true);
+            const dragNDropBTN = button('Arrastrar y soltar');
+            nav.append(coordenatesBTN, dragNDropBTN);
 
-        const instructions = wrapper('div', '', 'settings__dialog');
-        const shipInventory = wrapper(
-            'p',
-            `${ship} (${ship.slice(0, 2)}), quedan ${shipsLeft} barcos por ubicar.`,
-            'dialog__ship',
-        );
-        const form = wrapper('form');
-        const input = inputText(
-            'Ingresa las coordenadas y presiona [Enter] para confirmar o, escribe <No sé> para ubicar aleatoriamente',
-            '<A-B> <1-10> <(H)orizontal/(V)ertical>',
-        );
-        form.append(input);
-        instructions.append(shipInventory, form);
-        settings.append(nav, instructions);
+            const { shipsLeft, ship } = shipsAvailable;
+            const instructions = wrapper('div', '', 'settings__dialog');
+            const shipInventory = wrapper(
+                'p',
+                `${ship} (${ship.slice(0, 2)}), quedan ${shipsLeft} barcos por ubicar.`,
+                'dialog__ship',
+            );
+            const form = wrapper('form');
+            const input = inputText(
+                'Ingresa las coordenadas y presiona [Enter] para confirmar o, escribe <No sé> para ubicar aleatoriamente',
+                '<A-B> <1-10> <(H)orizontal/(V)ertical>',
+            );
+            form.append(input);
+            instructions.append(shipInventory, form);
+            const resetBTN = button('Reiniciar', 'set', 'reset');
 
-        const confirmation = wrapper('div', '', 'settings__confirmation');
-        const resetBTN = button('Reiniciar', 'set');
-        const confirmBTN = button('Confirmar', 'set', '', true);
-        confirmation.append(resetBTN, confirmBTN);
+            settings.append(nav, instructions, resetBTN);
+        } else {
+            const resetBTN = button('No, volver a ubicar', 'set', 'reset');
+            const confirmBTN = button('Sí', 'set', 'confirm');
 
-        resetBTN.addEventListener('pointerdown', () => {
-            player.board.resetShips()
-            this.setShips(player)
-        });
+            settings.append(resetBTN, confirmBTN);
+        }
 
-        app.append(header, shipsPlacement, settings, confirmation);
+        app.append(header, shipsPlacement, settings);
     }
 
     setShips(player) {
@@ -81,18 +81,28 @@ export default class Game {
             }
         }
 
-        if (player.board.shipsInventory.placed.size === 5) {
-            // TODO: activar el botón de confirmación si es persona, saltar a siguiente si no
-            if (player === this.player1) {
-                this.switcher('shipPlacement', this.player1, this.player2);
-            } else {
-                this.switcher('attack', this.player2, this.player1);
-            }
+        const confirmation = player.board.shipsInventory.placed.size === 5;
+        const { shipsLeft, ship, size } = this.getShips(player);
+        this.renderShipsBoard(player, { shipsLeft, ship, size }, confirmation);
+
+        const resetBTN = document.querySelector('[data-cell="reset"]');
+        resetBTN.addEventListener('pointerdown', () => {
+            player.board.resetShips();
+            this.setShips(player);
+        });
+
+        if (confirmation) {
+            const confirmBTN = document.querySelector('[data-cell="confirm"]');
+            confirmBTN.addEventListener('pointerdown', () => {
+                if (player === this.player1) {
+                    this.switcher('shipPlacement', this.player1, this.player2);
+                } else {
+                    this.switcher('attack', this.player2, this.player1);
+                }
+            });
             return;
         }
 
-        const { shipsLeft, ship, size } = this.getShips(player);
-        this.renderShipsPositioningScreen(player, { shipsLeft, ship, size });
         const coordenates = document.querySelector('input');
         let setShipIn = null;
 
@@ -190,18 +200,13 @@ export default class Game {
     switcher(type, playerFrom, playerTo) {
         // TODO: mejorar la lógica del switch
         clearApp();
-
-        const draw = wrapper(
-            'pre',
-            type === 'attack' ? asciiArt.ship1 : asciiArt.ship1,
-        );
-        const msg = wrapper(
-            'p',
-            `${playerFrom.name}, ahora le toca a ${playerFrom.adversaryName}...`,
-        );
         let btn;
 
         if (type === 'shipPlacement') {
+            if (!playerTo.name) {
+                this.playerAttack(playerFrom);
+                return;
+            }
             btn = button(`${playerTo.name}, clic aquí para ubicar tus barcos`);
 
             btn.addEventListener('pointerdown', () => {
@@ -216,6 +221,15 @@ export default class Game {
                 this.playerAttack(playerTo);
             });
         }
+
+        const draw = wrapper(
+            'pre',
+            type === 'attack' ? asciiArt.ship1 : asciiArt.ship1,
+        );
+        const msg = wrapper(
+            'p',
+            `${playerFrom.name}, ahora le toca a ${playerFrom.adversaryName}...`,
+        );
         app.append(msg, btn, draw);
     }
 
