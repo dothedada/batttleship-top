@@ -11,8 +11,6 @@ import {
 } from './DOMrender';
 import Ship from './ships';
 
-// TODO: revisar la implementación del switcher
-
 const app = document.querySelector('#app');
 
 export default class Game {
@@ -37,11 +35,10 @@ export default class Game {
             ? `${player.name}, ubica tus barcos...`
             : `${player.name}, ¿Quieres esta disposición para tu flota?`;
         const header = wrapper('header');
-        const headerTextWrapper = wrapper('h1', headerTXT)
-        header.append(headerTextWrapper)
+        const headerTextWrapper = wrapper('h1', headerTXT);
+        header.append(headerTextWrapper);
         const shipsPlacement = shipsBoard(player);
         const settings = wrapper('div', '', 'settings');
-
 
         if (!confirm) {
             const nav = wrapper('nav');
@@ -79,14 +76,8 @@ export default class Game {
     setShips(player) {
         if (!player.name) {
             player.board.placeRemainignShipsRandom();
-
-            if (this.player1 === player) {
-                this.setShips(this.player2);
-            } else {
-                this.playerAttack(this.player1);
-            }
-
-            return
+            this.switcher('shipsPlacement', player);
+            return;
         }
 
         const confirmation = player.board.shipsInventory.placed.size === 5;
@@ -102,11 +93,7 @@ export default class Game {
         if (confirmation) {
             const confirmBTN = document.querySelector('[data-cell="confirm"]');
             confirmBTN.addEventListener('pointerdown', () => {
-                if (player === this.player1) {
-                    this.switcher('shipPlacement', this.player1, this.player2);
-                } else {
-                    this.switcher('attack', this.player2, this.player1);
-                }
+                this.switcher('shipsPlacement', player);
             });
             return;
         }
@@ -209,7 +196,7 @@ export default class Game {
         }
     }
 
-    renderAttackBoard(player) {
+    renderSendAttack(player) {
         clearApp();
 
         const radar = wrapper('div', '', 'radar');
@@ -244,8 +231,14 @@ export default class Game {
         app.append(radar, header, attacks, settings);
     }
 
+    renderReceiveAttack(player) {
+        clearApp()
+        app.append(wrapper('div', `${player.name} recibe ataque`))
+        //
+    }
+
     playerAttack(player) {
-        this.renderAttackBoard(player);
+        this.renderSendAttack(player);
 
         const radarBTN = document.querySelector('[data-cell="radar"]');
         radarBTN.addEventListener('pointerdown', () => {
@@ -260,34 +253,72 @@ export default class Game {
         attackBTNs.forEach((btn) => {
             btn.addEventListener('pointerdown', (event) => {
                 const [row, col] = btn.getAttribute('data-cell').split('-');
-                const attackResult = player.attack(+col, +row)
+                const attackResult = player.attack(+col, +row);
 
                 if (attackResult === 'Water') {
-                    this.playerAttack(player)
-                    document.body.classList.remove('alarm')
+                    this.playerAttack(player);
+                    document.body.classList.remove('alarm');
                     // this.switcher('attack', player, this.player2)
-                } else if(attackResult === 'Ship') {
-                    document.body.classList.add('alarm')
-                    replaceAttackCell(event.target.getAttribute('data-cell'))
-                } else if(attackResult === 'Sunk') {
-                    document.body.classList.remove('alarm')
-                    replaceAttackCell(event.target.getAttribute('data-cell'))
+                } else if (attackResult === 'Ship') {
+                    document.body.classList.add('alarm');
+                    replaceAttackCell(event.target.getAttribute('data-cell'));
+                } else if (attackResult === 'Sunk') {
+                    document.body.classList.remove('alarm');
+                    replaceAttackCell(event.target.getAttribute('data-cell'));
                 }
             });
         });
     }
 
-    switcher(type, playerFrom, playerTo) {
+    switcher(type, fromPlayer) {
+        const bothHumans = this.player1.name && this.player2.name;
+        const onlyPlayer1 = this.player1.name && !this.player2.name;
+        const onlyPlayer2 = !this.player1.name && this.player2.name;
+
+        const from = fromPlayer;
+        const to = fromPlayer === this.player1 ? this.player2 : this.player1;
+
+        if (type === 'shipsPlacement') {
+            if (bothHumans) {
+                if (from === this.player1) {
+                    this.switcherScreen(type, this.player1, this.player2);
+                } else {
+                    this.switcherScreen('attack', this.player2, this.player1);
+                }
+            } else if (onlyPlayer1) {
+                this.playerAttack(this.player1);
+            } else if (onlyPlayer2) {
+                if (from === this.player2) {
+                    this.renderReceiveAttack(this.player2)
+                } else {
+                    this.setShips(this.player2);
+
+                }
+            }
+        } else if (type === 'attack') {
+            if (bothHumans) {
+                this.switcherScreen('attack', from, to);
+            } else if (onlyPlayer1) {
+                if (fromPlayer === this.player1) {
+                    this.renderReceiveAttack(this.player1);
+                } else {
+                    this.playerAttack(this.player1);
+                }
+            } else if (onlyPlayer2) {
+                if (fromPlayer === this.player1) {
+                    this.playerAttack(this.player2);
+                } else {
+                    this.renderReceiveAttack(this.player2);
+                }
+            }
+        }
+    }
+
+    switcherScreen(type, playerFrom, playerTo) {
         clearApp();
         let btn;
 
-        if (type === 'shipPlacement' && !playerTo.name) {
-            this.playerAttack(this.player2)
-            return
-        }
-
-        if (type === 'shipPlacement') {
-
+        if (type === 'shipsPlacement') {
             btn = button(`${playerTo.name}, clic aquí para ubicar tus barcos`);
 
             btn.addEventListener('pointerdown', () => {
@@ -309,7 +340,7 @@ export default class Game {
         );
         const msg = wrapper(
             'p',
-            `${playerFrom.name}, ahora le toca a ${playerFrom.adversaryName}...`,
+            `${playerFrom.name}, pásale el dispositivo a ${playerFrom.adversaryName}...`,
         );
         app.append(msg, btn, draw);
     }
