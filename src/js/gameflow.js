@@ -35,9 +35,12 @@ export default class Game {
         const headerTXT = !confirm
             ? `${player.name}, ubica tus barcos...`
             : `${player.name}, ¿Quieres esta disposición para tu flota?`;
-        const header = wrapper('p', headerTXT);
+        const header = wrapper('header');
+        const headerTextWrapper = wrapper('h1', headerTXT)
+        header.append(headerTextWrapper)
         const shipsPlacement = shipsBoard(player);
         const settings = wrapper('div', '', 'settings');
+
 
         if (!confirm) {
             const nav = wrapper('nav');
@@ -81,6 +84,8 @@ export default class Game {
             } else {
                 this.playerAttack(this.player1);
             }
+
+            return
         }
 
         const confirmation = player.board.shipsInventory.placed.size === 5;
@@ -113,11 +118,18 @@ export default class Game {
 
             const input = event.target;
 
+            const allrandom = input.value.match(/\bRRRRR\b/);
+
             const randomRgx = input.value.match(/random|aleatorio|no s[eé]/i);
             const rowRgx = input.value.match(/(10|[1-9])/);
             const colRgx = input.value.match(/\b[a-j]\b/i);
             const dirRgx = input.value.match(/\b(hor|ver)/i);
             setShipIn = null;
+
+            if (allrandom) {
+                setShipIn = 'RRRRR';
+                return;
+            }
 
             if (randomRgx) {
                 setShipIn = 'random';
@@ -154,6 +166,8 @@ export default class Game {
 
             if (setShipIn === 'random') {
                 player.board.placeShipRandom(ship);
+            } else if (setShipIn === 'RRRRR') {
+                player.board.placeRemainignShipsRandom();
             } else if (setShipIn.ship) {
                 const { col, row, horizon, ship } = setShipIn;
                 player.board.placeShip(col, row, horizon, ship);
@@ -232,23 +246,36 @@ export default class Game {
     playerAttack(player) {
         this.renderAttackBoard(player);
 
-        const radarBTN = document.querySelector('[data-cell="radar"]')
+        const radarBTN = document.querySelector('[data-cell="radar"]');
         radarBTN.addEventListener('pointerdown', () => {
-            const radar = document.querySelector('.radar')
-            radar.classList.toggle('hidden')
-            radarBTN.textContent = radar.classList.contains('hidden') ? 'Encender radar' : 'Apagar radar'
-        })
+            const radar = document.querySelector('.radar');
+            radar.classList.toggle('hidden');
+            radarBTN.textContent = radar.classList.contains('hidden')
+                ? 'Encender radar'
+                : 'Apagar radar';
+        });
+
+        const attackBTNs = document.querySelectorAll('.board__attack');
+        attackBTNs.forEach((btn) => {
+            btn.addEventListener('pointerdown', () => {
+                const [row, col] = btn.getAttribute('data-cell').split('-');
+                console.log(player.attack(+col, +row))
+                this.playerAttack(player)
+            });
+        });
     }
 
     switcher(type, playerFrom, playerTo) {
         clearApp();
         let btn;
 
+        if (type === 'shipPlacement' && !playerTo.name) {
+            this.playerAttack(this.player2)
+            return
+        }
+
         if (type === 'shipPlacement') {
-            if (!playerTo.name) {
-                this.playerAttack(playerFrom);
-                return;
-            }
+
             btn = button(`${playerTo.name}, clic aquí para ubicar tus barcos`);
 
             btn.addEventListener('pointerdown', () => {
