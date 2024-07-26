@@ -10,6 +10,8 @@ import {
 } from './DOMrender';
 import Ship from './ships';
 
+// TODO: revisar la implementación del switcher
+
 const app = document.querySelector('#app');
 
 export default class Game {
@@ -57,12 +59,12 @@ export default class Game {
             );
             form.append(input);
             instructions.append(shipInventory, form);
-            const resetBTN = button('Reiniciar', 'set', 'reset');
+            const resetBTN = button('Reiniciar', '', 'reset');
 
             settings.append(nav, instructions, resetBTN);
         } else {
             const resetBTN = button('No, volver a ubicar', 'set', 'reset');
-            const confirmBTN = button('Sí', 'set', 'confirm');
+            const confirmBTN = button('Sí', '', 'confirm');
 
             settings.append(resetBTN, confirmBTN);
         }
@@ -192,13 +194,53 @@ export default class Game {
         }
     }
 
+    renderAttackBoard(player) {
+        clearApp();
+
+        const radar = wrapper('div', '', 'radar');
+        const radarSweep = wrapper('div', '', 'radar__sweep');
+        radar.append(radarSweep);
+
+        const header = wrapper('header');
+        const headerTXT = wrapper('h1', `¡${player.name}, es hora de atacar!`);
+        const headerBTN = button('apagar radar', '', 'radar');
+        header.append(headerTXT, headerBTN);
+
+        const settings = wrapper('div', '', 'settings');
+
+        const nav = wrapper('nav');
+        const myAttacksBTN = button('Ver mis disparos', '', '', true);
+        const myShipsBTN = button('Ver mis barcos', '', '');
+        nav.append(myAttacksBTN, myShipsBTN);
+
+        const instructions = wrapper('div', '', 'settings__dialog');
+        const timer = wrapper('span', '00:15seg', 'counter warn');
+        const coordinates = inputText(
+            'Escribe las coordenadas de tu ataque y presiona [Enter] para disparar:',
+            '<A-J> <1-10> / <Aleatorio/Random>',
+        );
+        const randomBTN = button('¡Disparo automático!', 'set');
+        instructions.append(timer, coordinates, randomBTN);
+
+        settings.append(nav, instructions);
+
+        const attacks = attackBoard(player);
+
+        app.append(radar, header, attacks, settings);
+    }
+
     playerAttack(player) {
-        console.log(player.name ?? 'compu', ' al ataque');
-        //
+        this.renderAttackBoard(player);
+
+        const radarBTN = document.querySelector('[data-cell="radar"]')
+        radarBTN.addEventListener('pointerdown', () => {
+            const radar = document.querySelector('.radar')
+            radar.classList.toggle('hidden')
+            radarBTN.textContent = radar.classList.contains('hidden') ? 'Encender radar' : 'Apagar radar'
+        })
     }
 
     switcher(type, playerFrom, playerTo) {
-        // TODO: mejorar la lógica del switch
         clearApp();
         let btn;
 
@@ -224,7 +266,7 @@ export default class Game {
 
         const draw = wrapper(
             'pre',
-            type === 'attack' ? asciiArt.ship1 : asciiArt.ship1,
+            type === 'attack' ? asciiArt.ship1 : asciiArt.ship2,
         );
         const msg = wrapper(
             'p',
