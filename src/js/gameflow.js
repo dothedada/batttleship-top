@@ -221,7 +221,7 @@ export default class Game {
             'Escribe las coordenadas de tu ataque y presiona [Enter] para disparar:',
             '<A-J> <1-10> / <Aleatorio/Random>',
         );
-        const randomBTN = button('¡Disparo automático!', 'set');
+        const randomBTN = button('¡Disparo automático!', 'set', 'attackRND');
         instructions.append(timer, coordinates, randomBTN);
 
         settings.append(nav, instructions);
@@ -276,7 +276,7 @@ export default class Game {
                         btn.disabled = false;
                     });
 
-                    attackInput.value = ''
+                    attackInput.value = '';
                 },
                 Math.random() * 2000 + 500,
             );
@@ -289,15 +289,38 @@ export default class Game {
             });
         });
 
+        const attackRndBTN = document.querySelector('[data-cell="attackRND"]');
+        attackRndBTN.addEventListener('pointerdown', () => {
+            const { rRow, rCol } = player.getRandomCoordenates();
+            const target = document.querySelector(
+                `button[data-cell="${rRow}-${rCol}"]`,
+            );
+            target.classList.add('board__attack--aim');
+
+            sendAttack(rRow, rCol);
+        });
+
         const attackInput = document.querySelector('input');
+
         attackInput.addEventListener('input', () => {
             targetSet = null;
-
-            const colRgx = attackInput.value.match(/[a-j]/i);
-            const rowRgx = attackInput.value.match(/(10|[1-9])/i);
             document
                 .querySelector('.board__attack--aim')
                 ?.classList.remove('board__attack--aim');
+
+            const randomRgx = attackInput.value.match(/aleatorio|random/i);
+            const colRgx = attackInput.value.match(/[a-j]/i);
+            const rowRgx = attackInput.value.match(/(10|[1-9])/);
+
+            if (randomRgx) {
+                const { rRow, rCol } = player.getRandomCoordenates();
+                const target = document.querySelector(
+                    `button[data-cell="${rRow}-${rCol}"]`,
+                );
+                target.classList.add('board__attack--aim');
+                targetSet = { row: rRow, col: rCol };
+                return;
+            }
 
             if (!rowRgx || !colRgx) {
                 return;
@@ -310,7 +333,7 @@ export default class Game {
                 `button[data-cell="${row}-${col}"]`,
             );
             if (!target) {
-                return
+                return;
             }
             target.classList.add('board__attack--aim');
 
@@ -326,8 +349,8 @@ export default class Game {
                 return;
             }
 
-            const {row, col} = targetSet
-            sendAttack(row, col)
+            const { row, col } = targetSet;
+            sendAttack(row, col);
         });
     }
 
