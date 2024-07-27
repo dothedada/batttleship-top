@@ -14,8 +14,6 @@ import Ship from './ships';
 const app = document.querySelector('#app');
 
 // TODO:
-// 1.b. contra compu.
-// 1.c. eliminar animación de radar cuando se recive ataque
 // 2. Implementar el dragDrop y el timer
 // 2.a. conservar preferencias del radar
 // 3. Simplificar, limpiar y ordenar codigo (creo que en el gameflow solo quedan
@@ -249,14 +247,9 @@ export default class Game {
     renderReceiveAttack(player) {
         clearApp();
 
-        // const radar = wrapper('div', '', 'radar');
-        // const radarSweep = wrapper('div', '', 'radar__sweep');
-        // radar.append(radarSweep);
-
         const header = wrapper('header');
         const headerTXT = wrapper('h1', `¡${player.name}, te atacan!`);
-        const headerBTN = button('apagar radar', '', 'radar');
-        header.append(headerTXT, headerBTN);
+        header.append(headerTXT);
 
         const myShips = shipsBoard(player);
 
