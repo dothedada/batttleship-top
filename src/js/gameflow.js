@@ -8,12 +8,14 @@ import {
     replaceAttackCell,
     shipsBoard,
     clearApp,
+    replaceBoard,
 } from './DOMrender';
 import Ship from './ships';
 
 const app = document.querySelector('#app');
 
 // TODO:
+// 1. habilitar botón para la revision de barcos
 // 2. Implementar el dragDrop y el timer
 // 2.a. conservar preferencias del radar
 // 3. Simplificar, limpiar y ordenar codigo (creo que en el gameflow solo quedan
@@ -51,7 +53,7 @@ export default class Game {
 
         if (!confirm) {
             const nav = wrapper('nav');
-            const coordenatesBTN = button('Coordenadas', '', '', true);
+            const coordenatesBTN = button('Coordenadas', '', '');
             const dragNDropBTN = button('Arrastrar y soltar');
             nav.append(coordenatesBTN, dragNDropBTN);
 
@@ -224,7 +226,7 @@ export default class Game {
         const settings = wrapper('div', '', 'settings');
 
         const nav = wrapper('nav');
-        const myAttacksBTN = button('Ver mis disparos', '', '', true);
+        const myAttacksBTN = button('Ver mis disparos', '', '');
         const myShipsBTN = button('Ver mis barcos', '', '');
         nav.append(myAttacksBTN, myShipsBTN);
 
@@ -242,6 +244,13 @@ export default class Game {
         const attacks = attackBoard(player);
 
         app.append(radar, header, attacks, settings);
+
+        myAttacksBTN.addEventListener('pointerdown', () => {
+            replaceBoard('attacks', player);
+        });
+        myShipsBTN.addEventListener('pointerdown', () => {
+            replaceBoard('ships', player);
+        });
     }
 
     renderReceiveAttack(player) {
@@ -502,7 +511,7 @@ export default class Game {
 
             document.body.removeEventListener('keydown', newMatch);
             if (key === 's') {
-                location.reload()
+                location.reload();
             } else if (key === 'n') {
                 window.location.href = 'https://cv.mmejia.com';
             }

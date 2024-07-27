@@ -26,7 +26,7 @@ const inputText = (labelText, placeholderText) => {
     return label;
 };
 
-const button = (buttonText, css = '', attribute = '', disabled = false) => {
+const button = (buttonText, css = '', attribute = '') => {
     const buttonElement = document.createElement('button');
 
     buttonElement.type = 'button';
@@ -36,10 +36,6 @@ const button = (buttonText, css = '', attribute = '', disabled = false) => {
     if (attribute) {
         buttonElement.setAttribute('data-cell', attribute);
     }
-    if (disabled) {
-        buttonElement.disabled = true;
-    }
-
     return buttonElement;
 };
 
@@ -125,6 +121,16 @@ const shipsBoard = (player) => {
     return board;
 };
 
+const replaceBoard = (shipsORattacks, player) => {
+    const ships = shipsORattacks === 'ships';
+
+    const newBoard = ships ? shipsBoard(player) : attackBoard(player);
+    const oldBoard = document.querySelector('.board');
+    const parentBoard = oldBoard.parentNode;
+
+    parentBoard.replaceChild(newBoard, oldBoard);
+};
+
 export {
     clearApp,
     wrapper,
@@ -133,4 +139,5 @@ export {
     attackBoard,
     replaceAttackCell,
     shipsBoard,
+    replaceBoard,
 };
