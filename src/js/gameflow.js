@@ -14,8 +14,6 @@ import Ship from './ships';
 const app = document.querySelector('#app');
 
 // TODO:
-// 1. crear pantallas de victoria, tomar como detonante el 'No ships left'
-// 1.a. contra personas
 // 1.b. contra compu.
 // 1.c. eliminar animación de radar cuando se recive ataque
 // 2. Implementar el dragDrop y el timer
@@ -23,6 +21,7 @@ const app = document.querySelector('#app');
 // 3. Simplificar, limpiar y ordenar codigo (creo que en el gameflow solo quedan
 //      los switcher los renders van para el dom, los ataques al player y las
 //      recepciones al gameboard)
+// 3.a. Revisar reinicio de partida
 // 4. crear el Readme
 
 export default class Game {
@@ -91,6 +90,10 @@ export default class Game {
             this.switcher('shipsPlacement', player);
             return;
         }
+
+        document.body.addEventListener('keydown', (event) => {
+            console.log(event.key);
+        });
 
         const confirmation = player.board.shipsInventory.placed.size === 5;
         const { shipsLeft, ship, size } = this.getShips(player);
@@ -246,9 +249,9 @@ export default class Game {
     renderReceiveAttack(player) {
         clearApp();
 
-        const radar = wrapper('div', '', 'radar');
-        const radarSweep = wrapper('div', '', 'radar__sweep');
-        radar.append(radarSweep);
+        // const radar = wrapper('div', '', 'radar');
+        // const radarSweep = wrapper('div', '', 'radar__sweep');
+        // radar.append(radarSweep);
 
         const header = wrapper('header');
         const headerTXT = wrapper('h1', `¡${player.name}, te atacan!`);
@@ -257,7 +260,7 @@ export default class Game {
 
         const myShips = shipsBoard(player);
 
-        app.append(radar, header, myShips);
+        app.append(header, myShips);
     }
 
     delayFunction(ms) {
@@ -319,7 +322,7 @@ export default class Game {
             document.body.classList.toggle('alarm', attackResult === 'Ship');
             replaceAttackCell(cell.getAttribute('data-cell'), attackResult);
 
-            await this.delayFunction(1500);
+            await this.delayFunction(500);
             if (attackResult === 'Water') {
                 this.switcher('attack', player);
             } else if (attackResult === 'No ships left') {
@@ -445,35 +448,33 @@ export default class Game {
             }
         } else if (type === 'winner') {
             if (bothHumans) {
-                // gano from this.switcherScreen('winner', from, to)
+                this.renderAftermath('winner', fromPlayer);
             } else if (onlyPlayer1) {
                 if (fromPlayer === this.player1) {
-                    // ganaste
+                    this.renderAftermath('winner');
                 } else {
-                    //perdiste
+                    this.renderAftermath('loser');
                 }
             } else if (onlyPlayer2) {
                 if (fromPlayer === this.player1) {
-                    //perdiste
+                    this.renderAftermath('loser');
                 } else {
-                    // ganaste
+                    this.renderAftermath('winner');
                 }
             }
         }
     }
 
     switcherScreen(type, from, to) {
-        clearApp();
-
         const artsTotal = 2;
-
         const msgTxt = `${from.name}, entrégale el dispositivo a ${to.name}`;
         const btnTxt =
             type === 'shipsPlacement'
-                ? `${to.name}, clic aquí para empezar a ubicar tus barcos`
-                : `${to.name}, clic aquí para realizar tu ataque`;
+                ? `${to.name}, haz clic aquí o presiona [Enter] para ubicar tus barcos`
+                : `${to.name}, haz clic aquí o presiona [Enter] para realizar tu ataque`;
         const ascii = asciiArt[`ship${Math.floor(Math.random() * artsTotal)}`];
 
+        clearApp();
         app.append(wrapper('p', msgTxt), wrapper('pre', ascii), button(btnTxt));
 
         const goto = (event) => {
@@ -486,12 +487,34 @@ export default class Game {
                 ? this.playerAttack(to)
                 : this.setShips(to);
         };
-
         document.querySelector('button').addEventListener('pointerdown', goto);
         document.addEventListener('keydown', goto);
     }
 
-    aftermath() {
-        //
+    renderAftermath(aftermath, winner = undefined) {
+        clearApp();
+
+        const ascii = asciiArt[aftermath];
+        const msgTxt = winner
+            ? `Así se hace ${winner.name}, ¿quieres jugar una nueva partida? (S)í / (N)o`
+            : '¿Una nueva partida? (S)í / (N)o';
+
+        app.append(wrapper('pre', ascii), wrapper('div', msgTxt));
+
+        const newMatch = (event) => {
+            const key = event.key.toLowerCase();
+            if (key !== 's' && key !== 'n') {
+                return;
+            }
+
+            document.body.removeEventListener('keydown', newMatch);
+            if (key === 's') {
+                location.reload()
+            } else if (key === 'n') {
+                window.location.href = 'https://cv.mmejia.com';
+            }
+        };
+
+        document.body.addEventListener('keydown', newMatch);
     }
 }
