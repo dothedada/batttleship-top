@@ -306,7 +306,7 @@ export default class Game {
                 : 'Apagar radar';
         });
 
-        const sendAttack = (row, col) => {
+        const sendAttack = async (row, col) => {
             const buttons = document.querySelectorAll('button');
             const attackResult = player.attack(+col, +row);
             const cell = document.querySelector(`[data-cell="${row}-${col}"]`);
@@ -315,34 +315,50 @@ export default class Game {
                 btn.disabled = true;
             });
 
-            setTimeout(
-                () => {
-                    document.body.classList.toggle(
-                        'alarm',
-                        attackResult === 'Ship',
-                    );
+            await this.delayFunction(Math.random() * 2000 + 500)
+            document.body.classList.toggle('alarm', attackResult === 'Ship')
+            replaceAttackCell(cell.getAttribute('data-cell'), attackResult)
 
-                    replaceAttackCell(
-                        cell.getAttribute('data-cell'),
-                        attackResult,
-                    );
+            await this.delayFunction(1500)
+            if (attackResult === 'Water') {
+                this.switcher('attack', player)
+            } else if (attackResult === 'No ships left') {
+                this.switcher('winner', player)
+            }
 
-                    setTimeout(() => {
-                        if (attackResult === 'Water') {
-                            this.switcher('attack', player);
-                        } else if (attackResult === 'No ships left') {
-                            this.switcher('winner', attacker);
-                        }
+            buttons.forEach(btn => {
+                btn.disabled = false
+            })
 
-                        buttons.forEach((btn) => {
-                            btn.disabled = false;
-                        });
-
-                        attackInput.value = '';
-                    }, 1000);
-                },
-                Math.random() * 2000 + 500,
-            );
+            attackInput.value = ''
+            // setTimeout(
+            //     () => {
+            //         document.body.classList.toggle(
+            //             'alarm',
+            //             attackResult === 'Ship',
+            //         );
+            //
+            //         replaceAttackCell(
+            //             cell.getAttribute('data-cell'),
+            //             attackResult,
+            //         );
+            //
+            //         setTimeout(() => {
+            //             if (attackResult === 'Water') {
+            //                 this.switcher('attack', player);
+            //             } else if (attackResult === 'No ships left') {
+            //                 this.switcher('winner', attacker);
+            //             }
+            //
+            //             buttons.forEach((btn) => {
+            //                 btn.disabled = false;
+            //             });
+            //
+            //             attackInput.value = '';
+            //         }, 1000);
+            //     },
+            //     Math.random() * 2000 + 500,
+            // );
         };
 
         attackBTNs.forEach((btn) => {
