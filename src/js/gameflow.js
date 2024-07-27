@@ -315,50 +315,22 @@ export default class Game {
                 btn.disabled = true;
             });
 
-            await this.delayFunction(Math.random() * 2000 + 500)
-            document.body.classList.toggle('alarm', attackResult === 'Ship')
-            replaceAttackCell(cell.getAttribute('data-cell'), attackResult)
+            await this.delayFunction(Math.random() * 2000 + 500);
+            document.body.classList.toggle('alarm', attackResult === 'Ship');
+            replaceAttackCell(cell.getAttribute('data-cell'), attackResult);
 
-            await this.delayFunction(1500)
+            await this.delayFunction(1500);
             if (attackResult === 'Water') {
-                this.switcher('attack', player)
+                this.switcher('attack', player);
             } else if (attackResult === 'No ships left') {
-                this.switcher('winner', player)
+                this.switcher('winner', player);
             }
 
-            buttons.forEach(btn => {
-                btn.disabled = false
-            })
+            buttons.forEach((btn) => {
+                btn.disabled = false;
+            });
 
-            attackInput.value = ''
-            // setTimeout(
-            //     () => {
-            //         document.body.classList.toggle(
-            //             'alarm',
-            //             attackResult === 'Ship',
-            //         );
-            //
-            //         replaceAttackCell(
-            //             cell.getAttribute('data-cell'),
-            //             attackResult,
-            //         );
-            //
-            //         setTimeout(() => {
-            //             if (attackResult === 'Water') {
-            //                 this.switcher('attack', player);
-            //             } else if (attackResult === 'No ships left') {
-            //                 this.switcher('winner', attacker);
-            //             }
-            //
-            //             buttons.forEach((btn) => {
-            //                 btn.disabled = false;
-            //             });
-            //
-            //             attackInput.value = '';
-            //         }, 1000);
-            //     },
-            //     Math.random() * 2000 + 500,
-            // );
+            attackInput.value = '';
         };
 
         attackBTNs.forEach((btn) => {
@@ -471,38 +443,52 @@ export default class Game {
                     this.receiveAttack(this.player2, this.player1);
                 }
             }
+        } else if (type === 'winner') {
+            if (bothHumans) {
+                // gano from this.switcherScreen('winner', from, to)
+            } else if (onlyPlayer1) {
+                if (fromPlayer === this.player1) {
+                    // ganaste
+                } else {
+                    //perdiste
+                }
+            } else if (onlyPlayer2) {
+                if (fromPlayer === this.player1) {
+                    //perdiste
+                } else {
+                    // ganaste
+                }
+            }
         }
     }
 
-    switcherScreen(type, playerFrom, playerTo) {
+    switcherScreen(type, from, to) {
         clearApp();
-        let btn;
 
-        if (type === 'shipsPlacement') {
-            btn = button(`${playerTo.name}, clic aquí para ubicar tus barcos`);
+        const artsTotal = 2;
 
-            btn.addEventListener('pointerdown', () => {
-                this.setShips(playerTo);
-            });
-        }
+        const msgTxt = `${from.name}, entrégale el dispositivo a ${to.name}`;
+        const btnTxt =
+            type === 'shipsPlacement'
+                ? `${to.name}, clic aquí para empezar a ubicar tus barcos`
+                : `${to.name}, clic aquí para realizar tu ataque`;
+        const ascii = asciiArt[`ship${Math.floor(Math.random() * artsTotal)}`];
 
-        if (type === 'attack') {
-            btn = button(`${playerTo.name}, clic aquí para realizar tu ataque`);
+        app.append(wrapper('p', msgTxt), wrapper('pre', ascii), button(btnTxt));
 
-            btn.addEventListener('pointerdown', () => {
-                this.playerAttack(playerTo);
-            });
-        }
+        const goto = (event) => {
+            if (event.type !== 'pointerdown' && event.key !== 'Enter') {
+                return;
+            }
+            document.removeEventListener('keydown', goto);
 
-        const draw = wrapper(
-            'pre',
-            type === 'attack' ? asciiArt.ship1 : asciiArt.ship2,
-        );
-        const msg = wrapper(
-            'p',
-            `${playerFrom.name}, pásale el dispositivo a ${playerFrom.adversaryName}...`,
-        );
-        app.append(msg, btn, draw);
+            return type === 'attack'
+                ? this.playerAttack(to)
+                : this.setShips(to);
+        };
+
+        document.querySelector('button').addEventListener('pointerdown', goto);
+        document.addEventListener('keydown', goto);
     }
 
     aftermath() {
