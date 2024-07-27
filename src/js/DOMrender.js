@@ -85,14 +85,13 @@ const attackBoard = (player) => {
     return board;
 };
 
-const replaceAttackCell = (coordenates) => {
+const replaceAttackCell = (coordenates, type) => {
     const [row, col] = coordenates.split('-');
-    const newSpan = wrapper(
-        'span',
-        'X',
-        'board__ships board__ships--occupied',
-        coordenates,
-    );
+    const char = type === 'Water' ? '~' : 'X';
+    let css = 'board__ships';
+    css += type === 'Water' ? ' board__ships--occupied' : ' board__ships--warn';
+
+    const newSpan = wrapper('span', char, css, coordenates);
     const replaceBTN = document.querySelector(`[data-cell="${row}-${col}"]`);
     const parent = replaceBTN.parentNode;
 

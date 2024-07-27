@@ -13,6 +13,18 @@ import Ship from './ships';
 
 const app = document.querySelector('#app');
 
+// TODO:
+// 1. crear pantallas de victoria, tomar como detonante el 'No ships left'
+// 1.a. contra personas
+// 1.b. contra compu.
+// 1.c. eliminar animación de radar cuando se recive ataque
+// 2. Implementar el dragDrop y el timer
+// 2.a. conservar preferencias del radar
+// 3. Simplificar, limpiar y ordenar codigo (creo que en el gameflow solo quedan
+//      los switcher los renders van para el dom, los ataques al player y las
+//      recepciones al gameboard)
+// 4. crear el Readme
+
 export default class Game {
     constructor(player_1, player_2) {
         this.player1 = new Player(player_1 !== '' ? player_1 : undefined);
@@ -77,7 +89,6 @@ export default class Game {
         if (!player.name) {
             player.board.placeRemainignShipsRandom();
             this.switcher('shipsPlacement', player);
-            console.table(player.board.ships);
             return;
         }
 
@@ -162,7 +173,7 @@ export default class Game {
                 player.board.placeShip(col, row, horizon, ship);
             }
 
-            this.switcher('shipsPlacement', player);
+            this.setShips(player); // carga pantalla de confirmación
         });
     }
 
@@ -267,6 +278,11 @@ export default class Game {
             const boardParent = oldShipsBoard.parentNode;
             boardParent.replaceChild(newShipsBoard, oldShipsBoard);
             await this.delayFunction(1500);
+
+            if (attackResult === 'No ships left') {
+                this.switcher('winner', attacker);
+                return;
+            }
         } while (attackResult !== 'Water');
 
         document.body.classList.remove('alarm');
@@ -306,17 +322,24 @@ export default class Game {
                         attackResult === 'Ship',
                     );
 
-                    if (attackResult === 'Water') {
-                        this.switcher('attack', player);
-                    } else {
-                        replaceAttackCell(cell.getAttribute('data-cell'));
-                    }
+                    replaceAttackCell(
+                        cell.getAttribute('data-cell'),
+                        attackResult,
+                    );
 
-                    buttons.forEach((btn) => {
-                        btn.disabled = false;
-                    });
+                    setTimeout(() => {
+                        if (attackResult === 'Water') {
+                            this.switcher('attack', player);
+                        } else if (attackResult === 'No ships left') {
+                            this.switcher('winner', attacker);
+                        }
 
-                    attackInput.value = '';
+                        buttons.forEach((btn) => {
+                            btn.disabled = false;
+                        });
+
+                        attackInput.value = '';
+                    }, 1000);
                 },
                 Math.random() * 2000 + 500,
             );
@@ -466,7 +489,7 @@ export default class Game {
         app.append(msg, btn, draw);
     }
 
-    afterMath() {
+    aftermath() {
         //
     }
 }
