@@ -15,9 +15,8 @@ import Ship from './ships';
 const app = document.querySelector('#app');
 
 // TODO:
-// 1. habilitar botón para la revision de barcos
 // 2. Implementar el dragDrop y el timer
-// 2.a. conservar preferencias del radar
+// 2.a. conservar preferencias del radar y del dragndrop
 // 3. Simplificar, limpiar y ordenar codigo (creo que en el gameflow solo quedan
 //      los switcher los renders van para el dom, los ataques al player y las
 //      recepciones al gameboard)
@@ -57,20 +56,18 @@ export default class Game {
             const dragNDropBTN = button('Arrastrar y soltar');
             nav.append(coordenatesBTN, dragNDropBTN);
 
-            const { shipsLeft, ship } = shipsAvailable;
+            const { shipsLeft, ship, size } = shipsAvailable;
             const instructions = wrapper('div', '', 'settings__dialog');
             const shipInventory = wrapper(
                 'p',
                 `${ship} (${ship.slice(0, 2)}), quedan ${shipsLeft} barcos por ubicar.`,
                 'dialog__ship',
             );
-            const form = wrapper('form');
-            const input = inputText(
-                'Ingresa las coordenadas y presiona [Enter] para confirmar o, escribe <No sé> para ubicar aleatoriamente',
-                '<A-B> <1-10> <(H)orizontal/(V)ertical>',
-            );
-            form.append(input);
-            instructions.append(shipInventory, form);
+            //  drag o form
+            const form = this.coordenatesDialog();
+            const drag = this.dragNdropDialog(ship, size);
+            // fin drag o form
+            instructions.append(shipInventory, drag);
             const resetBTN = button('Reiniciar', '', 'reset');
 
             settings.append(nav, instructions, resetBTN);
@@ -84,16 +81,49 @@ export default class Game {
         app.append(header, shipsPlacement, settings);
     }
 
+    coordenatesDialog() {
+        const form = wrapper('form');
+        const input = inputText(
+            'Ingresa las coordenadas y presiona [Enter] para confirmar o, escribe <No sé> para ubicar aleatoriamente',
+            '<A-B> <1-10> <(H)orizontal/(V)ertical>',
+        );
+        form.append(input);
+        return form;
+    }
+
+    dragNdropDialog(name, size) {
+        const sectionTXT = name.slice(0, 2);
+        const dock = wrapper('div', '', 'dialog__dock');
+        const ship = wrapper('div', '', 'dock__ship');
+        ship.draggable = true;
+
+        for (let i = 0; i < size; i++) {
+            ship.append(wrapper('div', sectionTXT, 'ship__section', i));
+        }
+
+        const dragSettings = wrapper('div', '', 'dialog__options');
+        const rotateBtn = button('Girar');
+        const randomBtn = button('Ubicación aleatoria');
+        dragSettings.append(rotateBtn, randomBtn);
+
+        rotateBtn.addEventListener('pointerdown', () => {
+            ship.classList.toggle('dock__ship--vertical');
+        });
+
+        dock.append(ship);
+
+        const dick = wrapper('div');
+        dick.append(dock, dragSettings);
+
+        return dick;
+    }
+
     setShips(player) {
         if (!player.name) {
             player.board.placeRemainignShipsRandom();
             this.switcher('shipsPlacement', player);
             return;
         }
-
-        document.body.addEventListener('keydown', (event) => {
-            console.log(event.key);
-        });
 
         const confirmation = player.board.shipsInventory.placed.size === 5;
         const { shipsLeft, ship, size } = this.getShips(player);
@@ -239,11 +269,11 @@ export default class Game {
         const randomBTN = button('¡Disparo automático!', 'set', 'attackRND');
         instructions.append(timer, coordinates, randomBTN);
 
-        settings.append(nav, instructions);
+        settings.append(instructions);
 
-        const attacks = attackBoard(player);
+        const boards = attackBoard(player);
 
-        app.append(radar, header, attacks, settings);
+        app.append(radar, header, nav, boards, settings);
 
         myAttacksBTN.addEventListener('pointerdown', () => {
             replaceBoard('attacks', player);
