@@ -70,6 +70,117 @@ const boardFrame = () => {
     return board;
 };
 
+const shipsBoard = (player) => {
+    const board = boardFrame();
+    board.setAttribute('data-board', 'myShips');
+    let rowHeader = 1;
+
+    player.board.ships.flat().forEach((cell, index) => {
+        const row = index % 10;
+        const col = Math.floor(index / 10);
+        let text = !cell ? '' : cell;
+        const css = /\s|X/i.test(cell)
+            ? 'board__ships board__ships--occupied'
+            : 'board__ships';
+
+        if (row === 0) {
+            board.append(wrapper('span', rowHeader, 'board__coordenates'));
+            rowHeader++;
+        }
+
+        if (typeof cell === 'object') {
+            text = cell.type.slice(0, 2);
+        }
+
+        board.append(wrapper('span', text, css, `${col}-${row}`));
+    });
+
+    return board;
+};
+
+const coordenatesDialog = () => {
+    const form = wrapper('form');
+    const input = inputText(
+        'Ingresa las coordenadas y presiona [Enter] para confirmar o, escribe <No sé> para ubicar aleatoriamente',
+        '<A-J> <1-10> <(H)orizontal/(V)ertical>',
+    );
+    form.append(input);
+    return form;
+};
+
+const dragNdropDialog = (ship, size) => {
+    const sectionTXT = ship.slice(0, 2);
+    const dock = wrapper('div', '', 'dialog__dock');
+    const shipDraggable = wrapper('div', '', 'dock__ship');
+    shipDraggable.draggable = true;
+
+    for (let i = 0; i < size; i++) {
+        const segment = wrapper('div', sectionTXT, 'ship__section', i);
+        shipDraggable.append(segment);
+    }
+
+    const dragSettings = wrapper('div', '', 'dialog__options');
+    const rotateBtn = button('Girar');
+    const randomBtn = button('Ubicación aleatoria');
+    dragSettings.append(rotateBtn, randomBtn);
+
+    rotateBtn.addEventListener('pointerdown', () => {
+        shipDraggable.classList.toggle('dock__ship--vertical');
+    });
+
+    dock.append(shipDraggable);
+    const container = wrapper('div', '', 'dialog__drag');
+    container.append(dock, dragSettings);
+
+    return container;
+};
+
+const renderShipsBoard = (player, shipsAvailable, confirm = undefined) => {
+    clearApp();
+
+    const headerTXT = !confirm
+        ? `${player.name}, ubica tus barcos...`
+        : `${player.name}, ¿Quieres esta disposición para tu flota?`;
+    const header = wrapper('header');
+    const headerTextWrapper = wrapper('h1', headerTXT);
+    header.append(headerTextWrapper);
+    const shipsPlacement = shipsBoard(player);
+    const settings = wrapper('div', '', 'settings');
+
+    if (!confirm) {
+        const nav = wrapper('nav');
+        const coordenatesBTN = button('Coordenadas', '', 'byInput');
+        const dragNDropBTN = button('Arrastrar y soltar', '', 'byDragDrop');
+        nav.append(coordenatesBTN, dragNDropBTN);
+
+        const { shipsLeft, ship, size } = shipsAvailable;
+        const instructions = wrapper('div', '', 'settings__dialog');
+        const shipInventory = wrapper(
+            'p',
+            `${ship} (${ship.slice(0, 2)}), quedan ${shipsLeft} barcos por ubicar.`,
+            'dialog__ship',
+        );
+
+        const form = coordenatesDialog();
+        const drag = dragNdropDialog(ship, size);
+        player.preferences.drag
+        ? form.classList.add('hidden')
+        : drag.classList.add('hidden');
+
+        instructions.append(shipInventory, form, drag);
+        const resetBTN = button('Reiniciar', '', 'reset');
+
+        settings.append(nav, instructions, resetBTN);
+    } else {
+        const resetBTN = button('No, volver a ubicar', 'set', 'reset');
+        const confirmBTN = button('Sí', '', 'confirm');
+
+        settings.append(resetBTN, confirmBTN);
+    }
+
+    app.append(header, shipsPlacement, settings);
+};
+
 const attackBoard = (player) => {
     const board = boardFrame();
     board.setAttribute('data-board', 'myAttacks');
@@ -112,44 +223,6 @@ const replaceAttackCell = (coordenates, type) => {
     const parent = replaceBTN.parentNode;
 
     parent.replaceChild(newSpan, replaceBTN);
-};
-
-const shipsBoard = (player) => {
-    const board = boardFrame();
-    board.setAttribute('data-board', 'myShips');
-    let rowHeader = 1;
-
-    player.board.ships.flat().forEach((cell, index) => {
-        const row = index % 10;
-        const col = Math.floor(index / 10);
-        let text = !cell ? '' : cell;
-        const css = /\s|X/i.test(cell)
-            ? 'board__ships board__ships--occupied'
-            : 'board__ships';
-
-        if (row === 0) {
-            board.append(wrapper('span', rowHeader, 'board__coordenates'));
-            rowHeader++;
-        }
-
-        if (typeof cell === 'object') {
-            text = cell.type.slice(0, 2);
-        }
-
-        board.append(wrapper('span', text, css, `${col}-${row}`));
-    });
-
-    return board;
-};
-
-const coordenatesDialog = () => {
-    const form = wrapper('form');
-    const input = inputText(
-        'Ingresa las coordenadas y presiona [Enter] para confirmar o, escribe <No sé> para ubicar aleatoriamente',
-        '<A-B> <1-10> <(H)orizontal/(V)ertical>',
-    );
-    form.append(input);
-    return form;
 };
 
 const replaceBoard = (shipsORattacks) => {
@@ -265,10 +338,12 @@ export {
     inputText,
     inputNumber,
     button,
+    shipsBoard,
+    coordenatesDialog,
+    dragNdropDialog,
+    renderShipsBoard,
     attackBoard,
     replaceAttackCell,
-    shipsBoard,
-    coordenatesDialog, 
     replaceBoard,
     renderMakeAttack,
     renderReceiveAttack,

@@ -2,17 +2,15 @@ import Player from './players';
 import {
     wrapper,
     button,
-    replaceAttackCell,
     shipsBoard,
-    clearApp,
-    coordenatesDialog, 
+    renderShipsBoard,
+    replaceAttackCell,
     replaceBoard,
     renderMakeAttack,
     renderReceiveAttack,
     switcherScreen,
     renderAftermath,
 } from './DOMrender';
-import Ship from './ships';
 
 const app = document.querySelector('#app');
 
@@ -43,134 +41,66 @@ export default class Game {
     }
 
 
-    renderShipsBoard(player, shipsAvailable, confirm = undefined) {
-        clearApp();
+    dragNDropHandler(player, ship, size) {
+        dragNDropDialog(ship, size);
 
-        const headerTXT = !confirm
-            ? `${player.name}, ubica tus barcos...`
-            : `${player.name}, ¿Quieres esta disposición para tu flota?`;
-        const header = wrapper('header');
-        const headerTextWrapper = wrapper('h1', headerTXT);
-        header.append(headerTextWrapper);
-        const shipsPlacement = shipsBoard(player);
-        const settings = wrapper('div', '', 'settings');
-
-        if (!confirm) {
-            const nav = wrapper('nav');
-            const coordenatesBTN = button('Coordenadas', '', 'byInput');
-            const dragNDropBTN = button('Arrastrar y soltar', '', 'byDragDrop');
-            nav.append(coordenatesBTN, dragNDropBTN);
-
-            const { shipsLeft, ship, size } = shipsAvailable;
-            const instructions = wrapper('div', '', 'settings__dialog');
-            const shipInventory = wrapper(
-                'p',
-                `${ship} (${ship.slice(0, 2)}), quedan ${shipsLeft} barcos por ubicar.`,
-                'dialog__ship',
-            );
-
-            //  drag o form
-            const form = coordenatesDialog();
-            const drag = this.dragNdropDialog(player, ship, size);
-            player.preferences.drag
-                ? form.classList.add('hidden')
-                : drag.classList.add('hidden');
-
-            // fin drag o form
-            instructions.append(shipInventory, form, drag);
-            const resetBTN = button('Reiniciar', '', 'reset');
-
-            settings.append(nav, instructions, resetBTN);
-        } else {
-            const resetBTN = button('No, volver a ubicar', 'set', 'reset');
-            const confirmBTN = button('Sí', '', 'confirm');
-
-            settings.append(resetBTN, confirmBTN);
-        }
-
-        app.append(header, shipsPlacement, settings);
-    }
-
-
-    dragNdropDialog(player, ship, size) {
-        const sectionTXT = ship.slice(0, 2);
-        const dock = wrapper('div', '', 'dialog__dock');
-        const shipDraggable = wrapper('div', '', 'dock__ship');
-        shipDraggable.draggable = true;
-        let currentSegment = undefined;
-        let targetCell = undefined;
-
-        for (let i = 0; i < size; i++) {
-            const segment = wrapper('div', sectionTXT, 'ship__section', i);
-            shipDraggable.append(segment);
-
-            // sacar de acá, tener cuidado con el momento de renderizacion
-            segment.addEventListener('pointerdown', () => {
-                currentSegment = i;
-            });
-            segment.addEventListener('pointerup', () => {
-                currentSegment = undefined;
-            });
-        }
-
-        const dragSettings = wrapper('div', '', 'dialog__options');
-        const rotateBtn = button('Girar');
-        const randomBtn = button('Ubicación aleatoria');
-        dragSettings.append(rotateBtn, randomBtn);
-
-        rotateBtn.addEventListener('pointerdown', () => {
-            shipDraggable.classList.toggle('dock__ship--vertical');
-        });
-
-        dock.append(shipDraggable);
-        const dick = wrapper('div', '', 'dialog__drag');
-        dick.append(dock, dragSettings);
-
-        // fin del render
-
-        const dragHandler = () => {
-            const boardCells = document.querySelectorAll('.board__ships');
-
-            boardCells.forEach((cell) => {
-                cell.addEventListener('dragenter', () => {
-                    this.clearShipPreview();
-                    targetCell = cell.getAttribute('data-cell');
-
-                    const [rowBase, colBase] = targetCell.split('-');
-                    let horizon = true;
-
-                    if (document.querySelector('.dock__ship--vertical')) {
-                        horizon = false;
-                    }
-
-                    const col = horizon ? +colBase - +currentSegment : +colBase;
-                    const row = !horizon
-                        ? +rowBase - +currentSegment
-                        : +rowBase;
-
-                    this.shipPreview(col, row, horizon, ship, size);
-                });
-            });
-        };
-
-        shipDraggable.addEventListener('dragstart', dragHandler);
-
-        shipDraggable.addEventListener('dragend', () => {
-            this.clearShipPreview();
-            const [rowBase, colBase] = targetCell.split('-');
-
-            let horizon = true;
-            if (document.querySelector('.dock__ship--vertical')) {
-                horizon = false;
-            }
-            const col = horizon ? +colBase - +currentSegment : +colBase;
-            const row = !horizon ? +rowBase - +currentSegment : +rowBase;
-            if (player.board.placeShip(col, row, horizon, ship)) {
-                this.setShips(player);
-            }
-        });
-
-        return dick;
+        // let currentSegment = undefined;
+        // let targetCell = undefined;
+        //
+        // // asignacion de valor al hacer clic en el segmento
+        // for (let i = 0; i < size; i++) {
+        //     const segment = wrapper('div', sectionTXT, 'ship__section', i);
+        //     shipDraggable.append(segment);
+        //
+        //     // sacar de acá, tener cuidado con el momento de renderizacion
+        //     segment.addEventListener('pointerdown', () => {
+        //         currentSegment = i;
+        //     });
+        //     segment.addEventListener('pointerup', () => {
+        //         currentSegment = undefined;
+        //     });
+        // }
+        // const dragHandler = () => {
+        //     const boardCells = document.querySelectorAll('.board__ships');
+        //
+        //     boardCells.forEach((cell) => {
+        //         cell.addEventListener('dragenter', () => {
+        //             this.clearShipPreview();
+        //             targetCell = cell.getAttribute('data-cell');
+        //
+        //             const [rowBase, colBase] = targetCell.split('-');
+        //             let horizon = true;
+        //
+        //             if (document.querySelector('.dock__ship--vertical')) {
+        //                 horizon = false;
+        //             }
+        //
+        //             const col = horizon ? +colBase - +currentSegment : +colBase;
+        //             const row = !horizon
+        //                 ? +rowBase - +currentSegment
+        //                 : +rowBase;
+        //
+        //             this.shipPreview(col, row, horizon, ship, size);
+        //         });
+        //     });
+        // };
+        //
+        // shipDraggable.addEventListener('dragstart', dragHandler);
+        //
+        // shipDraggable.addEventListener('dragend', () => {
+        //     this.clearShipPreview();
+        //     const [rowBase, colBase] = targetCell.split('-');
+        //
+        //     let horizon = true;
+        //     if (document.querySelector('.dock__ship--vertical')) {
+        //         horizon = false;
+        //     }
+        //     const col = horizon ? +colBase - +currentSegment : +colBase;
+        //     const row = !horizon ? +rowBase - +currentSegment : +rowBase;
+        //     if (player.board.placeShip(col, row, horizon, ship)) {
+        //         this.setShips(player);
+        //     }
+        // });
     }
 
     setShips(player) {
@@ -182,7 +112,7 @@ export default class Game {
 
         const confirmation = player.board.shipsInventory.placed.size === 5;
         const { shipsLeft, ship, size } = player.board.getShips();
-        this.renderShipsBoard(player, { shipsLeft, ship, size }, confirmation);
+        renderShipsBoard(player, { shipsLeft, ship, size }, confirmation);
 
         const resetBTN = document.querySelector('[data-cell="reset"]');
         resetBTN.addEventListener('pointerdown', () => {
