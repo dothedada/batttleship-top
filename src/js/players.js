@@ -6,6 +6,7 @@ class Player {
         this.myAttacks = Gameboard.boardGenerator();
         this.adversaryName = undefined;
         this.score = 0;
+        this.preferences = { drag: false, radar: true}
 
         if (name) {
             this.name = name;
