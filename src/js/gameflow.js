@@ -1,5 +1,4 @@
 import Player from './players';
-import asciiArt from './asciiArt';
 import {
     wrapper,
     inputText,
@@ -30,10 +29,15 @@ export default class Game {
 
         this.timerSec = +time;
 
-        this.AttackDelaySec = 0.5;
-        this.underAttackDelaySec = 0.5;
-        this.rndBaseMs = 500;
-        this.evalAttackFeedback = 1;
+        // this.AttackDelaySec = 0.5;
+        // this.underAttackDelaySec = 0.5;
+        // this.rndBaseMs = 500;
+        // this.evalAttackFeedback = 1;
+        this.AttackDelaySec = 0;
+        this.underAttackDelaySec = 1;
+        this.rndBaseMs = 0;
+        this.evalAttackFeedback = 0;
+
 
         this.player1.setAdversary(this.player2);
     }
@@ -150,7 +154,7 @@ export default class Game {
 
         // fin del render
 
-        const dragHandler = (event) => {
+        const dragHandler = () => {
             const boardCells = document.querySelectorAll('.board__ships');
 
             boardCells.forEach((cell) => {
@@ -595,38 +599,38 @@ export default class Game {
                     from === this.player1
                         ? this.setShips.bind(this)
                         : this.playerAttack.bind(this);
-
                 switcherScreen(type, from, to, callback);
             } else if (onlyPlayer1) {
                 from === this.player1
-                    ? this.setShips(this.player2)
+                    ? this.setShips(to)
                     : this.playerAttack(to);
             } else if (onlyPlayer2) {
                 from === this.player2
-                    ? this.receiveAttack(this.player2, this.player1)
-                    : this.setShips(this.player2);
+                    ? this.receiveAttack(from, to)
+                    : this.setShips(to);
             }
         } else if (type === 'attack') {
             if (bothHumans) {
                 switcherScreen(type, from, to, this.playerAttack.bind(this));
             } else if (onlyPlayer1) {
-                fromPlayer === this.player1
-                    ? this.receiveAttack(this.player1, this.player2)
-                    : this.playerAttack(this.player1);
+                from === this.player1
+                    ? this.receiveAttack(from, to)
+                    : this.playerAttack(to);
             } else if (onlyPlayer2) {
-                fromPlayer === this.player1
-                    ? this.playerAttack(this.player2)
-                    : this.receiveAttack(this.player2, this.player1);
+                from === this.player1
+                    ? this.playerAttack(to)
+                    : this.receiveAttack(from, to);
+                // this.receiveAttack(receiver, attacker)
             }
         } else if (type === 'winner') {
             if (bothHumans) {
-                renderAftermath('winner', fromPlayer);
+                renderAftermath('winner', from);
             } else if (onlyPlayer1) {
-                fromPlayer === this.player1
+                from === this.player1
                     ? renderAftermath('winner')
                     : renderAftermath('loser');
             } else if (onlyPlayer2) {
-                fromPlayer === this.player1
+                from === this.player1
                     ? renderAftermath('loser')
                     : renderAftermath('winner');
             }
