@@ -65,9 +65,10 @@ export default class Game {
             );
             //  drag o form
             const form = this.coordenatesDialog();
-            const drag = this.dragNdropDialog(ship, size);
+            form.classList.add('hidden');
+            const drag = this.dragNdropDialog(player, ship, size);
             // fin drag o form
-            instructions.append(shipInventory, drag);
+            instructions.append(shipInventory, form, drag);
             const resetBTN = button('Reiniciar', '', 'reset');
 
             settings.append(nav, instructions, resetBTN);
@@ -91,14 +92,24 @@ export default class Game {
         return form;
     }
 
-    dragNdropDialog(name, size) {
-        const sectionTXT = name.slice(0, 2);
+    dragNdropDialog(player, ship, size) {
+        const sectionTXT = ship.slice(0, 2);
         const dock = wrapper('div', '', 'dialog__dock');
-        const ship = wrapper('div', '', 'dock__ship');
-        ship.draggable = true;
+        const shipDraggable = wrapper('div', '', 'dock__ship');
+        shipDraggable.draggable = true;
+
+        let currentSegment = undefined;
+        let targetCell = undefined;
 
         for (let i = 0; i < size; i++) {
-            ship.append(wrapper('div', sectionTXT, 'ship__section', i));
+            const segment = wrapper('div', sectionTXT, 'ship__section', i);
+            shipDraggable.append(segment);
+            segment.addEventListener('pointerdown', () => {
+                currentSegment = i;
+            });
+            segment.addEventListener('pointerup', () => {
+                currentSegment = undefined;
+            });
         }
 
         const dragSettings = wrapper('div', '', 'dialog__options');
@@ -107,13 +118,57 @@ export default class Game {
         dragSettings.append(rotateBtn, randomBtn);
 
         rotateBtn.addEventListener('pointerdown', () => {
-            ship.classList.toggle('dock__ship--vertical');
+            shipDraggable.classList.toggle('dock__ship--vertical');
         });
 
-        dock.append(ship);
+        dock.append(shipDraggable);
 
-        const dick = wrapper('div');
+        const dick = wrapper('div', '', 'dialog__drag');
         dick.append(dock, dragSettings);
+
+        const dragHandler = (event) => {
+            const boardCells = document.querySelectorAll('.board__ships');
+            boardCells.forEach((cell) => {
+                cell.addEventListener('dragenter', () => {
+                    this.clearShipPreview();
+                    targetCell = cell.getAttribute('data-cell');
+
+                    const [rowBase, colBase] = targetCell.split('-');
+                    let horizon = true;
+                    if (document.querySelector('.dock__ship--vertical')) {
+                        horizon = false;
+                    }
+
+            // const col = horizon && colBase + size > 10 ? 10 - size : colBase;
+            // const row = !horizon && rowBase + size > 10 ? 10 - size : rowBase;
+
+                    const col = horizon ? +colBase - +currentSegment : +colBase;
+                    const row = !horizon ? +rowBase - +currentSegment : +rowBase;
+
+                    console.log(colBase, col)
+
+                    this.shipPreview(col, row, horizon, ship, size);
+                });
+            });
+        };
+
+        shipDraggable.addEventListener('dragstart', dragHandler);
+
+        shipDraggable.addEventListener('dragend', () => {
+            this.clearShipPreview();
+            const [rowBase, colBase] = targetCell.split('-');
+
+            const col = +colBase - +currentSegment;
+            const row = +rowBase - +currentSegment;
+
+            let horizon = true;
+            if (document.querySelector('.dock__ship--vertical')) {
+                horizon = false;
+            }
+            if (player.board.placeShip(col, row, horizon, ship)) {
+                this.setShips(player);
+            }
+        });
 
         return dick;
     }
@@ -226,9 +281,12 @@ export default class Game {
     }
 
     shipPreview(colValue, rowValue, dirValue, shipToPlace, shipSize) {
+        const col = dirValue && colValue + shipSize > 10 ? 10 - shipSize : colValue < 0 ? 0 : colValue
+        const row = !dirValue && rowValue + shipSize > 10 ? 10 - shipSize : rowValue < 0 ? 0 : rowValue
+
         for (let l = 0; l < shipSize; l++) {
-            const i = !dirValue ? rowValue + l : rowValue;
-            const j = dirValue ? colValue + l : colValue;
+            const i = !dirValue ? row + l : row;
+            const j = dirValue ? col + l : col;
             const cell = document.querySelector(`[data-cell="${i}-${j}"]`);
 
             if (!cell.textContent) {
