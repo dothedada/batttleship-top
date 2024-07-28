@@ -142,6 +142,16 @@ const shipsBoard = (player) => {
     return board;
 };
 
+const coordenatesDialog = () => {
+    const form = wrapper('form');
+    const input = inputText(
+        'Ingresa las coordenadas y presiona [Enter] para confirmar o, escribe <No sé> para ubicar aleatoriamente',
+        '<A-B> <1-10> <(H)orizontal/(V)ertical>',
+    );
+    form.append(input);
+    return form;
+};
+
 const replaceBoard = (shipsORattacks) => {
     const myShips = document.querySelector('[data-board="myShips"]');
     const myAttacks = document.querySelector('[data-board="myAttacks"]');
@@ -258,6 +268,7 @@ export {
     attackBoard,
     replaceAttackCell,
     shipsBoard,
+    coordenatesDialog, 
     replaceBoard,
     renderMakeAttack,
     renderReceiveAttack,

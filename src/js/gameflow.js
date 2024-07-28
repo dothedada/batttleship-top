@@ -1,11 +1,11 @@
 import Player from './players';
 import {
     wrapper,
-    inputText,
     button,
     replaceAttackCell,
     shipsBoard,
     clearApp,
+    coordenatesDialog, 
     replaceBoard,
     renderMakeAttack,
     renderReceiveAttack,
@@ -39,7 +39,6 @@ export default class Game {
         this.rndBaseMs = 0;
         this.evalAttackFeedback = 0;
 
-
         this.player1.setAdversary(this.player2);
     }
 
@@ -64,8 +63,8 @@ export default class Game {
 
         if (!confirm) {
             const nav = wrapper('nav');
-            const coordenatesBTN = button('Coordenadas', '', '');
-            const dragNDropBTN = button('Arrastrar y soltar');
+            const coordenatesBTN = button('Coordenadas', '', 'byInput');
+            const dragNDropBTN = button('Arrastrar y soltar', '', 'byDragDrop');
             nav.append(coordenatesBTN, dragNDropBTN);
 
             const { shipsLeft, ship, size } = shipsAvailable;
@@ -77,22 +76,11 @@ export default class Game {
             );
 
             //  drag o form
-            const form = this.coordenatesDialog();
+            const form = coordenatesDialog();
             const drag = this.dragNdropDialog(player, ship, size);
             player.preferences.drag
                 ? form.classList.add('hidden')
                 : drag.classList.add('hidden');
-
-            coordenatesBTN.addEventListener('pointerdown', () => {
-                drag.classList.add('hidden');
-                form.classList.remove('hidden');
-                player.preferences.drag = false;
-            });
-            dragNDropBTN.addEventListener('pointerdown', () => {
-                drag.classList.remove('hidden');
-                form.classList.add('hidden');
-                player.preferences.drag = true;
-            });
 
             // fin drag o form
             instructions.append(shipInventory, form, drag);
@@ -109,15 +97,6 @@ export default class Game {
         app.append(header, shipsPlacement, settings);
     }
 
-    coordenatesDialog() {
-        const form = wrapper('form');
-        const input = inputText(
-            'Ingresa las coordenadas y presiona [Enter] para confirmar o, escribe <No sé> para ubicar aleatoriamente',
-            '<A-B> <1-10> <(H)orizontal/(V)ertical>',
-        );
-        form.append(input);
-        return form;
-    }
 
     dragNdropDialog(player, ship, size) {
         const sectionTXT = ship.slice(0, 2);
@@ -225,8 +204,23 @@ export default class Game {
             return;
         }
 
+        const byInputBTN = document.querySelector('[data-cell="byInput"]');
+        const byDnDropBTN = document.querySelector('[data-cell="byDragDrop"]');
+        const byInputSection = document.querySelector('form');
+        const byDragDropSection = document.querySelector('.dialog__drag');
         const coordenates = document.querySelector('input');
         let setShipIn = null;
+
+        byInputBTN.addEventListener('pointerdown', () => {
+            byDragDropSection.classList.add('hidden');
+            byInputSection.classList.remove('hidden');
+            player.preferences.drag = false;
+        });
+        byDnDropBTN.addEventListener('pointerdown', () => {
+            byDragDropSection.classList.remove('hidden');
+            byInputSection.classList.add('hidden');
+            player.preferences.drag = true;
+        });
 
         coordenates.addEventListener('input', (event) => {
             this.clearShipPreview();
@@ -292,52 +286,7 @@ export default class Game {
         });
     }
 
-    activeCountdowns = [];
-
-    purgeCountdowns() {
-        this.activeCountdowns.forEach(clearInterval);
-        this.activeCountdowns.length = 0;
-    }
-
-    countdown(callbackToUpdate) {
-        return new Promise((resolve) => {
-            let timeAvailable = this.timerSec;
-
-            const timer = setInterval(() => {
-                timeAvailable -= 1;
-                callbackToUpdate(timeAvailable);
-                if (timeAvailable <= 0) {
-                    clearInterval(timer);
-                    resolve(timeAvailable);
-                }
-            }, 1000);
-
-            this.activeCountdowns.push(timer);
-        });
-    }
-
-    createCountdown(player) {
-        this.purgeCountdowns();
-        const clock = document.querySelector('.counter.warn');
-
-        if (!clock) {
-            return;
-        }
-        clock.textContent = `00:${String(this.timerSec).padStart(2, '0')}`;
-
-        this.countdown((timeLeft) => {
-            clock.textContent = `00:${String(timeLeft).padStart(2, '0')}`;
-            const warnTime = Math.max(this.timerSec / 4, 3);
-
-            if (timeLeft < warnTime) {
-                document.body.classList.add('alarm');
-            }
-        }).then(() => {
-            document.body.classList.remove('alarm');
-            this.switcher('attack', player);
-        });
-    }
-
+    //se va a DOM
     clearShipPreview() {
         if (document.querySelector('[data-current]')) {
             document.querySelectorAll('[data-current]').forEach((cell) => {
@@ -353,6 +302,7 @@ export default class Game {
         }
     }
 
+    //se va a DOM
     shipPreview(colValue, rowValue, dirValue, shipToPlace, shipSize) {
         const col =
             dirValue && colValue + shipSize > 10
@@ -382,13 +332,6 @@ export default class Game {
         }
     }
 
-
-
-    delayActions(sec) {
-        const time = sec * 1000 + Math.floor(Math.random() * this.rndBaseMs);
-        return new Promise((resolve) => setTimeout(resolve, time));
-    }
-
     async receiveAttack(defender, attacker) {
         renderReceiveAttack(defender);
         document.body.classList.add('alarm');
@@ -415,13 +358,13 @@ export default class Game {
     }
 
     playerAttack(player) {
-        renderMakeAttack(player, this.timerSec)
+        renderMakeAttack(player, this.timerSec);
         this.createCountdown(player);
 
-        const radarBTN = document.querySelector('[data-cell="radar"]')
-        const radar = document.querySelector('.radar')
-        const myAttacksBTN = document.querySelector('[data-cell="myAttacks"]')
-        const myShipsBTN = document.querySelector('[data-cell="myShips"]')
+        const radarBTN = document.querySelector('[data-cell="radar"]');
+        const radar = document.querySelector('.radar');
+        const myAttacksBTN = document.querySelector('[data-cell="myAttacks"]');
+        const myShipsBTN = document.querySelector('[data-cell="myShips"]');
 
         radarBTN.addEventListener('pointerdown', () => {
             player.preferences.radar = !player.preferences.radar;
@@ -540,6 +483,57 @@ export default class Game {
 
             const { row, col } = targetSet;
             sendAttack(row, col);
+        });
+    }
+
+    delayActions(sec) {
+        const time = sec * 1000 + Math.floor(Math.random() * this.rndBaseMs);
+        return new Promise((resolve) => setTimeout(resolve, time));
+    }
+
+    activeCountdowns = [];
+
+    purgeCountdowns() {
+        this.activeCountdowns.forEach(clearInterval);
+        this.activeCountdowns.length = 0;
+    }
+
+    countdown(callbackToUpdate) {
+        return new Promise((resolve) => {
+            let timeAvailable = this.timerSec;
+
+            const timer = setInterval(() => {
+                timeAvailable -= 1;
+                callbackToUpdate(timeAvailable);
+                if (timeAvailable <= 0) {
+                    clearInterval(timer);
+                    resolve(timeAvailable);
+                }
+            }, 1000);
+
+            this.activeCountdowns.push(timer);
+        });
+    }
+
+    createCountdown(player) {
+        this.purgeCountdowns();
+        const clock = document.querySelector('.counter.warn');
+
+        if (!clock) {
+            return;
+        }
+        clock.textContent = `00:${String(this.timerSec).padStart(2, '0')}`;
+
+        this.countdown((timeLeft) => {
+            clock.textContent = `00:${String(timeLeft).padStart(2, '0')}`;
+            const warnTime = Math.max(this.timerSec / 4, 3);
+
+            if (timeLeft < warnTime) {
+                document.body.classList.add('alarm');
+            }
+        }).then(() => {
+            document.body.classList.remove('alarm');
+            this.switcher('attack', player);
         });
     }
 
