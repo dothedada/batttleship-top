@@ -110,7 +110,6 @@ export default class Game {
         const dock = wrapper('div', '', 'dialog__dock');
         const shipDraggable = wrapper('div', '', 'dock__ship');
         shipDraggable.draggable = true;
-
         let currentSegment = undefined;
         let targetCell = undefined;
 
@@ -118,6 +117,7 @@ export default class Game {
             const segment = wrapper('div', sectionTXT, 'ship__section', i);
             shipDraggable.append(segment);
 
+            // sacar de acá, tener cuidado con el momento de renderizacion
             segment.addEventListener('pointerdown', () => {
                 currentSegment = i;
             });
@@ -140,7 +140,6 @@ export default class Game {
         dick.append(dock, dragSettings);
 
         // fin del render
-        //
 
         const dragHandler = (event) => {
             const boardCells = document.querySelectorAll('.board__ships');
@@ -173,13 +172,12 @@ export default class Game {
             this.clearShipPreview();
             const [rowBase, colBase] = targetCell.split('-');
 
-            const col = +colBase - +currentSegment;
-            const row = +rowBase - +currentSegment;
-
             let horizon = true;
             if (document.querySelector('.dock__ship--vertical')) {
                 horizon = false;
             }
+            const col = horizon ? +colBase - +currentSegment : +colBase;
+            const row = !horizon ? +rowBase - +currentSegment : +rowBase;
             if (player.board.placeShip(col, row, horizon, ship)) {
                 this.setShips(player);
             }
@@ -325,31 +323,21 @@ export default class Game {
     }
 
     renderSendAttack(player) {
-        clearApp();
-
         const radar = wrapper('div', '', 'radar');
         const radarSweep = wrapper('div', '', 'radar__sweep');
-        radar.append(radarSweep);
-
         if (!player.preferences.radar) {
             radar.classList.add('hidden');
         }
-
         const header = wrapper('header');
         const headerTXT = wrapper('h1', `¡${player.name}, es hora de atacar!`);
         const radarTXT = player.preferences.radar
             ? 'Apagar el radar'
             : 'Encender el radar';
         const radarBTN = button(radarTXT, '', 'radar');
-        header.append(headerTXT, radarBTN);
-
         const settings = wrapper('div', '', 'settings');
-
         const nav = wrapper('nav');
         const myAttacksBTN = button('Ver mis disparos', '', '');
         const myShipsBTN = button('Ver mis barcos', '', '');
-        nav.append(myAttacksBTN, myShipsBTN);
-
         const instructions = wrapper('div', '', 'settings__dialog');
         const timer = wrapper('span', '00:15seg', 'counter warn');
         const coordinates = inputText(
@@ -357,17 +345,24 @@ export default class Game {
             '<A-J> <1-10> / <Aleatorio/Random>',
         );
         const randomBTN = button('¡Disparo automático!', 'set', 'attackRND');
-        instructions.append(timer, coordinates, randomBTN);
-
-        settings.append(instructions);
-
         const boards = attackBoard(player);
 
+        clearApp();
+        radar.append(radarSweep);
+        header.append(headerTXT, radarBTN);
+        nav.append(myAttacksBTN, myShipsBTN);
+        instructions.append(timer, coordinates, randomBTN);
+        settings.append(instructions);
         app.append(radar, header, nav, boards, settings);
 
+        // action
+
         radarBTN.addEventListener('pointerdown', () => {
-            player.preferences.radar = !player.preferences.radar
-            radar.classList.toggle('hidden', player.preferences.radar === false);
+            player.preferences.radar = !player.preferences.radar;
+            radar.classList.toggle(
+                'hidden',
+                player.preferences.radar === false,
+            );
 
             radarBTN.textContent = radar.classList.contains('hidden')
                 ? 'Encender radar'
@@ -377,20 +372,19 @@ export default class Game {
         myAttacksBTN.addEventListener('pointerdown', () => {
             replaceBoard('attacks', player);
         });
+
         myShipsBTN.addEventListener('pointerdown', () => {
             replaceBoard('ships', player);
         });
     }
 
     renderReceiveAttack(player) {
-        clearApp();
-
         const header = wrapper('header');
         const headerTXT = wrapper('h1', `¡${player.name}, te atacan!`);
-        header.append(headerTXT);
-
         const myShips = shipsBoard(player);
 
+        clearApp();
+        header.append(headerTXT);
         app.append(header, myShips);
     }
 
@@ -440,7 +434,7 @@ export default class Game {
                 btn.disabled = true;
             });
 
-            await this.delayFunction(Math.random() * 2000 + 500);
+            await this.delayFunction(Math.random() * 1000 + 500);
             document.body.classList.toggle('alarm', attackResult === 'Ship');
             replaceAttackCell(cell.getAttribute('data-cell'), attackResult);
 
