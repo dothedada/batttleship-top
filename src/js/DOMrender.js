@@ -1,5 +1,9 @@
+import asciiArt from './asciiArt';
+
+const app = document.querySelector('#app');
+
 const clearApp = () => {
-    document.querySelector('#app').textContent = '';
+    app.textContent = '';
 };
 
 const wrapper = (type, textContent = '', css = '', data = undefined) => {
@@ -146,6 +150,32 @@ const replaceBoard = (shipsORattacks, player) => {
     parentBoard.replaceChild(newBoard, oldBoard);
 };
 
+const renderAftermath = (aftermath, winner = undefined) => {
+    clearApp();
+    const ascii = asciiArt[aftermath];
+    const aftermathTXT = aftermath === 'winner' ? '¡Ganaste!,' : 'Perdiste,';
+    const msgTxt = winner
+        ? `Así se hace ${winner.name}, ¿quieres jugar una nueva partida? (S)í / (N)o`
+        : `${aftermathTXT} ¿Una nueva partida? (S)í / (N)o`;
+
+    const newMatch = (event) => {
+        const key = event.key.toLowerCase();
+        if (key !== 's' && key !== 'n') {
+            return;
+        }
+
+        document.body.removeEventListener('keydown', newMatch);
+        if (key === 's') {
+            location.reload();
+        } else if (key === 'n') {
+            window.location.href = 'https://cv.mmejia.com';
+        }
+    };
+
+    app.append(wrapper('pre', ascii), wrapper('div', msgTxt));
+    document.body.addEventListener('keydown', newMatch);
+};
+
 export {
     clearApp,
     wrapper,
@@ -156,4 +186,5 @@ export {
     replaceAttackCell,
     shipsBoard,
     replaceBoard,
+    renderAftermath,
 };

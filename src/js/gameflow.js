@@ -9,6 +9,7 @@ import {
     shipsBoard,
     clearApp,
     replaceBoard,
+    renderAftermath,
 } from './DOMrender';
 import Ship from './ships';
 
@@ -443,7 +444,7 @@ export default class Game {
     }
 
     delayFunction(sec) {
-        const time = (sec * 1000) + Math.floor(Math.random() * this.rndBaseMs)
+        const time = sec * 1000 + Math.floor(Math.random() * this.rndBaseMs);
         return new Promise((resolve) => setTimeout(resolve, time));
     }
 
@@ -611,15 +612,15 @@ export default class Game {
             }
         } else if (type === 'winner') {
             if (bothHumans) {
-                this.renderAftermath('winner', fromPlayer);
+                renderAftermath('winner', fromPlayer);
             } else if (onlyPlayer1) {
                 fromPlayer === this.player1
-                    ? this.renderAftermath('winner')
-                    : this.renderAftermath('loser');
+                    ? renderAftermath('winner')
+                    : renderAftermath('loser');
             } else if (onlyPlayer2) {
                 fromPlayer === this.player1
-                    ? this.renderAftermath('loser')
-                    : this.renderAftermath('winner');
+                    ? renderAftermath('loser')
+                    : renderAftermath('winner');
             }
         }
     }
@@ -650,28 +651,5 @@ export default class Game {
         document.addEventListener('keydown', goto);
     }
 
-    renderAftermath(aftermath, winner = undefined) {
-        clearApp();
-        const ascii = asciiArt[aftermath];
-        const msgTxt = winner
-            ? `Así se hace ${winner.name}, ¿quieres jugar una nueva partida? (S)í / (N)o`
-            : '¿Una nueva partida? (S)í / (N)o';
 
-        const newMatch = (event) => {
-            const key = event.key.toLowerCase();
-            if (key !== 's' && key !== 'n') {
-                return;
-            }
-
-            document.body.removeEventListener('keydown', newMatch);
-            if (key === 's') {
-                location.reload();
-            } else if (key === 'n') {
-                window.location.href = 'https://cv.mmejia.com';
-            }
-        };
-
-        app.append(wrapper('pre', ascii), wrapper('div', msgTxt));
-        document.body.addEventListener('keydown', newMatch);
-    }
 }
