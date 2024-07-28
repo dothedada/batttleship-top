@@ -150,6 +150,30 @@ const replaceBoard = (shipsORattacks, player) => {
     parentBoard.replaceChild(newBoard, oldBoard);
 };
 
+const switcherScreen = (type, from, to, callback) => {
+    clearApp();
+    const artsTotal = 2;
+    const msgTxt = `${from.name}, entrégale el dispositivo a ${to.name}`;
+    const btnTxt =
+        type === 'shipsPlacement'
+            ? `${to.name}, haz clic aquí o presiona [Enter] para ubicar tus barcos`
+            : `${to.name}, haz clic aquí o presiona [Enter] para realizar tu ataque`;
+    const ascii = asciiArt[`ship${Math.floor(Math.random() * artsTotal)}`];
+
+    const goto = (event) => {
+        if (event.type !== 'pointerdown' && event.key !== 'Enter') {
+            return;
+        }
+        document.removeEventListener('keydown', goto);
+        console.log(callback)
+        callback(to);
+    };
+
+    app.append(wrapper('p', msgTxt), wrapper('pre', ascii), button(btnTxt));
+    document.querySelector('button').addEventListener('pointerdown', goto);
+    document.addEventListener('keydown', goto);
+};
+
 const renderAftermath = (aftermath, winner = undefined) => {
     clearApp();
     const ascii = asciiArt[aftermath];
@@ -186,5 +210,6 @@ export {
     replaceAttackCell,
     shipsBoard,
     replaceBoard,
+    switcherScreen,
     renderAftermath,
 };

@@ -9,6 +9,7 @@ import {
     shipsBoard,
     clearApp,
     replaceBoard,
+    switcherScreen,
     renderAftermath,
 } from './DOMrender';
 import Ship from './ships';
@@ -313,6 +314,10 @@ export default class Game {
     createCountdown(player) {
         this.purgeCountdowns();
         const clock = document.querySelector('.counter.warn');
+
+        if (!clock) {
+            return;
+        }
         clock.textContent = `00:${String(this.timerSec).padStart(2, '0')}`;
 
         this.countdown((timeLeft) => {
@@ -586,9 +591,12 @@ export default class Game {
 
         if (type === 'shipsPlacement') {
             if (bothHumans) {
-                from === this.player1
-                    ? this.switcherScreen(type, this.player1, this.player2)
-                    : this.switcherScreen('attack', this.player2, this.player1);
+                const callback =
+                    from === this.player1
+                        ? this.setShips.bind(this)
+                        : this.playerAttack.bind(this);
+
+                switcherScreen(type, from, to, callback);
             } else if (onlyPlayer1) {
                 from === this.player1
                     ? this.setShips(this.player2)
@@ -600,7 +608,7 @@ export default class Game {
             }
         } else if (type === 'attack') {
             if (bothHumans) {
-                this.switcherScreen('attack', from, to);
+                switcherScreen(type, from, to, this.playerAttack.bind(this));
             } else if (onlyPlayer1) {
                 fromPlayer === this.player1
                     ? this.receiveAttack(this.player1, this.player2)
@@ -624,32 +632,4 @@ export default class Game {
             }
         }
     }
-
-    switcherScreen(type, from, to) {
-        clearApp();
-        const artsTotal = 2;
-        const msgTxt = `${from.name}, entrégale el dispositivo a ${to.name}`;
-        const btnTxt =
-            type === 'shipsPlacement'
-                ? `${to.name}, haz clic aquí o presiona [Enter] para ubicar tus barcos`
-                : `${to.name}, haz clic aquí o presiona [Enter] para realizar tu ataque`;
-        const ascii = asciiArt[`ship${Math.floor(Math.random() * artsTotal)}`];
-
-        const goto = (event) => {
-            if (event.type !== 'pointerdown' && event.key !== 'Enter') {
-                return;
-            }
-            document.removeEventListener('keydown', goto);
-
-            return type === 'attack'
-                ? this.playerAttack(to)
-                : this.setShips(to);
-        };
-
-        app.append(wrapper('p', msgTxt), wrapper('pre', ascii), button(btnTxt));
-        document.querySelector('button').addEventListener('pointerdown', goto);
-        document.addEventListener('keydown', goto);
-    }
-
-
 }
