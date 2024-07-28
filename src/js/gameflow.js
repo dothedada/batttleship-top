@@ -15,12 +15,12 @@ import Ship from './ships';
 const app = document.querySelector('#app');
 
 // TODO:
-// 2. Implementar el dragDrop y el timer
-// 2.a. conservar preferencias del radar y del dragndrop
+// 2. el timer
 // 3. Simplificar, limpiar y ordenar codigo (creo que en el gameflow solo quedan
 //      los switcher los renders van para el dom, los ataques al player y las
 //      recepciones al gameboard)
 // 3.a. Revisar reinicio de partida
+// 3.b. Revisar secuencia de ataques del compu
 // 4. crear el Readme
 
 export default class Game {
@@ -65,8 +65,21 @@ export default class Game {
             );
             //  drag o form
             const form = this.coordenatesDialog();
-            form.classList.add('hidden');
             const drag = this.dragNdropDialog(player, ship, size);
+            player.preferences.drag
+                ? form.classList.add('hidden')
+                : drag.classList.add('hidden');
+
+            coordenatesBTN.addEventListener('pointerdown', () => {
+                drag.classList.add('hidden');
+                form.classList.remove('hidden');
+                player.preferences.drag = false;
+            });
+            dragNDropBTN.addEventListener('pointerdown', () => {
+                drag.classList.remove('hidden');
+                form.classList.add('hidden');
+                player.preferences.drag = true;
+            });
             // fin drag o form
             instructions.append(shipInventory, form, drag);
             const resetBTN = button('Reiniciar', '', 'reset');
@@ -318,10 +331,17 @@ export default class Game {
         const radarSweep = wrapper('div', '', 'radar__sweep');
         radar.append(radarSweep);
 
+        if (!player.preferences.radar) {
+            radar.classList.add('hidden');
+        }
+
         const header = wrapper('header');
         const headerTXT = wrapper('h1', `¡${player.name}, es hora de atacar!`);
-        const headerBTN = button('apagar radar', '', 'radar');
-        header.append(headerTXT, headerBTN);
+        const radarTXT = player.preferences.radar
+            ? 'Apagar el radar'
+            : 'Encender el radar';
+        const radarBTN = button(radarTXT, '', 'radar');
+        header.append(headerTXT, radarBTN);
 
         const settings = wrapper('div', '', 'settings');
 
@@ -344,6 +364,15 @@ export default class Game {
         const boards = attackBoard(player);
 
         app.append(radar, header, nav, boards, settings);
+
+        radarBTN.addEventListener('pointerdown', () => {
+            player.preferences.radar = !player.preferences.radar
+            radar.classList.toggle('hidden', player.preferences.radar === false);
+
+            radarBTN.textContent = radar.classList.contains('hidden')
+                ? 'Encender radar'
+                : 'Apagar radar';
+        });
 
         myAttacksBTN.addEventListener('pointerdown', () => {
             replaceBoard('attacks', player);
@@ -397,19 +426,10 @@ export default class Game {
     playerAttack(player) {
         this.renderSendAttack(player);
 
-        const radarBTN = document.querySelector('[data-cell="radar"]');
         const attackBTNs = document.querySelectorAll('.board__attack');
         const attackRndBTN = document.querySelector('[data-cell="attackRND"]');
         const attackInput = document.querySelector('input');
         let targetSet = null;
-
-        radarBTN.addEventListener('pointerdown', () => {
-            const radar = document.querySelector('.radar');
-            radar.classList.toggle('hidden');
-            radarBTN.textContent = radar.classList.contains('hidden')
-                ? 'Encender radar'
-                : 'Apagar radar';
-        });
 
         const sendAttack = async (row, col) => {
             const buttons = document.querySelectorAll('button');
