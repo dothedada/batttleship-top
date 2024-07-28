@@ -15,6 +15,13 @@ class Gameboard {
         sank: new Set(),
     };
 
+    getShips() {
+        const shipsLeft = this.shipsInventory.available.length;
+        const ship = this.shipsInventory.available.shift();
+        const size = Ship.shipsAndSize[ship];
+        return { shipsLeft, ship, size };
+    }
+
     placeShip(col, row, horizontal, type) {
         const ship = new Ship(type);
         const maxPosition = 10 - ship.length;
@@ -64,7 +71,7 @@ class Gameboard {
     }
 
     resetShips() {
-        this.ships = Gameboard.boardGenerator()
+        this.ships = Gameboard.boardGenerator();
         this.shipsInventory.available = Object.keys(Ship.shipsAndSize);
         this.shipsInventory.placed = new Set();
     }

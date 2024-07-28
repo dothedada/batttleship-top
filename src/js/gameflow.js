@@ -42,12 +42,6 @@ export default class Game {
         this.player1.setAdversary(this.player2);
     }
 
-    getShips(player) {
-        const shipsLeft = player.board.shipsInventory.available.length;
-        const ship = player.board.shipsInventory.available.shift();
-        const size = Ship.shipsAndSize[ship];
-        return { shipsLeft, ship, size };
-    }
 
     renderShipsBoard(player, shipsAvailable, confirm = undefined) {
         clearApp();
@@ -187,7 +181,7 @@ export default class Game {
         }
 
         const confirmation = player.board.shipsInventory.placed.size === 5;
-        const { shipsLeft, ship, size } = this.getShips(player);
+        const { shipsLeft, ship, size } = player.board.getShips();
         this.renderShipsBoard(player, { shipsLeft, ship, size }, confirmation);
 
         const resetBTN = document.querySelector('[data-cell="reset"]');
