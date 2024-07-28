@@ -24,10 +24,16 @@ const app = document.querySelector('#app');
 // 4. crear el Readme
 
 export default class Game {
+    AttackDelayMs = 1000;
+    underAttackDelayMs = 2000;
+    baseRandomDelayMs = 500;
+    checkFeedbackMs = 1000;
+
     constructor(player_1, player_2) {
         this.player1 = new Player(player_1 !== '' ? player_1 : undefined);
         this.player2 = new Player(player_2 !== '' ? player_2 : undefined);
 
+        this.timerSec = 15;
         this.player1.setAdversary(this.player2);
     }
 
@@ -40,6 +46,7 @@ export default class Game {
 
     renderShipsBoard(player, shipsAvailable, confirm = undefined) {
         clearApp();
+        this.countdown((timeLeft) => console.log(timeLeft)).then((timeLeft) => console.log('final', timeLeft));
 
         const headerTXT = !confirm
             ? `${player.name}, ubica tus barcos...`
@@ -278,6 +285,21 @@ export default class Game {
         });
     }
 
+    countdown(updateCallback) {
+        return new Promise((resolve) => {
+            let timeAvailable = this.timerSec;
+
+            const timer = setInterval(() => {
+                timeAvailable -= 1;
+                updateCallback(timeAvailable);
+                if (timeAvailable <= 0) {
+                    clearInterval(timer);
+                    resolve(timeAvailable);
+                }
+            }, 1000);
+        });
+    }
+
     clearShipPreview() {
         if (document.querySelector('[data-current]')) {
             document.querySelectorAll('[data-current]').forEach((cell) => {
@@ -339,7 +361,7 @@ export default class Game {
         const myAttacksBTN = button('Ver mis disparos', '', '');
         const myShipsBTN = button('Ver mis barcos', '', '');
         const instructions = wrapper('div', '', 'settings__dialog');
-        const timer = wrapper('span', '00:15seg', 'counter warn');
+        const timer = wrapper('span', '00:15', 'counter warn');
         const coordinates = inputText(
             'Escribe las coordenadas de tu ataque y presiona [Enter] para disparar:',
             '<A-J> <1-10> / <Aleatorio/Random>',
@@ -388,8 +410,11 @@ export default class Game {
         app.append(header, myShips);
     }
 
-    delayFunction(ms) {
-        return new Promise((resolve) => setTimeout(resolve, ms));
+    delayFunction(ms, fixed = false) {
+        const totalTimeMs = !fixed
+            ? Math.floor(Math.random() * ms + this.baseRandomDelayMs)
+            : ms;
+        return new Promise((resolve) => setTimeout(resolve, totalTimeMs));
     }
 
     async receiveAttack(receiver, attacker) {
@@ -400,12 +425,12 @@ export default class Game {
 
         do {
             attackResult = attacker.attackAuto();
-            await this.delayFunction(Math.random() * 2000 + 500);
+            await this.delayFunction(this.underAttackDelayMs);
             const newShipsBoard = shipsBoard(receiver);
             const oldShipsBoard = document.querySelector('.board');
             const boardParent = oldShipsBoard.parentNode;
             boardParent.replaceChild(newShipsBoard, oldShipsBoard);
-            await this.delayFunction(1500);
+            await this.delayFunction(this.checkFeedbackMs);
 
             if (attackResult === 'No ships left') {
                 this.switcher('winner', attacker);
@@ -434,11 +459,11 @@ export default class Game {
                 btn.disabled = true;
             });
 
-            await this.delayFunction(Math.random() * 1000 + 500);
+            await this.delayFunction(this.AttackDelayMs);
             document.body.classList.toggle('alarm', attackResult === 'Ship');
             replaceAttackCell(cell.getAttribute('data-cell'), attackResult);
 
-            await this.delayFunction(500);
+            await this.delayFunction(this.checkFeedbackMs);
             if (attackResult === 'Water') {
                 this.switcher('attack', player);
             } else if (attackResult === 'No ships left') {
