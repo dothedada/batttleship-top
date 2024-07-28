@@ -104,6 +104,7 @@ export default class Game {
         for (let i = 0; i < size; i++) {
             const segment = wrapper('div', sectionTXT, 'ship__section', i);
             shipDraggable.append(segment);
+
             segment.addEventListener('pointerdown', () => {
                 currentSegment = i;
             });
@@ -122,12 +123,15 @@ export default class Game {
         });
 
         dock.append(shipDraggable);
-
         const dick = wrapper('div', '', 'dialog__drag');
         dick.append(dock, dragSettings);
 
+        // fin del render
+        //
+
         const dragHandler = (event) => {
             const boardCells = document.querySelectorAll('.board__ships');
+
             boardCells.forEach((cell) => {
                 cell.addEventListener('dragenter', () => {
                     this.clearShipPreview();
@@ -135,17 +139,15 @@ export default class Game {
 
                     const [rowBase, colBase] = targetCell.split('-');
                     let horizon = true;
+
                     if (document.querySelector('.dock__ship--vertical')) {
                         horizon = false;
                     }
 
-            // const col = horizon && colBase + size > 10 ? 10 - size : colBase;
-            // const row = !horizon && rowBase + size > 10 ? 10 - size : rowBase;
-
                     const col = horizon ? +colBase - +currentSegment : +colBase;
-                    const row = !horizon ? +rowBase - +currentSegment : +rowBase;
-
-                    console.log(colBase, col)
+                    const row = !horizon
+                        ? +rowBase - +currentSegment
+                        : +rowBase;
 
                     this.shipPreview(col, row, horizon, ship, size);
                 });
@@ -281,8 +283,18 @@ export default class Game {
     }
 
     shipPreview(colValue, rowValue, dirValue, shipToPlace, shipSize) {
-        const col = dirValue && colValue + shipSize > 10 ? 10 - shipSize : colValue < 0 ? 0 : colValue
-        const row = !dirValue && rowValue + shipSize > 10 ? 10 - shipSize : rowValue < 0 ? 0 : rowValue
+        const col =
+            dirValue && colValue + shipSize > 10
+                ? 10 - shipSize
+                : colValue < 0
+                  ? 0
+                  : colValue;
+        const row =
+            !dirValue && rowValue + shipSize > 10
+                ? 10 - shipSize
+                : rowValue < 0
+                  ? 0
+                  : rowValue;
 
         for (let l = 0; l < shipSize; l++) {
             const i = !dirValue ? row + l : row;
@@ -502,60 +514,47 @@ export default class Game {
 
         if (type === 'shipsPlacement') {
             if (bothHumans) {
-                if (from === this.player1) {
-                    this.switcherScreen(type, this.player1, this.player2);
-                } else {
-                    this.switcherScreen('attack', this.player2, this.player1);
-                }
+                from === this.player1
+                    ? this.switcherScreen(type, this.player1, this.player2)
+                    : this.switcherScreen('attack', this.player2, this.player1);
             } else if (onlyPlayer1) {
-                if (from === this.player1) {
-                    this.setShips(this.player2);
-                } else {
-                    this.playerAttack(to);
-                }
+                from === this.player1
+                    ? this.setShips(this.player2)
+                    : this.playerAttack(to);
             } else if (onlyPlayer2) {
-                if (from === this.player2) {
-                    this.receiveAttack(this.player2, this.player1);
-                } else {
-                    this.setShips(this.player2);
-                }
+                from === this.player2
+                    ? this.receiveAttack(this.player2, this.player1)
+                    : this.setShips(this.player2);
             }
         } else if (type === 'attack') {
             if (bothHumans) {
                 this.switcherScreen('attack', from, to);
             } else if (onlyPlayer1) {
-                if (fromPlayer === this.player1) {
-                    this.receiveAttack(this.player1, this.player2);
-                } else {
-                    this.playerAttack(this.player1);
-                }
+                fromPlayer === this.player1
+                    ? this.receiveAttack(this.player1, this.player2)
+                    : this.playerAttack(this.player1);
             } else if (onlyPlayer2) {
-                if (fromPlayer === this.player1) {
-                    this.playerAttack(this.player2);
-                } else {
-                    this.receiveAttack(this.player2, this.player1);
-                }
+                fromPlayer === this.player1
+                    ? this.playerAttack(this.player2)
+                    : this.receiveAttack(this.player2, this.player1);
             }
         } else if (type === 'winner') {
             if (bothHumans) {
                 this.renderAftermath('winner', fromPlayer);
             } else if (onlyPlayer1) {
-                if (fromPlayer === this.player1) {
-                    this.renderAftermath('winner');
-                } else {
-                    this.renderAftermath('loser');
-                }
+                fromPlayer === this.player1
+                    ? this.renderAftermath('winner')
+                    : this.renderAftermath('loser');
             } else if (onlyPlayer2) {
-                if (fromPlayer === this.player1) {
-                    this.renderAftermath('loser');
-                } else {
-                    this.renderAftermath('winner');
-                }
+                fromPlayer === this.player1
+                    ? this.renderAftermath('loser')
+                    : this.renderAftermath('winner');
             }
         }
     }
 
     switcherScreen(type, from, to) {
+        clearApp();
         const artsTotal = 2;
         const msgTxt = `${from.name}, entrégale el dispositivo a ${to.name}`;
         const btnTxt =
@@ -563,9 +562,6 @@ export default class Game {
                 ? `${to.name}, haz clic aquí o presiona [Enter] para ubicar tus barcos`
                 : `${to.name}, haz clic aquí o presiona [Enter] para realizar tu ataque`;
         const ascii = asciiArt[`ship${Math.floor(Math.random() * artsTotal)}`];
-
-        clearApp();
-        app.append(wrapper('p', msgTxt), wrapper('pre', ascii), button(btnTxt));
 
         const goto = (event) => {
             if (event.type !== 'pointerdown' && event.key !== 'Enter') {
@@ -577,19 +573,18 @@ export default class Game {
                 ? this.playerAttack(to)
                 : this.setShips(to);
         };
+
+        app.append(wrapper('p', msgTxt), wrapper('pre', ascii), button(btnTxt));
         document.querySelector('button').addEventListener('pointerdown', goto);
         document.addEventListener('keydown', goto);
     }
 
     renderAftermath(aftermath, winner = undefined) {
         clearApp();
-
         const ascii = asciiArt[aftermath];
         const msgTxt = winner
             ? `Así se hace ${winner.name}, ¿quieres jugar una nueva partida? (S)í / (N)o`
             : '¿Una nueva partida? (S)í / (N)o';
-
-        app.append(wrapper('pre', ascii), wrapper('div', msgTxt));
 
         const newMatch = (event) => {
             const key = event.key.toLowerCase();
@@ -605,6 +600,7 @@ export default class Game {
             }
         };
 
+        app.append(wrapper('pre', ascii), wrapper('div', msgTxt));
         document.body.addEventListener('keydown', newMatch);
     }
 }
