@@ -26,6 +26,21 @@ const inputText = (labelText, placeholderText) => {
     return label;
 };
 
+const inputNumber = (labelText, placeholderText, max, min, defaultValue) => {
+    const label = wrapper('label', labelText);
+    const inputElement = document.createElement('input');
+
+    inputElement.type = 'number';
+    inputElement.max = max;
+    inputElement.min = min;
+    inputElement.defaultValue = defaultValue;
+    inputElement.placeholder = placeholderText;
+
+    label.append(inputElement);
+
+    return label;
+};
+
 const button = (buttonText, css = '', attribute = '') => {
     const buttonElement = document.createElement('button');
 
@@ -135,6 +150,7 @@ export {
     clearApp,
     wrapper,
     inputText,
+    inputNumber,
     button,
     attackBoard,
     replaceAttackCell,

@@ -4,6 +4,7 @@ import {
     clearApp,
     wrapper,
     inputText,
+    inputNumber,
     button,
     attackBoard,
     shipsBoard,
@@ -32,6 +33,18 @@ app.addEventListener('pointerdown', startGame);
 document.body.addEventListener('keydown', startGame);
 
 const configGame = () => {
+    // const timerInput = document.createElement('input');
+    // timerInput.type = 'number';
+    // timerInput.min = 1;
+    // timerInput.max = 60;
+    // timerInput.placeholder = 'un número de 1 a 60';
+    // timerInput.defaultValue = 15;
+    // const timerLabel = wrapper(
+    //     'label',
+    //     '¿Cúanto tiempo para cada ronda? (de 1 a 60 segundos)',
+    // );
+    // timerLabel.append(timerInput);
+
     app.append(
         wrapper(
             'p',
@@ -39,22 +52,59 @@ const configGame = () => {
         ),
         inputText('¿Quién inicia el juego?', 'Nombre'),
         inputText('¿Quiés es el contrincante?', 'Nombre'),
+        inputNumber(
+            '¿Turnos de cuanto tiempo? (1-60 segundos)',
+            '<1-60>',
+            1,
+            60,
+            15,
+        ),
         button('¡Iniciar el encuentro!'),
     );
 
-    document.querySelector('button').addEventListener('pointerdown', () => {
-        const [player1, player2] = document.querySelectorAll('input');
+    const submitSettings = (event) => {
+        if (event.type !== 'pointerdown' && event.key !== 'Enter') {
+            return;
+        }
+
+        const [player1, player2, timer] = document.querySelectorAll('input');
+
+        const previousWarns = app.querySelectorAll('.warn');
+        previousWarns.forEach((warn) => warn.remove());
+        let validationError = false;
 
         if (!player1.value && !player2.value) {
             app.insertBefore(
                 wrapper('h2', '¡Debe haber al menos una persona!', 'warn'),
                 app.querySelector('label'),
             );
+            validationError = true;
+        }
 
+        if (isNaN(timer.value) || +timer.value < 1 || timer.value > 60) {
+            app.insertBefore(
+                wrapper(
+                    'h2',
+                    '¡El timer sólo acepta números entre 1 y 60!',
+                    'warn',
+                ),
+                app.querySelector('label'),
+            );
+            validationError = true;
+        }
+
+        if (validationError) {
             return;
         }
 
-        const game = new Game(player1.value, player2.value);
+        document.body.removeEventListener('keydown', submitSettings);
+
+        const game = new Game(player1.value, player2.value, +timer.value);
         game.setShips(game.player1);
-    });
+    };
+
+    document
+        .querySelector('button')
+        .addEventListener('pointerdown', submitSettings);
+    document.body.addEventListener('keydown', submitSettings);
 };

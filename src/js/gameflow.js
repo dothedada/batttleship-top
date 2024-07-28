@@ -24,16 +24,17 @@ const app = document.querySelector('#app');
 // 4. crear el Readme
 
 export default class Game {
-    AttackDelayMs = 1000;
-    underAttackDelayMs = 2000;
-    baseRandomDelayMs = 500;
-    checkFeedbackMs = 1000;
-
-    constructor(player_1, player_2) {
+    constructor(player_1, player_2, time) {
         this.player1 = new Player(player_1 !== '' ? player_1 : undefined);
         this.player2 = new Player(player_2 !== '' ? player_2 : undefined);
 
-        this.timerSec = 25;
+        this.timerSec = +time;
+
+        this.AttackDelaySec = 0.5;
+        this.underAttackDelaySec = 0.5;
+        this.rndBaseMs = 500;
+        this.evalAttackFeedback = 1.5;
+
         this.player1.setAdversary(this.player2);
     }
 
@@ -284,18 +285,45 @@ export default class Game {
         });
     }
 
-    countdown(updateCallback) {
+    activeCountdowns = [];
+
+    purgeCountdowns() {
+        this.activeCountdowns.forEach(clearInterval);
+        this.activeCountdowns.length = 0;
+    }
+
+    countdown(callbackToUpdate) {
         return new Promise((resolve) => {
             let timeAvailable = this.timerSec;
 
             const timer = setInterval(() => {
                 timeAvailable -= 1;
-                updateCallback(timeAvailable);
+                callbackToUpdate(timeAvailable);
                 if (timeAvailable <= 0) {
                     clearInterval(timer);
                     resolve(timeAvailable);
                 }
             }, 1000);
+
+            this.activeCountdowns.push(timer);
+        });
+    }
+
+    createCountdown(player) {
+        this.purgeCountdowns();
+        const clock = document.querySelector('.counter.warn');
+        clock.textContent = `00:${String(this.timerSec).padStart(2, '0')}`;
+
+        this.countdown((timeLeft) => {
+            clock.textContent = `00:${String(timeLeft).padStart(2, '0')}`;
+            const warnTime = Math.max(this.timerSec / 4, 3);
+
+            if (timeLeft < warnTime) {
+                document.body.classList.add('alarm');
+            }
+        }).then(() => {
+            document.body.classList.remove('alarm');
+            this.switcher('attack', player);
         });
     }
 
@@ -360,7 +388,11 @@ export default class Game {
         const myAttacksBTN = button('Ver mis disparos', '', '');
         const myShipsBTN = button('Ver mis barcos', '', '');
         const instructions = wrapper('div', '', 'settings__dialog');
-        const timer = wrapper('span', `00:${String(this.timerSec).padStart(2, '0')}`, 'counter warn');
+        const timer = wrapper(
+            'span',
+            `00:${String(this.timerSec).padStart(2, '0')}`,
+            'counter warn',
+        );
         const coordinates = inputText(
             'Escribe las coordenadas de tu ataque y presiona [Enter] para disparar:',
             '<A-J> <1-10> / <Aleatorio/Random>',
@@ -377,17 +409,7 @@ export default class Game {
         app.append(radar, header, nav, boards, settings);
 
         // action
-        this.countdown((timeLeft) => {
-            timer.textContent = `00:${String(timeLeft).padStart(2, '0')}`;
-            const warnTime = Math.max(this.timerSec / 4, 3)
-            console.log(warnTime)
-            if (timeLeft < this.timerSec / 4) {
-                document.body.classList.add('alarm');
-            }
-        }).then(() => {
-            document.body.classList.remove('alarm');
-            this.switcher('attack', player);
-        });
+        this.createCountdown(player);
 
         radarBTN.addEventListener('pointerdown', () => {
             player.preferences.radar = !player.preferences.radar;
@@ -420,11 +442,9 @@ export default class Game {
         app.append(header, myShips);
     }
 
-    delayFunction(ms, fixed = false) {
-        const totalTimeMs = !fixed
-            ? Math.floor(Math.random() * ms + this.baseRandomDelayMs)
-            : ms;
-        return new Promise((resolve) => setTimeout(resolve, totalTimeMs));
+    delayFunction(sec) {
+        const time = (sec * 1000) + Math.floor(Math.random() * this.rndBaseMs)
+        return new Promise((resolve) => setTimeout(resolve, time));
     }
 
     async receiveAttack(receiver, attacker) {
@@ -435,12 +455,12 @@ export default class Game {
 
         do {
             attackResult = attacker.attackAuto();
-            await this.delayFunction(this.underAttackDelayMs);
+            await this.delayFunction(this.underAttackDelaySec, true);
             const newShipsBoard = shipsBoard(receiver);
             const oldShipsBoard = document.querySelector('.board');
             const boardParent = oldShipsBoard.parentNode;
             boardParent.replaceChild(newShipsBoard, oldShipsBoard);
-            await this.delayFunction(this.checkFeedbackMs);
+            await this.delayFunction(this.evalAttackFeedback);
 
             if (attackResult === 'No ships left') {
                 this.switcher('winner', attacker);
@@ -461,6 +481,7 @@ export default class Game {
         let targetSet = null;
 
         const sendAttack = async (row, col) => {
+            this.purgeCountdowns();
             const buttons = document.querySelectorAll('button');
             const attackResult = player.attack(+col, +row);
             const cell = document.querySelector(`[data-cell="${row}-${col}"]`);
@@ -469,11 +490,11 @@ export default class Game {
                 btn.disabled = true;
             });
 
-            await this.delayFunction(this.AttackDelayMs);
+            await this.delayFunction(this.AttackDelaySec);
             document.body.classList.toggle('alarm', attackResult === 'Ship');
             replaceAttackCell(cell.getAttribute('data-cell'), attackResult);
 
-            await this.delayFunction(this.checkFeedbackMs);
+            await this.delayFunction(this.evalAttackFeedback);
             if (attackResult === 'Water') {
                 this.switcher('attack', player);
             } else if (attackResult === 'No ships left') {
@@ -485,6 +506,7 @@ export default class Game {
             });
 
             attackInput.value = '';
+            this.createCountdown(player);
         };
 
         attackBTNs.forEach((btn) => {
