@@ -33,7 +33,7 @@ export default class Game {
         this.player1 = new Player(player_1 !== '' ? player_1 : undefined);
         this.player2 = new Player(player_2 !== '' ? player_2 : undefined);
 
-        this.timerSec = 15;
+        this.timerSec = 25;
         this.player1.setAdversary(this.player2);
     }
 
@@ -46,7 +46,6 @@ export default class Game {
 
     renderShipsBoard(player, shipsAvailable, confirm = undefined) {
         clearApp();
-        this.countdown((timeLeft) => console.log(timeLeft)).then((timeLeft) => console.log('final', timeLeft));
 
         const headerTXT = !confirm
             ? `${player.name}, ubica tus barcos...`
@@ -361,7 +360,7 @@ export default class Game {
         const myAttacksBTN = button('Ver mis disparos', '', '');
         const myShipsBTN = button('Ver mis barcos', '', '');
         const instructions = wrapper('div', '', 'settings__dialog');
-        const timer = wrapper('span', '00:15', 'counter warn');
+        const timer = wrapper('span', `00:${String(this.timerSec).padStart(2, '0')}`, 'counter warn');
         const coordinates = inputText(
             'Escribe las coordenadas de tu ataque y presiona [Enter] para disparar:',
             '<A-J> <1-10> / <Aleatorio/Random>',
@@ -378,6 +377,17 @@ export default class Game {
         app.append(radar, header, nav, boards, settings);
 
         // action
+        this.countdown((timeLeft) => {
+            timer.textContent = `00:${String(timeLeft).padStart(2, '0')}`;
+            const warnTime = Math.max(this.timerSec / 4, 3)
+            console.log(warnTime)
+            if (timeLeft < this.timerSec / 4) {
+                document.body.classList.add('alarm');
+            }
+        }).then(() => {
+            document.body.classList.remove('alarm');
+            this.switcher('attack', player);
+        });
 
         radarBTN.addEventListener('pointerdown', () => {
             player.preferences.radar = !player.preferences.radar;
