@@ -3,11 +3,11 @@ import {
     wrapper,
     inputText,
     button,
-    attackBoard,
     replaceAttackCell,
     shipsBoard,
     clearApp,
     replaceBoard,
+    renderMakeAttack,
     renderReceiveAttack,
     switcherScreen,
     renderAftermath,
@@ -382,45 +382,6 @@ export default class Game {
         }
     }
 
-    renderSendAttack(player) {
-        const radar = wrapper('div', '', 'radar');
-        const radarSweep = wrapper('div', '', 'radar__sweep');
-        if (!player.preferences.radar) {
-            radar.classList.add('hidden');
-        }
-        const header = wrapper('header');
-        const headerTXT = wrapper('h1', `¡${player.name}, es hora de atacar!`);
-        const radarTXT = player.preferences.radar
-            ? 'Apagar el radar'
-            : 'Encender el radar';
-        const radarBTN = button(radarTXT, '', 'radar');
-        const settings = wrapper('div', '', 'settings');
-        const nav = wrapper('nav');
-        const myAttacksBTN = button('Ver mis disparos', '', 'myAttacks');
-        const myShipsBTN = button('Ver mis barcos', '', 'myShips');
-        const instructions = wrapper('div', '', 'settings__dialog');
-        const timer = wrapper(
-            'span',
-            `00:${String(this.timerSec).padStart(2, '0')}`,
-            'counter warn',
-        );
-        const coordinates = inputText(
-            'Escribe las coordenadas de tu ataque y presiona [Enter] para disparar:',
-            '<A-J> <1-10> / <Aleatorio/Random>',
-        );
-        const randomBTN = button('¡Disparo automático!', 'set', 'attackRND');
-        const myAttacks = attackBoard(player);
-        const myShips = shipsBoard(player);
-        myShips.classList.add('hidden')
-
-        clearApp();
-        radar.append(radarSweep);
-        header.append(headerTXT, radarBTN);
-        nav.append(myAttacksBTN, myShipsBTN);
-        instructions.append(timer, coordinates, randomBTN);
-        settings.append(instructions);
-        app.append(radar, header, nav, myAttacks, myShips, settings);
-    }
 
 
     delayActions(sec) {
@@ -454,7 +415,7 @@ export default class Game {
     }
 
     playerAttack(player) {
-        this.renderSendAttack(player);
+        renderMakeAttack(player, this.timerSec)
         this.createCountdown(player);
 
         const radarBTN = document.querySelector('[data-cell="radar"]')

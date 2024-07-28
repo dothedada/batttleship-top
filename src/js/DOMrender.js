@@ -72,7 +72,7 @@ const boardFrame = () => {
 
 const attackBoard = (player) => {
     const board = boardFrame();
-    board.setAttribute('data-board', 'myAttacks')
+    board.setAttribute('data-board', 'myAttacks');
     let rowHeader = 1;
 
     player.myAttacks.flat().forEach((cell, index) => {
@@ -116,7 +116,7 @@ const replaceAttackCell = (coordenates, type) => {
 
 const shipsBoard = (player) => {
     const board = boardFrame();
-    board.setAttribute('data-board', 'myShips')
+    board.setAttribute('data-board', 'myShips');
     let rowHeader = 1;
 
     player.board.ships.flat().forEach((cell, index) => {
@@ -143,11 +143,51 @@ const shipsBoard = (player) => {
 };
 
 const replaceBoard = (shipsORattacks) => {
-    const myShips = document.querySelector('[data-board="myShips"]')
-    const myAttacks = document.querySelector('[data-board="myAttacks"]')
+    const myShips = document.querySelector('[data-board="myShips"]');
+    const myAttacks = document.querySelector('[data-board="myAttacks"]');
 
-    myShips.classList.toggle('hidden', shipsORattacks !== 'ships')
-    myAttacks.classList.toggle('hidden', shipsORattacks !== 'attacks')
+    myShips.classList.toggle('hidden', shipsORattacks !== 'ships');
+    myAttacks.classList.toggle('hidden', shipsORattacks !== 'attacks');
+};
+
+const renderMakeAttack = (player, time) => {
+    const radar = wrapper('div', '', 'radar');
+    const radarSweep = wrapper('div', '', 'radar__sweep');
+    if (!player.preferences.radar) {
+        radar.classList.add('hidden');
+    }
+    const header = wrapper('header');
+    const headerTXT = wrapper('h1', `¡${player.name}, es hora de atacar!`);
+    const radarTXT = player.preferences.radar
+        ? 'Apagar el radar'
+        : 'Encender el radar';
+    const radarBTN = button(radarTXT, '', 'radar');
+    const settings = wrapper('div', '', 'settings');
+    const nav = wrapper('nav');
+    const myAttacksBTN = button('Ver mis disparos', '', 'myAttacks');
+    const myShipsBTN = button('Ver mis barcos', '', 'myShips');
+    const instructions = wrapper('div', '', 'settings__dialog');
+    const timer = wrapper(
+        'span',
+        `00:${String(time).padStart(2, '0')}`,
+        'counter warn',
+    );
+    const coordinates = inputText(
+        'Escribe las coordenadas de tu ataque y presiona [Enter] para disparar:',
+        '<A-J> <1-10> / <Aleatorio/Random>',
+    );
+    const randomBTN = button('¡Disparo automático!', 'set', 'attackRND');
+    const myAttacks = attackBoard(player);
+    const myShips = shipsBoard(player);
+    myShips.classList.add('hidden');
+
+    clearApp();
+    radar.append(radarSweep);
+    header.append(headerTXT, radarBTN);
+    nav.append(myAttacksBTN, myShipsBTN);
+    instructions.append(timer, coordinates, randomBTN);
+    settings.append(instructions);
+    app.append(radar, header, nav, myAttacks, myShips, settings);
 };
 
 const renderReceiveAttack = (defender) => {
@@ -219,6 +259,7 @@ export {
     replaceAttackCell,
     shipsBoard,
     replaceBoard,
+    renderMakeAttack,
     renderReceiveAttack,
     switcherScreen,
     renderAftermath,
