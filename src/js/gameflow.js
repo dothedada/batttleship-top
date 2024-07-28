@@ -396,8 +396,8 @@ export default class Game {
         const radarBTN = button(radarTXT, '', 'radar');
         const settings = wrapper('div', '', 'settings');
         const nav = wrapper('nav');
-        const myAttacksBTN = button('Ver mis disparos', '', '');
-        const myShipsBTN = button('Ver mis barcos', '', '');
+        const myAttacksBTN = button('Ver mis disparos', '', 'myAttacks');
+        const myShipsBTN = button('Ver mis barcos', '', 'myShips');
         const instructions = wrapper('div', '', 'settings__dialog');
         const timer = wrapper(
             'span',
@@ -409,7 +409,9 @@ export default class Game {
             '<A-J> <1-10> / <Aleatorio/Random>',
         );
         const randomBTN = button('¡Disparo automático!', 'set', 'attackRND');
-        const boards = attackBoard(player);
+        const myAttacks = attackBoard(player);
+        const myShips = shipsBoard(player);
+        myShips.classList.add('hidden')
 
         clearApp();
         radar.append(radarSweep);
@@ -417,10 +419,48 @@ export default class Game {
         nav.append(myAttacksBTN, myShipsBTN);
         instructions.append(timer, coordinates, randomBTN);
         settings.append(instructions);
-        app.append(radar, header, nav, boards, settings);
+        app.append(radar, header, nav, myAttacks, myShips, settings);
+    }
 
-        // action
+
+    delayActions(sec) {
+        const time = sec * 1000 + Math.floor(Math.random() * this.rndBaseMs);
+        return new Promise((resolve) => setTimeout(resolve, time));
+    }
+
+    async receiveAttack(defender, attacker) {
+        renderReceiveAttack(defender);
+        document.body.classList.add('alarm');
+
+        let attackResult;
+
+        do {
+            attackResult = attacker.attackAuto();
+            await this.delayActions(this.underAttackDelaySec, true);
+            const newShipsBoard = shipsBoard(defender);
+            const oldShipsBoard = document.querySelector('.board');
+            const boardParent = oldShipsBoard.parentNode;
+            boardParent.replaceChild(newShipsBoard, oldShipsBoard);
+            await this.delayActions(this.evalAttackFeedback);
+
+            if (attackResult === 'No ships left') {
+                this.switcher('winner', attacker);
+                return;
+            }
+        } while (attackResult !== 'Water');
+
+        document.body.classList.remove('alarm');
+        this.switcher('attack', attacker);
+    }
+
+    playerAttack(player) {
+        this.renderSendAttack(player);
         this.createCountdown(player);
+
+        const radarBTN = document.querySelector('[data-cell="radar"]')
+        const radar = document.querySelector('.radar')
+        const myAttacksBTN = document.querySelector('[data-cell="myAttacks"]')
+        const myShipsBTN = document.querySelector('[data-cell="myShips"]')
 
         radarBTN.addEventListener('pointerdown', () => {
             player.preferences.radar = !player.preferences.radar;
@@ -435,47 +475,12 @@ export default class Game {
         });
 
         myAttacksBTN.addEventListener('pointerdown', () => {
-            replaceBoard('attacks', player);
+            replaceBoard('attacks');
         });
 
         myShipsBTN.addEventListener('pointerdown', () => {
-            replaceBoard('ships', player);
+            replaceBoard('ships');
         });
-    }
-
-
-    delayFunction(sec) {
-        const time = sec * 1000 + Math.floor(Math.random() * this.rndBaseMs);
-        return new Promise((resolve) => setTimeout(resolve, time));
-    }
-
-    async receiveAttack(defender, attacker) {
-        renderReceiveAttack(defender);
-        document.body.classList.add('alarm');
-
-        let attackResult;
-
-        do {
-            attackResult = attacker.attackAuto();
-            await this.delayFunction(this.underAttackDelaySec, true);
-            const newShipsBoard = shipsBoard(defender);
-            const oldShipsBoard = document.querySelector('.board');
-            const boardParent = oldShipsBoard.parentNode;
-            boardParent.replaceChild(newShipsBoard, oldShipsBoard);
-            await this.delayFunction(this.evalAttackFeedback);
-
-            if (attackResult === 'No ships left') {
-                this.switcher('winner', attacker);
-                return;
-            }
-        } while (attackResult !== 'Water');
-
-        document.body.classList.remove('alarm');
-        this.switcher('attack', attacker);
-    }
-
-    playerAttack(player) {
-        this.renderSendAttack(player);
 
         const attackBTNs = document.querySelectorAll('.board__attack');
         const attackRndBTN = document.querySelector('[data-cell="attackRND"]');
@@ -492,11 +497,11 @@ export default class Game {
                 btn.disabled = true;
             });
 
-            await this.delayFunction(this.AttackDelaySec);
+            await this.delayActions(this.AttackDelaySec);
             document.body.classList.toggle('alarm', attackResult === 'Ship');
             replaceAttackCell(cell.getAttribute('data-cell'), attackResult);
 
-            await this.delayFunction(this.evalAttackFeedback);
+            await this.delayActions(this.evalAttackFeedback);
             if (attackResult === 'Water') {
                 this.switcher('attack', player);
             } else if (attackResult === 'No ships left') {

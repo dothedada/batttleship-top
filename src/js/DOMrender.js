@@ -72,6 +72,7 @@ const boardFrame = () => {
 
 const attackBoard = (player) => {
     const board = boardFrame();
+    board.setAttribute('data-board', 'myAttacks')
     let rowHeader = 1;
 
     player.myAttacks.flat().forEach((cell, index) => {
@@ -115,6 +116,7 @@ const replaceAttackCell = (coordenates, type) => {
 
 const shipsBoard = (player) => {
     const board = boardFrame();
+    board.setAttribute('data-board', 'myShips')
     let rowHeader = 1;
 
     player.board.ships.flat().forEach((cell, index) => {
@@ -140,14 +142,12 @@ const shipsBoard = (player) => {
     return board;
 };
 
-const replaceBoard = (shipsORattacks, player) => {
-    const ships = shipsORattacks === 'ships';
+const replaceBoard = (shipsORattacks) => {
+    const myShips = document.querySelector('[data-board="myShips"]')
+    const myAttacks = document.querySelector('[data-board="myAttacks"]')
 
-    const newBoard = ships ? shipsBoard(player) : attackBoard(player);
-    const oldBoard = document.querySelector('.board');
-    const parentBoard = oldBoard.parentNode;
-
-    parentBoard.replaceChild(newBoard, oldBoard);
+    myShips.classList.toggle('hidden', shipsORattacks !== 'ships')
+    myAttacks.classList.toggle('hidden', shipsORattacks !== 'attacks')
 };
 
 const renderReceiveAttack = (defender) => {
