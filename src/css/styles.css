@@ -8,7 +8,6 @@
     --secondary: hsl(54, 55%, 49%);
     --accent: hsl(0, 75%, 39%);
 
-    /* --font: 'M Plus 1 Code', monospace; */
     --font: monospace;
     --lineheight: calc(1ex / 0.32);
     --ship-section-size: 5ch;
@@ -49,6 +48,7 @@ button:disabled {
     pointer-events: none;
     border-color: var(--primary);
 }
+
 input {
     box-sizing: border-box;
     display: block;
@@ -70,6 +70,9 @@ input:focus-visible {
 }
 input:focus-visible::placeholder {
     color: unset;
+}
+input[type='number'] {
+    appearance: textfield;
 }
 
 /* Secciones */
@@ -176,7 +179,6 @@ pre {
 }
 
 nav {
-    /* border-bottom: 1px solid var(--text); */
     margin-bottom: 0.2rem;
     display: flex;
     justify-content: flex-start;
@@ -217,10 +219,7 @@ nav > button:active {
 }
 
 .dialog__dock {
-    margin: calc(var(--lineheight) / 4) 0 calc(var(--lineheight) / 2) 0.5ch ;
-    /* padding: var(--lineheight) 1ch; */
-    /* background: black; */
-
+    margin: calc(var(--lineheight) / 4) 0 calc(var(--lineheight) / 2) 0.5ch;
     outline: 1px solid var(--text);
 
     display: inline-flex;
@@ -272,7 +271,6 @@ nav > button:active {
 
 /* Animations */
 .radar {
-    /* display: none; */
     position: absolute;
     width: 100%;
     height: 100%;
@@ -280,7 +278,6 @@ nav > button:active {
     left: 0;
     overflow: hidden;
     pointer-events: none;
-    /* z-index: 100; */
 }
 .radar__sweep {
     width: calc(max(100vh, 100vw) * 3);
@@ -292,7 +289,6 @@ nav > button:active {
     );
     mix-blend-mode: hard-light;
     animation: radar 10s infinite linear;
-    /* isolation: isolate; */
 }
 .alarm {
     animation: alarm 1s linear infinite;
