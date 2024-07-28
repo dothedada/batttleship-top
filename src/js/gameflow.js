@@ -1,7 +1,6 @@
 import Player from './players';
 import {
-    wrapper,
-    button,
+    clearShipPreview,
     shipsBoard,
     renderShipsBoard,
     replaceAttackCell,
@@ -65,7 +64,7 @@ export default class Game {
         //
         //     boardCells.forEach((cell) => {
         //         cell.addEventListener('dragenter', () => {
-        //             this.clearShipPreview();
+        //             clearShipPreview();
         //             targetCell = cell.getAttribute('data-cell');
         //
         //             const [rowBase, colBase] = targetCell.split('-');
@@ -88,7 +87,7 @@ export default class Game {
         // shipDraggable.addEventListener('dragstart', dragHandler);
         //
         // shipDraggable.addEventListener('dragend', () => {
-        //     this.clearShipPreview();
+        //     clearShipPreview();
         //     const [rowBase, colBase] = targetCell.split('-');
         //
         //     let horizon = true;
@@ -147,7 +146,7 @@ export default class Game {
         });
 
         coordenates.addEventListener('input', (event) => {
-            this.clearShipPreview();
+            clearShipPreview();
 
             const input = event.target;
 
@@ -211,20 +210,6 @@ export default class Game {
     }
 
     //se va a DOM
-    clearShipPreview() {
-        if (document.querySelector('[data-current]')) {
-            document.querySelectorAll('[data-current]').forEach((cell) => {
-                cell.removeAttribute('data-current');
-                cell.className = 'board__ships';
-                cell.textContent = '';
-            });
-        }
-        if (document.querySelectorAll('.board__ships--warn')) {
-            document.querySelectorAll('.board__ships--warn').forEach((cell) => {
-                cell.classList.remove('board__ships--warn');
-            });
-        }
-    }
 
     //se va a DOM
     shipPreview(colValue, rowValue, dirValue, shipToPlace, shipSize) {

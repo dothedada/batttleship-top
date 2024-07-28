@@ -135,6 +135,21 @@ const dragNdropDialog = (ship, size) => {
     return container;
 };
 
+const clearShipPreview = () => {
+    if (document.querySelector('[data-current]')) {
+        document.querySelectorAll('[data-current]').forEach((cell) => {
+            cell.removeAttribute('data-current');
+            cell.className = 'board__ships';
+            cell.textContent = '';
+        });
+    }
+    if (document.querySelectorAll('.board__ships--warn')) {
+        document.querySelectorAll('.board__ships--warn').forEach((cell) => {
+            cell.classList.remove('board__ships--warn');
+        });
+    }
+};
+
 const renderShipsBoard = (player, shipsAvailable, confirm = undefined) => {
     clearApp();
 
@@ -164,8 +179,8 @@ const renderShipsBoard = (player, shipsAvailable, confirm = undefined) => {
         const form = coordenatesDialog();
         const drag = dragNdropDialog(ship, size);
         player.preferences.drag
-        ? form.classList.add('hidden')
-        : drag.classList.add('hidden');
+            ? form.classList.add('hidden')
+            : drag.classList.add('hidden');
 
         instructions.append(shipInventory, form, drag);
         const resetBTN = button('Reiniciar', '', 'reset');
@@ -341,6 +356,7 @@ export {
     shipsBoard,
     coordenatesDialog,
     dragNdropDialog,
+    clearShipPreview,
     renderShipsBoard,
     attackBoard,
     replaceAttackCell,
