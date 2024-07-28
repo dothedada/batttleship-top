@@ -150,6 +150,16 @@ const replaceBoard = (shipsORattacks, player) => {
     parentBoard.replaceChild(newBoard, oldBoard);
 };
 
+const renderReceiveAttack = (defender) => {
+    const header = wrapper('header');
+    const headerTXT = wrapper('h1', `¡${defender.name}, te atacan!`);
+    const myShips = shipsBoard(defender);
+
+    clearApp();
+    header.append(headerTXT);
+    app.append(header, myShips);
+};
+
 const switcherScreen = (type, from, to, callback) => {
     clearApp();
     const artsTotal = 2;
@@ -165,7 +175,6 @@ const switcherScreen = (type, from, to, callback) => {
             return;
         }
         document.removeEventListener('keydown', goto);
-        console.log(callback)
         callback(to);
     };
 
@@ -210,6 +219,7 @@ export {
     replaceAttackCell,
     shipsBoard,
     replaceBoard,
+    renderReceiveAttack,
     switcherScreen,
     renderAftermath,
 };

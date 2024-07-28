@@ -8,6 +8,7 @@ import {
     shipsBoard,
     clearApp,
     replaceBoard,
+    renderReceiveAttack,
     switcherScreen,
     renderAftermath,
 } from './DOMrender';
@@ -442,23 +443,14 @@ export default class Game {
         });
     }
 
-    renderReceiveAttack(player) {
-        const header = wrapper('header');
-        const headerTXT = wrapper('h1', `¡${player.name}, te atacan!`);
-        const myShips = shipsBoard(player);
-
-        clearApp();
-        header.append(headerTXT);
-        app.append(header, myShips);
-    }
 
     delayFunction(sec) {
         const time = sec * 1000 + Math.floor(Math.random() * this.rndBaseMs);
         return new Promise((resolve) => setTimeout(resolve, time));
     }
 
-    async receiveAttack(receiver, attacker) {
-        this.renderReceiveAttack(receiver);
+    async receiveAttack(defender, attacker) {
+        renderReceiveAttack(defender);
         document.body.classList.add('alarm');
 
         let attackResult;
@@ -466,7 +458,7 @@ export default class Game {
         do {
             attackResult = attacker.attackAuto();
             await this.delayFunction(this.underAttackDelaySec, true);
-            const newShipsBoard = shipsBoard(receiver);
+            const newShipsBoard = shipsBoard(defender);
             const oldShipsBoard = document.querySelector('.board');
             const boardParent = oldShipsBoard.parentNode;
             boardParent.replaceChild(newShipsBoard, oldShipsBoard);
@@ -620,7 +612,6 @@ export default class Game {
                 from === this.player1
                     ? this.playerAttack(to)
                     : this.receiveAttack(from, to);
-                // this.receiveAttack(receiver, attacker)
             }
         } else if (type === 'winner') {
             if (bothHumans) {
