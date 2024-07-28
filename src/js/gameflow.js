@@ -15,11 +15,9 @@ import Ship from './ships';
 const app = document.querySelector('#app');
 
 // TODO:
-// 2. el timer
 // 3. Simplificar, limpiar y ordenar codigo (creo que en el gameflow solo quedan
 //      los switcher los renders van para el dom, los ataques al player y las
 //      recepciones al gameboard)
-// 3.a. Revisar reinicio de partida
 // 3.b. Revisar secuencia de ataques del compu
 // 4. crear el Readme
 
@@ -33,7 +31,7 @@ export default class Game {
         this.AttackDelaySec = 0.5;
         this.underAttackDelaySec = 0.5;
         this.rndBaseMs = 500;
-        this.evalAttackFeedback = 1.5;
+        this.evalAttackFeedback = 1;
 
         this.player1.setAdversary(this.player2);
     }
@@ -70,6 +68,7 @@ export default class Game {
                 `${ship} (${ship.slice(0, 2)}), quedan ${shipsLeft} barcos por ubicar.`,
                 'dialog__ship',
             );
+
             //  drag o form
             const form = this.coordenatesDialog();
             const drag = this.dragNdropDialog(player, ship, size);
@@ -87,6 +86,7 @@ export default class Game {
                 form.classList.add('hidden');
                 player.preferences.drag = true;
             });
+
             // fin drag o form
             instructions.append(shipInventory, form, drag);
             const resetBTN = button('Reiniciar', '', 'reset');

@@ -6,45 +6,33 @@ import {
     inputText,
     inputNumber,
     button,
-    attackBoard,
-    shipsBoard,
 } from './DOMrender';
 import Game from './gameflow';
 
 const app = document.querySelector('#app');
 
-app.append(
-    wrapper('pre', asciiArt.submarine),
-    wrapper('pre', asciiArt.name),
-    wrapper('pre', asciiArt.sea),
-    wrapper('p', 'Presiona [Enter] o haz clic aquí para empezar...'),
-);
+const loadGame = () => {
+    app.append(
+        wrapper('pre', asciiArt.submarine),
+        wrapper('pre', asciiArt.name),
+        wrapper('pre', asciiArt.sea),
+        wrapper('p', 'Presiona [Enter] o haz clic aquí para empezar...'),
+    );
 
-const startGame = (event) => {
-    if (event.type === 'pointerdown' || event.key === 'Enter') {
-        clearApp();
-        app.removeEventListener('pointerdown', startGame);
-        document.body.removeEventListener('keydown', startGame);
-        configGame();
-    }
+    const startGame = (event) => {
+        if (event.type === 'pointerdown' || event.key === 'Enter') {
+            clearApp();
+            app.removeEventListener('pointerdown', startGame);
+            document.body.removeEventListener('keydown', startGame);
+            configGame();
+        }
+    };
+
+    app.addEventListener('pointerdown', startGame);
+    document.body.addEventListener('keydown', startGame);
 };
 
-app.addEventListener('pointerdown', startGame);
-document.body.addEventListener('keydown', startGame);
-
 const configGame = () => {
-    // const timerInput = document.createElement('input');
-    // timerInput.type = 'number';
-    // timerInput.min = 1;
-    // timerInput.max = 60;
-    // timerInput.placeholder = 'un número de 1 a 60';
-    // timerInput.defaultValue = 15;
-    // const timerLabel = wrapper(
-    //     'label',
-    //     '¿Cúanto tiempo para cada ronda? (de 1 a 60 segundos)',
-    // );
-    // timerLabel.append(timerInput);
-
     app.append(
         wrapper(
             'p',
@@ -63,6 +51,7 @@ const configGame = () => {
     );
 
     const submitSettings = (event) => {
+
         if (event.type !== 'pointerdown' && event.key !== 'Enter') {
             return;
         }
@@ -108,3 +97,5 @@ const configGame = () => {
         .addEventListener('pointerdown', submitSettings);
     document.body.addEventListener('keydown', submitSettings);
 };
+
+loadGame();
