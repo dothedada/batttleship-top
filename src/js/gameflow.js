@@ -1,8 +1,8 @@
 import Player from './players';
 import {
-    clearShipPreview,
-    shipPreview,
     shipsBoard,
+    shipPreview,
+    clearShipPreview,
     renderShipsBoard,
     replaceAttackCell,
     replaceBoard,
