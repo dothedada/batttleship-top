@@ -1,4 +1,5 @@
 import asciiArt from './asciiArt';
+import Gameboard from './gameboard';
 
 const app = document.querySelector('#app');
 
@@ -135,6 +136,24 @@ const dragNdropDialog = (ship, size) => {
     return container;
 };
 
+const shipPreview = (colValue, rowValue, horizontal, ship, size) => {
+    const col = horizontal ? Gameboard.fixSpace(colValue, size) : colValue;
+    const row = !horizontal ? Gameboard.fixSpace(rowValue, size) : rowValue;
+
+    for (let l = 0; l < size; l++) {
+        const j = horizontal ? col + l : col;
+        const i = !horizontal ? row + l : row;
+        const cell = document.querySelector(`[data-cell="${i}-${j}"]`);
+
+        if (!cell.textContent) {
+            cell.setAttribute('data-current', true);
+            cell.classList.add('board__ships--occupied');
+            cell.textContent = `${ship.slice(0, 2)}`;
+        } else {
+            cell.classList.add('board__ships--warn');
+        }
+    }
+};
 const clearShipPreview = () => {
     if (document.querySelector('[data-current]')) {
         document.querySelectorAll('[data-current]').forEach((cell) => {
@@ -356,6 +375,7 @@ export {
     shipsBoard,
     coordenatesDialog,
     dragNdropDialog,
+    shipPreview,
     clearShipPreview,
     renderShipsBoard,
     attackBoard,

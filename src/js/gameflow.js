@@ -1,6 +1,7 @@
 import Player from './players';
 import {
     clearShipPreview,
+    shipPreview,
     shipsBoard,
     renderShipsBoard,
     replaceAttackCell,
@@ -38,7 +39,6 @@ export default class Game {
 
         this.player1.setAdversary(this.player2);
     }
-
 
     dragNDropHandler(player, ship, size) {
         dragNDropDialog(ship, size);
@@ -79,7 +79,7 @@ export default class Game {
         //                 ? +rowBase - +currentSegment
         //                 : +rowBase;
         //
-        //             this.shipPreview(col, row, horizon, ship, size);
+        //             shipPreview(col, row, horizon, ship, size);
         //         });
         //     });
         // };
@@ -179,7 +179,7 @@ export default class Game {
             const col = horizon && colBase + size > 10 ? 10 - size : colBase;
             const row = !horizon && rowBase + size > 10 ? 10 - size : rowBase;
 
-            this.shipPreview(col, row, horizon, ship, size);
+            shipPreview(col, row, horizon, ship, size);
 
             setShipIn = document.querySelector('.board__ships--warn')
                 ? null
@@ -207,38 +207,6 @@ export default class Game {
 
             this.setShips(player); // carga pantalla de confirmación
         });
-    }
-
-    //se va a DOM
-
-    //se va a DOM
-    shipPreview(colValue, rowValue, dirValue, shipToPlace, shipSize) {
-        const col =
-            dirValue && colValue + shipSize > 10
-                ? 10 - shipSize
-                : colValue < 0
-                  ? 0
-                  : colValue;
-        const row =
-            !dirValue && rowValue + shipSize > 10
-                ? 10 - shipSize
-                : rowValue < 0
-                  ? 0
-                  : rowValue;
-
-        for (let l = 0; l < shipSize; l++) {
-            const i = !dirValue ? row + l : row;
-            const j = dirValue ? col + l : col;
-            const cell = document.querySelector(`[data-cell="${i}-${j}"]`);
-
-            if (!cell.textContent) {
-                cell.setAttribute('data-current', true);
-                cell.className += ' board__ships--occupied';
-                cell.textContent = `${shipToPlace.slice(0, 2)}`;
-            } else {
-                cell.classList.add('board__ships--warn');
-            }
-        }
     }
 
     async receiveAttack(defender, attacker) {
