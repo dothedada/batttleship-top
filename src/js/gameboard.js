@@ -5,6 +5,10 @@ class Gameboard {
         return Array.from({ length: 10 }, () => Array(10).fill(false));
     }
 
+    static fixSpace(value, size) {
+        return Math.max(0, Math.min(value, 10 - size));
+    }
+
     constructor() {
         this.ships = Gameboard.boardGenerator();
     }
@@ -24,9 +28,12 @@ class Gameboard {
 
     placeShip(col, row, horizontal, type) {
         const ship = new Ship(type);
-        const maxPosition = 10 - ship.length;
-        const startCol = horizontal && col > maxPosition ? maxPosition : col;
-        const startRow = !horizontal && row > maxPosition ? maxPosition : row;
+        const startCol = horizontal
+            ? Gameboard.fixSpace(col, ship.length)
+            : col;
+        const startRow = !horizontal
+            ? Gameboard.fixSpace(row, ship.length)
+            : row;
 
         for (let l = 0; l < ship.length; l++) {
             const i = !horizontal ? startRow + l : startRow;
