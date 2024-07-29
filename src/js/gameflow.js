@@ -15,8 +15,7 @@ import {
 const app = document.querySelector('#app');
 
 // TODO:
-// 3. Simplificar, limpiar y ordenar codigo (creo que en el gameflow solo quedan
-//      los switcher los renders van para el dom, los ataques al player y las
+// 3. Simplificar, limpiar y ordenar codigo (los ataques al player y las
 //      recepciones al gameboard)
 // 3.b. Revisar secuencia de ataques del compu
 // 4. crear el Readme
@@ -28,14 +27,10 @@ export default class Game {
 
         this.timerSec = +time;
 
-        // this.AttackDelaySec = 0.5;
-        // this.underAttackDelaySec = 0.5;
-        // this.rndBaseMs = 500;
-        // this.evalAttackFeedback = 1;
-        this.AttackDelaySec = 0;
+        this.AttackDelaySec = 0.5;
         this.underAttackDelaySec = 1;
-        this.rndBaseMs = 0;
-        this.evalAttackFeedback = 0;
+        this.rndBaseMs = 500;
+        this.evalAttackFeedback = 1.5;
 
         this.player1.setAdversary(this.player2);
     }
@@ -124,6 +119,9 @@ export default class Game {
         const byInputSection = document.querySelector('form');
         const byDragDropSection = document.querySelector('.dialog__drag');
         const coordenates = document.querySelector('input');
+        const randomBTN = document.querySelector(
+            '[data-cell="randomPosition"]',
+        );
         let setShipIn = null;
 
         byInputBTN.addEventListener('pointerdown', () => {
@@ -135,6 +133,10 @@ export default class Game {
             byDragDropSection.classList.remove('hidden');
             byInputSection.classList.add('hidden');
             player.preferences.drag = true;
+        });
+        randomBTN.addEventListener('pointerdown', () => {
+            player.board.placeShipRandom(ship);
+            this.setShips(player);
         });
 
         this.dragNDropHandler(player, ship, size);
