@@ -122,7 +122,7 @@ const dragNdropDialog = (ship, size) => {
 
     const dragSettings = wrapper('div', '', 'dialog__options');
     const rotateBtn = button('Girar');
-    const randomBtn = button('Ubicación aleatoria');
+    const randomBtn = button('Ubicación aleatoria','', 'randomPosition');
     dragSettings.append(rotateBtn, randomBtn);
 
     rotateBtn.addEventListener('pointerdown', () => {
@@ -319,13 +319,15 @@ const renderReceiveAttack = (defender) => {
 
 const switcherScreen = (type, from, to, callback) => {
     clearApp();
-    const artsTotal = 2;
+    const artsTotal = 6;
+    const currentArt = Math.floor(Math.random() * artsTotal)
     const msgTxt = `${from.name}, entrégale el dispositivo a ${to.name}`;
     const btnTxt =
         type === 'shipsPlacement'
             ? `${to.name}, haz clic aquí o presiona [Enter] para ubicar tus barcos`
             : `${to.name}, haz clic aquí o presiona [Enter] para realizar tu ataque`;
-    const ascii = asciiArt[`ship${Math.floor(Math.random() * artsTotal)}`];
+    const ascii = asciiArt[`ship${currentArt}`];
+    console.log(artsTotal, currentArt)
 
     const goto = (event) => {
         if (event.type !== 'pointerdown' && event.key !== 'Enter') {
